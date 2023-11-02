@@ -77,7 +77,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlinx.serialization.core)
+                compileOnly(libs.kotlinx.serialization.core)
             }
         }
 
@@ -85,6 +85,12 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.serialization.json)
+            }
+        }
+
+        nativeMain {
+            dependencies {
+                implementation(libs.kotlinx.serialization.core)
             }
         }
     }
