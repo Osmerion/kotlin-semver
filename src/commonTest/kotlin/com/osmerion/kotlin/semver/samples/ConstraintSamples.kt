@@ -1,5 +1,6 @@
 package com.osmerion.kotlin.semver.samples
 
+import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.constraints.Constraint
 import com.osmerion.kotlin.semver.constraints.ConstraintSerializer
 import com.osmerion.kotlin.semver.constraints.satisfiedBy
@@ -7,7 +8,6 @@ import com.osmerion.kotlin.semver.constraints.satisfiedByAll
 import com.osmerion.kotlin.semver.constraints.satisfiedByAny
 import com.osmerion.kotlin.semver.constraints.toConstraint
 import com.osmerion.kotlin.semver.constraints.toConstraintOrNull
-import com.osmerion.kotlin.semver.toVersion
 import kotlinx.serialization.json.Json
 
 class ConstraintSamples {
@@ -46,19 +46,19 @@ class ConstraintSamples {
 
     fun satisfiedBy() {
         val constraint = ">=1.1.0".toConstraint()
-        val version = "1.1.0".toVersion()
+        val version = SemanticVersion.parse("1.1.0")
         print("$constraint satisfiedBy $version? ${constraint satisfiedBy version}")
     }
 
     fun satisfiedByAll() {
         val constraint = ">=1.1.0".toConstraint()
-        val versions = listOf("1.1.0", "1.2.0").map { it.toVersion() }
+        val versions = listOf("1.1.0", "1.2.0").map(SemanticVersion::parse)
         print("$constraint satisfied by ${versions.joinToString(" and ")}? ${constraint satisfiedByAll versions}")
     }
 
     fun satisfiedByAny() {
         val constraint = ">=1.1.0".toConstraint()
-        val versions = listOf("1.1.0", "1.0.0").map { it.toVersion() }
+        val versions = listOf("1.1.0", "1.0.0").map(SemanticVersion::parse)
         print("$constraint satisfied by ${versions.joinToString(" or ")}? ${constraint satisfiedByAny versions}")
     }
 

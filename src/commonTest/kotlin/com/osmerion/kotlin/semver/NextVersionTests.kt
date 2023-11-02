@@ -7,7 +7,7 @@ import kotlin.test.assertFailsWith
 class NextVersionTests {
     @Test
     fun testVersionComponentsNullBuildMeta() {
-        val version = "1.2.3-alpha.4+build.3".toVersion()
+        val version = SemanticVersion.parse("1.2.3-alpha.4+build.3")
         assertEquals("2.0.0", version.nextMajor().toString())
         assertEquals("1.3.0", version.nextMinor().toString())
         assertEquals("1.2.3", version.nextPatch().toString())
@@ -16,7 +16,7 @@ class NextVersionTests {
 
     @Test
     fun testNextVersionsWithoutPreRelease() {
-        val version = "1.2.3".toVersion()
+        val version = SemanticVersion.parse("1.2.3")
         assertEquals("2.0.0", version.nextMajor().toString())
         assertEquals("1.3.0", version.nextMinor().toString())
         assertEquals("1.2.4", version.nextPatch().toString())
@@ -25,7 +25,7 @@ class NextVersionTests {
 
     @Test
     fun testNextVersionsWithNonNumericPreRelease() {
-        val version = "1.2.3-alpha".toVersion()
+        val version = SemanticVersion.parse("1.2.3-alpha")
         assertEquals("2.0.0", version.nextMajor().toString())
         assertEquals("1.3.0", version.nextMinor().toString())
         assertEquals("1.2.3", version.nextPatch().toString())
@@ -34,7 +34,7 @@ class NextVersionTests {
 
     @Test
     fun testInc() {
-        val version = "1.2.3-alpha".toVersion()
+        val version = SemanticVersion.parse("1.2.3-alpha")
         assertEquals("2.0.0", version.inc(by = Inc.MAJOR).toString())
         assertEquals("1.3.0", version.inc(by = Inc.MINOR).toString())
         assertEquals("1.2.3", version.inc(by = Inc.PATCH).toString())
@@ -43,7 +43,7 @@ class NextVersionTests {
 
     @Test
     fun testInvalidPreReleases() {
-        val version = "1.2.3-alpha".toVersion()
+        val version = SemanticVersion.parse("1.2.3-alpha")
         assertFailsWith<VersionFormatException> { version.nextMajor(preRelease = "01") }
         assertFailsWith<VersionFormatException> { version.nextMinor(preRelease = "01") }
         assertFailsWith<VersionFormatException> { version.nextPatch(preRelease = "01") }
@@ -119,7 +119,7 @@ class NextVersionTests {
         )
 
         data.forEach {
-            assertEquals(it.expected.toVersion(), it.source.toVersion().inc(by = it.incBy, it.preRelease))
+            assertEquals(SemanticVersion.parse(it.expected), SemanticVersion.parse(it.source).inc(by = it.incBy, it.preRelease))
         }
     }
 }

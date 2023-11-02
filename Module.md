@@ -96,8 +96,8 @@ This behaviour can be turned off by setting the `strict` parameter to `false`.
 "v2.3-alpha".toVersion()                    // exception
 "2.0".toVersion()                           // exception
 
-"v2.3-alpha".toVersion(strict = false)      // 2.3.0-alpha
-"2".toVersion(strict = false)               // 2.0.0
+SemanticVersion.parse("v2.3-alpha", strict = false)      // 2.3.0-alpha
+SemanticVersion.parse("2", strict = false)               // 2.0.0
 ```
 
 ## Compare

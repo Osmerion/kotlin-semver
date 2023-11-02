@@ -12,14 +12,12 @@ import com.osmerion.kotlin.semver.nextPreRelease
 import com.osmerion.kotlin.semver.satisfies
 import com.osmerion.kotlin.semver.satisfiesAll
 import com.osmerion.kotlin.semver.satisfiesAny
-import com.osmerion.kotlin.semver.toVersion
-import com.osmerion.kotlin.semver.toVersionOrNull
 import com.osmerion.kotlin.semver.withoutSuffixes
 import kotlinx.serialization.json.Json
 
 class VersionSamples {
     fun explode() {
-        val version = "1.2.3-alpha.1+build.1".toVersion()
+        val version = SemanticVersion.parse("1.2.3-alpha.1+build.1")
         println("Version: $version")
         println("Major: ${version.major}, Minor: ${version.minor}, Patch: ${version.patch}")
         println("Pre-release: ${version.preRelease}")
@@ -28,19 +26,19 @@ class VersionSamples {
         println("Is it stable? ${version.isStable}")
 
         // equality
-        println("Is 1.0.0 == 1.0.0? ${"1.0.0".toVersion() == "1.0.0".toVersion()}")
-        println("Is 1.0.0 == 1.0.1? ${"1.0.0".toVersion() == "1.0.1".toVersion()}")
+        println("Is 1.0.0 == 1.0.0? ${SemanticVersion.parse("1.0.0") == SemanticVersion.parse("1.0.0")}")
+        println("Is 1.0.0 == 1.0.1? ${SemanticVersion.parse("1.0.0") == SemanticVersion.parse("1.0.1")}")
 
         // comparison
-        println("Is 1.0.1 > 1.0.0? ${"1.0.1".toVersion() > "1.0.0".toVersion()}")
-        println("Is 1.0.0-alpha.1 > 1.0.0-alpha.0? ${"1.0.0-alpha.1".toVersion() > "1.0.0-alpha.0".toVersion()}")
+        println("Is 1.0.1 > 1.0.0? ${SemanticVersion.parse("1.0.1") > SemanticVersion.parse("1.0.0")}")
+        println("Is 1.0.0-alpha.1 > 1.0.0-alpha.0? ${SemanticVersion.parse("1.0.0-alpha.1") > SemanticVersion.parse("1.0.0-alpha.0")}")
 
         // range
-        println("Is 1.0.1 in 1.0.0 .. 1.0.2? ${"1.0.1".toVersion() in "1.0.0".toVersion().."1.0.2".toVersion()}")
+        println("Is 1.0.1 in 1.0.0 .. 1.0.2? ${SemanticVersion.parse("1.0.1") in SemanticVersion.parse("1.0.0")..SemanticVersion.parse("1.0.2")}")
 
         // destructuring
         print("Destructuring: ")
-        val (major, minor, patch, preRelease, build) = "1.0.0-alpha+build".toVersion()
+        val (major, minor, patch, preRelease, build) = SemanticVersion.parse("1.0.0-alpha+build")
         print("$major $minor $patch $preRelease $build")
     }
 
@@ -55,11 +53,11 @@ class VersionSamples {
     }
 
     fun exception() {
-        "1.0.a".toVersion()
+        SemanticVersion.parse("1.0.a")
     }
 
     fun preReleaseException() {
-        "1.0.1".toVersion().nextPatch(preRelease = "alpha.01")
+        SemanticVersion.parse("1.0.1").nextPatch(preRelease = "alpha.01")
     }
 
     fun construct() {
@@ -68,36 +66,36 @@ class VersionSamples {
     }
 
     fun toVersionStrict() {
-        print("1.0.0-alpha.1+build.1".toVersion())
+        print(SemanticVersion.parse("1.0.0-alpha.1+build.1"))
     }
 
     fun toVersionLoose() {
-        println("v1.0.0-alpha.1+build.1".toVersion(strict = false))
-        println("v1-alpha".toVersion(strict = false))
-        println("2".toVersion(strict = false))
+        println(SemanticVersion.parse("v1.0.0-alpha.1+build.1", strict = false))
+        println(SemanticVersion.parse("v1-alpha", strict = false))
+        println(SemanticVersion.parse("2", strict = false))
     }
 
     fun toVersionOrNullStrict() {
-        println("1.0.0-alpha.1+build.1".toVersionOrNull())
-        println("1.1.a".toVersionOrNull())
-        println("v1.1.0".toVersionOrNull())
-        println("1.1".toVersionOrNull())
+        println(SemanticVersion.tryParse("1.0.0-alpha.1+build.1"))
+        println(SemanticVersion.tryParse("1.1.a"))
+        println(SemanticVersion.tryParse("v1.1.0"))
+        println(SemanticVersion.tryParse("1.1"))
     }
 
     fun toVersionOrNullLoose() {
-        println("v1.1.0".toVersionOrNull(strict = false))
-        println("1.1-alpha.1+build.1".toVersionOrNull(strict = false))
-        println("1".toVersionOrNull(strict = false))
-        println("v1".toVersionOrNull(strict = false))
+        println(SemanticVersion.tryParse("v1.1.0", strict = false))
+        println(SemanticVersion.tryParse("1.1-alpha.1+build.1", strict = false))
+        println(SemanticVersion.tryParse("1", strict = false))
+        println(SemanticVersion.tryParse("v1", strict = false))
     }
 
     fun copy() {
-        val version = "1.0.0-alpha.1".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1")
         print(version.copy(minor = 1, preRelease = "beta.0"))
     }
 
     fun inc() {
-        val version = "1.0.0-alpha.1".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1")
         println(version.inc(by = com.osmerion.kotlin.semver.Inc.MAJOR))
         println(version.inc(by = com.osmerion.kotlin.semver.Inc.MINOR))
         println(version.inc(by = com.osmerion.kotlin.semver.Inc.PATCH))
@@ -108,7 +106,7 @@ class VersionSamples {
     }
 
     fun nextMajor() {
-        val version = "1.0.0-alpha.1".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1")
         println(version.nextMajor())
         println(version.nextMajor(preRelease = ""))
         println(version.nextMajor(preRelease = "alpha"))
@@ -116,7 +114,7 @@ class VersionSamples {
     }
 
     fun nextMinor() {
-        val version = "1.0.0-alpha.1".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1")
         println(version.nextMinor())
         println(version.nextMinor(preRelease = ""))
         println(version.nextMinor(preRelease = "alpha"))
@@ -124,7 +122,7 @@ class VersionSamples {
     }
 
     fun nextPatch() {
-        val version = "1.0.0-alpha.1".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1")
         println(version.nextPatch())
         println(version.nextPatch(preRelease = ""))
         println(version.nextPatch(preRelease = "alpha"))
@@ -132,7 +130,7 @@ class VersionSamples {
     }
 
     fun nextPreRelease() {
-        val version = "1.0.0-alpha.1".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1")
         println(version.nextPreRelease())
         println(version.nextPreRelease(preRelease = ""))
         println(version.nextPreRelease(preRelease = "alpha"))
@@ -145,29 +143,29 @@ class VersionSamples {
 
     fun satisfies() {
         val constraint = ">=1.1.0".toConstraint()
-        val version = "1.1.1".toVersion()
+        val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies $constraint? ${version satisfies constraint}")
     }
 
     fun satisfiesAll() {
         val constraints = listOf(">=1.1.0", "~1").map { it.toConstraint() }
-        val version = "1.1.1".toVersion()
+        val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" and ")}? ${version satisfiesAll constraints}")
     }
 
     fun satisfiesAny() {
         val constraints = listOf(">=1.1.0", "~1").map { it.toConstraint() }
-        val version = "1.1.1".toVersion()
+        val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" or ")}? ${version satisfiesAny constraints}")
     }
 
     fun withoutSuffixes() {
-        val version = "1.0.0-alpha.1+build".toVersion()
+        val version = SemanticVersion.parse("1.0.0-alpha.1+build")
         print(version.withoutSuffixes())
     }
 
     fun serialization() {
-        print(Json.encodeToString(VersionSerializer, "1.0.0-alpha.1+build".toVersion()))
+        print(Json.encodeToString(VersionSerializer, SemanticVersion.parse("1.0.0-alpha.1+build")))
     }
 
     fun deserialization() {
@@ -181,7 +179,7 @@ class VersionSamples {
     }
 
     fun looseSerialization() {
-        print(Json.encodeToString(LooseVersionSerializer, "1-alpha.1+build".toVersion(strict = false)))
+        print(Json.encodeToString(LooseVersionSerializer, SemanticVersion.parse("1-alpha.1+build", strict = false)))
     }
 
     fun looseDeserialization() {

@@ -1,6 +1,7 @@
 package com.osmerion.kotlin.semver
 
 import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmStatic
 
 /**
  * This class describes a semantic version and related operations following the semver 2.0.0 specification.
@@ -37,7 +38,7 @@ public class SemanticVersion private constructor(
         patch: Int = 0,
         preRelease: String? = null,
         buildMetadata: String? = null
-    ) : this(major, minor, patch, preRelease?.toPreRelease(), buildMetadata)
+    ) : this(major, minor, patch, preRelease?.let(PreRelease.Companion::invoke), buildMetadata)
 
     init {
         when {
@@ -162,6 +163,23 @@ public class SemanticVersion private constructor(
                 else -> throw VersionFormatException("Invalid version: $versionString")
             }
         }
+
+        /**
+         * Parses the string as a [SemanticVersion] and returns the result or null
+         * if the string is not a valid representation of a semantic version.
+         *
+         * Strict mode is on by default, which means partial versions (e.g. '1.0' or '1') and versions with 'v' prefix are
+         * considered invalid. This behaviour can be turned off by setting [strict] to false.
+         *
+         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionOrNullStrict
+         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionOrNullLoose
+         */
+        public fun tryParse(versionString: String, strict: Boolean = true): SemanticVersion? =
+            try {
+                parse(versionString, strict)
+            } catch (_: Exception) {
+                null
+            }
 
         // used by extensions only
         internal operator fun invoke(

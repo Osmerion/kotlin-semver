@@ -51,10 +51,10 @@ class ConstraintTests {
     @Test
     fun testSatisfiesAll() {
         val constraints = listOf("!=1.2.4", "=1.2.3", ">1.0.0").map { it.toConstraint() }
-        assertTrue("1.2.3".toVersion() satisfiesAll constraints)
-        assertFalse("1.2.4".toVersion() satisfiesAll constraints)
+        assertTrue(SemanticVersion.parse("1.2.3") satisfiesAll constraints)
+        assertFalse(SemanticVersion.parse("1.2.4") satisfiesAll constraints)
 
-        val versions = listOf("1.0.0", "1.0.1").map { it.toVersion() }
+        val versions = listOf("1.0.0", "1.0.1").map(SemanticVersion::parse)
         assertTrue(">=1.0.0".toConstraint() satisfiedByAll versions)
         assertFalse(">=1.0.1".toConstraint() satisfiedByAll versions)
     }
@@ -62,10 +62,10 @@ class ConstraintTests {
     @Test
     fun testSatisfiesAny() {
         val constraints = listOf("!=1.2.4", "=1.2.3", ">1.0.0").map { it.toConstraint() }
-        assertTrue("1.2.3".toVersion() satisfiesAny constraints)
-        assertTrue("1.2.4".toVersion() satisfiesAny constraints)
+        assertTrue(SemanticVersion.parse("1.2.3") satisfiesAny constraints)
+        assertTrue(SemanticVersion.parse("1.2.4") satisfiesAny constraints)
 
-        val versions = listOf("1.0.0", "1.0.1").map { it.toVersion() }
+        val versions = listOf("1.0.0", "1.0.1").map(SemanticVersion::parse)
         assertTrue(">=1.0.0".toConstraint() satisfiedByAny versions)
         assertTrue(">=1.0.1".toConstraint() satisfiedByAny versions)
     }
@@ -85,7 +85,7 @@ class ConstraintTests {
 
     @Test
     fun testCondition() {
-        val version = "1.0.0".toVersion()
+        val version = SemanticVersion.parse("1.0.0")
         assertEquals("${Op.NOT_EQUAL}1.0.0", Condition(Op.EQUAL, version).opposite())
         assertEquals("${Op.EQUAL}1.0.0", Condition(Op.NOT_EQUAL, version).opposite())
         assertEquals("${Op.GREATER_THAN_OR_EQUAL}1.0.0", Condition(Op.LESS_THAN, version).opposite())
@@ -93,18 +93,18 @@ class ConstraintTests {
         assertEquals("${Op.LESS_THAN_OR_EQUAL}1.0.0", Condition(Op.GREATER_THAN, version).opposite())
         assertEquals("${Op.LESS_THAN}1.0.0", Condition(Op.GREATER_THAN_OR_EQUAL, version).opposite())
 
-        assertTrue(Condition(Op.EQUAL, version).isSatisfiedBy("1.0.0".toVersion()))
-        assertTrue(Condition(Op.NOT_EQUAL, version).isSatisfiedBy("1.2.0".toVersion()))
-        assertTrue(Condition(Op.LESS_THAN, version).isSatisfiedBy("0.1.0".toVersion()))
-        assertTrue(Condition(Op.LESS_THAN_OR_EQUAL, version).isSatisfiedBy("1.0.0".toVersion()))
-        assertTrue(Condition(Op.GREATER_THAN, version).isSatisfiedBy("1.0.1".toVersion()))
-        assertTrue(Condition(Op.GREATER_THAN_OR_EQUAL, version).isSatisfiedBy("1.0.0".toVersion()))
+        assertTrue(Condition(Op.EQUAL, version).isSatisfiedBy(SemanticVersion.parse("1.0.0")))
+        assertTrue(Condition(Op.NOT_EQUAL, version).isSatisfiedBy(SemanticVersion.parse("1.2.0")))
+        assertTrue(Condition(Op.LESS_THAN, version).isSatisfiedBy(SemanticVersion.parse("0.1.0")))
+        assertTrue(Condition(Op.LESS_THAN_OR_EQUAL, version).isSatisfiedBy(SemanticVersion.parse("1.0.0")))
+        assertTrue(Condition(Op.GREATER_THAN, version).isSatisfiedBy(SemanticVersion.parse("1.0.1")))
+        assertTrue(Condition(Op.GREATER_THAN_OR_EQUAL, version).isSatisfiedBy(SemanticVersion.parse("1.0.0")))
     }
 
     @Test
     fun testRange() {
-        val start = Condition(Op.GREATER_THAN, "1.0.0".toVersion())
-        val end = Condition(Op.LESS_THAN, "1.1.0".toVersion())
+        val start = Condition(Op.GREATER_THAN, SemanticVersion.parse("1.0.0"))
+        val end = Condition(Op.LESS_THAN, SemanticVersion.parse("1.1.0"))
         assertEquals("<=1.0.0 || >=1.1.0", Range(start, end, Op.EQUAL).opposite())
         assertEquals(">1.0.0 <1.1.0", Range(start, end, Op.NOT_EQUAL).opposite())
         assertEquals(">1.0.0", Range(start, end, Op.LESS_THAN).opposite())
@@ -112,12 +112,12 @@ class ConstraintTests {
         assertEquals("<1.1.0", Range(start, end, Op.GREATER_THAN).opposite())
         assertEquals("<=1.0.0", Range(start, end, Op.GREATER_THAN_OR_EQUAL).opposite())
 
-        assertTrue(Range(start, end, Op.EQUAL).isSatisfiedBy("1.0.1".toVersion()))
-        assertTrue(Range(start, end, Op.NOT_EQUAL).isSatisfiedBy("1.2.0".toVersion()))
-        assertFalse(Range(start, end, Op.LESS_THAN).isSatisfiedBy("1.1.1".toVersion()))
-        assertTrue(Range(start, end, Op.LESS_THAN_OR_EQUAL).isSatisfiedBy("1.0.0".toVersion()))
-        assertTrue(Range(start, end, Op.GREATER_THAN).isSatisfiedBy("1.2.0".toVersion()))
-        assertTrue(Range(start, end, Op.GREATER_THAN_OR_EQUAL).isSatisfiedBy("1.0.1".toVersion()))
+        assertTrue(Range(start, end, Op.EQUAL).isSatisfiedBy(SemanticVersion.parse("1.0.1")))
+        assertTrue(Range(start, end, Op.NOT_EQUAL).isSatisfiedBy(SemanticVersion.parse("1.2.0")))
+        assertFalse(Range(start, end, Op.LESS_THAN).isSatisfiedBy(SemanticVersion.parse("1.1.1")))
+        assertTrue(Range(start, end, Op.LESS_THAN_OR_EQUAL).isSatisfiedBy(SemanticVersion.parse("1.0.0")))
+        assertTrue(Range(start, end, Op.GREATER_THAN).isSatisfiedBy(SemanticVersion.parse("1.2.0")))
+        assertTrue(Range(start, end, Op.GREATER_THAN_OR_EQUAL).isSatisfiedBy(SemanticVersion.parse("1.0.1")))
     }
 
     @Test
@@ -328,7 +328,7 @@ class ConstraintTests {
         )
 
         data.forEach {
-            assertTrue { it.second.toVersion() satisfies it.first.toConstraint() }
+            assertTrue { SemanticVersion.parse(it.second) satisfies it.first.toConstraint() }
         }
     }
 
@@ -512,7 +512,7 @@ class ConstraintTests {
         )
 
         data.forEach {
-            assertFalse(it.second.toVersion() satisfies it.first.toConstraint())
+            assertFalse(SemanticVersion.parse(it.second) satisfies it.first.toConstraint())
         }
     }
 

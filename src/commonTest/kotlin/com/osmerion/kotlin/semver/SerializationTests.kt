@@ -23,19 +23,19 @@ class SerializationTests {
 
     @Test
     fun testVersionSerialization() {
-        val encoded = Json.encodeToString("1.0.0-alpha.1+build.3".toVersion())
+        val encoded = Json.encodeToString(SemanticVersion.parse("1.0.0-alpha.1+build.3"))
         assertEquals("\"1.0.0-alpha.1+build.3\"", encoded)
     }
 
     @Test
     fun testVersionDeserialization() {
         val decoded = Json.decodeFromString<SemanticVersion>("\"1.0.0-alpha.1+build.3\"")
-        assertEquals("1.0.0-alpha.1+build.3".toVersion(), decoded)
+        assertEquals(SemanticVersion.parse("1.0.0-alpha.1+build.3"), decoded)
     }
 
     @Test
     fun testMemberVersionSerialization() {
-        val obj = ToSerialize(version = "1.0.0-alpha.1+build.3".toVersion())
+        val obj = ToSerialize(version = SemanticVersion.parse("1.0.0-alpha.1+build.3"))
         val encoded = Json.encodeToString(obj)
         assertEquals("{\"version\":\"1.0.0-alpha.1+build.3\"}", encoded)
     }
@@ -43,12 +43,12 @@ class SerializationTests {
     @Test
     fun testMemberVersionDeserialization() {
         val decoded = Json.decodeFromString<ToSerialize>("{\"version\":\"1.0.0-alpha.1+build.3\"}")
-        assertEquals("1.0.0-alpha.1+build.3".toVersion(), decoded.version)
+        assertEquals(SemanticVersion.parse("1.0.0-alpha.1+build.3"), decoded.version)
     }
 
     @Test
     fun testMemberLooseVersionSerialization() {
-        val obj = ToLooseSerialize(version = "1-alpha.1+build.3".toVersion(strict = false))
+        val obj = ToLooseSerialize(version = SemanticVersion.parse("1-alpha.1+build.3", strict = false))
         val encoded = Json.encodeToString(obj)
         assertEquals("{\"version\":\"1.0.0-alpha.1+build.3\"}", encoded)
     }
@@ -56,7 +56,7 @@ class SerializationTests {
     @Test
     fun testMemberLooseVersionDeserialization() {
         val decoded = Json.decodeFromString<ToLooseSerialize>("{\"version\":\"1-alpha.1+build.3\"}")
-        assertEquals("1-alpha.1+build.3".toVersion(strict = false), decoded.version)
+        assertEquals(SemanticVersion.parse("1-alpha.1+build.3", strict = false), decoded.version)
     }
 
     @Test
