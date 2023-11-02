@@ -12,7 +12,7 @@ import com.osmerion.kotlin.semver.constraints.satisfiedBy
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextMajor
  */
-public fun Version.nextMajor(preRelease: String? = null): Version = Version(
+public fun SemanticVersion.nextMajor(preRelease: String? = null): SemanticVersion = SemanticVersion(
     major + 1,
     0,
     0,
@@ -28,7 +28,7 @@ public fun Version.nextMajor(preRelease: String? = null): Version = Version(
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextMinor
  */
-public fun Version.nextMinor(preRelease: String? = null): Version = Version(
+public fun SemanticVersion.nextMinor(preRelease: String? = null): SemanticVersion = SemanticVersion(
     major,
     minor + 1,
     0,
@@ -46,7 +46,7 @@ public fun Version.nextMinor(preRelease: String? = null): Version = Version(
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextPatch
  */
-public fun Version.nextPatch(preRelease: String? = null): Version = Version(
+public fun SemanticVersion.nextPatch(preRelease: String? = null): SemanticVersion = SemanticVersion(
     major,
     minor,
     if (parsedPreRelease == null || preRelease != null) patch + 1 else patch,
@@ -63,7 +63,7 @@ public fun Version.nextPatch(preRelease: String? = null): Version = Version(
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextPreRelease
  */
-public fun Version.nextPreRelease(preRelease: String? = null): Version = Version(
+public fun SemanticVersion.nextPreRelease(preRelease: String? = null): SemanticVersion = SemanticVersion(
     major,
     minor,
     parsedPreRelease?.let { patch } ?: (patch + 1),
@@ -89,7 +89,7 @@ public fun Version.nextPreRelease(preRelease: String? = null): Version = Version
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.inc
  */
-public fun Version.inc(by: Inc, preRelease: String? = null): Version =
+public fun SemanticVersion.inc(by: Inc, preRelease: String? = null): SemanticVersion =
     when (by) {
         Inc.MAJOR -> nextMajor(preRelease)
         Inc.MINOR -> nextMinor(preRelease)
@@ -98,31 +98,31 @@ public fun Version.inc(by: Inc, preRelease: String? = null): Version =
     }
 
 /**
- * Produces a copy of the [Version] without the PRE-RELEASE and BUILD METADATA identities.
+ * Produces a copy of the [SemanticVersion] without the PRE-RELEASE and BUILD METADATA identities.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.withoutSuffixes
  */
-public fun Version.withoutSuffixes(): Version = this.copy(preRelease = null, buildMetadata = null)
+public fun SemanticVersion.withoutSuffixes(): SemanticVersion = this.copy(preRelease = null, buildMetadata = null)
 
 /**
- * Determines whether a [Version] satisfies a [Constraint] or not.
+ * Determines whether a [SemanticVersion] satisfies a [Constraint] or not.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.satisfies
  */
-public infix fun Version.satisfies(constraint: Constraint): Boolean = constraint satisfiedBy this
+public infix fun SemanticVersion.satisfies(constraint: Constraint): Boolean = constraint satisfiedBy this
 
 /**
- * Determines whether a [Version] satisfies each [Constraint] in a collection or not.
+ * Determines whether a [SemanticVersion] satisfies each [Constraint] in a collection or not.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.satisfiesAll
  */
-public infix fun Version.satisfiesAll(constraints: Iterable<Constraint>): Boolean =
+public infix fun SemanticVersion.satisfiesAll(constraints: Iterable<Constraint>): Boolean =
     constraints.all { constraint -> constraint satisfiedBy this }
 
 /**
- * Determines whether a [Version] satisfies at least one [Constraint] in a collection or not.
+ * Determines whether a [SemanticVersion] satisfies at least one [Constraint] in a collection or not.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.satisfiesAny
  */
-public infix fun Version.satisfiesAny(constraints: Iterable<Constraint>): Boolean =
+public infix fun SemanticVersion.satisfiesAny(constraints: Iterable<Constraint>): Boolean =
     constraints.any { constraint -> constraint satisfiedBy this }

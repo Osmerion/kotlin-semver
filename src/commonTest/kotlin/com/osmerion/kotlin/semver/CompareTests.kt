@@ -90,7 +90,7 @@ class CompareTests {
 
     @Test
     fun testListOrder() {
-        val list: List<Version> = listOf(
+        val list: List<SemanticVersion> = listOf(
             "1.0.1".toVersion(),
             "1.0.1-alpha".toVersion(),
             "1.0.1-alpha.beta".toVersion(),

@@ -1,7 +1,7 @@
 package com.osmerion.kotlin.semver
 
 /**
- * Parses the string as a [Version] and returns the result or throws a [VersionFormatException]
+ * Parses the string as a [SemanticVersion] and returns the result or throws a [VersionFormatException]
  * if the string is not a valid representation of a semantic version.
  *
  * Strict mode is on by default, which means partial versions (e.g. '1.0' or '1') and versions with 'v' prefix are
@@ -10,10 +10,10 @@ package com.osmerion.kotlin.semver
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionStrict
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionLoose
  */
-public fun String.toVersion(strict: Boolean = true): Version = Version.parse(this, strict)
+public fun String.toVersion(strict: Boolean = true): SemanticVersion = SemanticVersion.parse(this, strict)
 
 /**
- * Parses the string as a [Version] and returns the result or null
+ * Parses the string as a [SemanticVersion] and returns the result or null
  * if the string is not a valid representation of a semantic version.
  *
  * Strict mode is on by default, which means partial versions (e.g. '1.0' or '1') and versions with 'v' prefix are
@@ -22,7 +22,7 @@ public fun String.toVersion(strict: Boolean = true): Version = Version.parse(thi
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionOrNullStrict
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionOrNullLoose
  */
-public fun String.toVersionOrNull(strict: Boolean = true): Version? =
+public fun String.toVersionOrNull(strict: Boolean = true): SemanticVersion? =
     try { this.toVersion(strict) } catch (_: Exception) { null }
 
 internal fun String.toPreRelease(): PreRelease = PreRelease(this)

@@ -1,6 +1,6 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.satisfies
 import kotlinx.serialization.Serializable
 
@@ -13,11 +13,11 @@ import kotlinx.serialization.Serializable
 @Serializable(with = ConstraintSerializer::class)
 public class Constraint private constructor(private val comparators: List<List<VersionComparator>>) {
     /**
-     * Determines whether a [Constraint] is satisfied by a [Version] or not.
+     * Determines whether a [Constraint] is satisfied by a [SemanticVersion] or not.
      *
      * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedBy
      */
-    public fun isSatisfiedBy(version: Version): Boolean =
+    public fun isSatisfiedBy(version: SemanticVersion): Boolean =
         comparators.any { comparator -> comparator.all { condition -> condition.isSatisfiedBy(version) } }
 
     override fun toString(): String = comparators.joinToString(" || ") { it.joinToString(" ") }

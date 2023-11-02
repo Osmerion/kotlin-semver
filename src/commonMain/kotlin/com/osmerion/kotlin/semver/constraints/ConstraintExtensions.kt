@@ -1,28 +1,28 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 
 /**
- * Determines whether a [Constraint] is satisfied by a [Version] or not.
+ * Determines whether a [Constraint] is satisfied by a [SemanticVersion] or not.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedBy
  */
-public infix fun Constraint.satisfiedBy(version: Version): Boolean = this.isSatisfiedBy(version)
+public infix fun Constraint.satisfiedBy(version: SemanticVersion): Boolean = this.isSatisfiedBy(version)
 
 /**
- * Determines whether a [Constraint] is satisfied by each [Version] in a collection or not.
+ * Determines whether a [Constraint] is satisfied by each [SemanticVersion] in a collection or not.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedByAll
  */
-public infix fun Constraint.satisfiedByAll(versions: Iterable<Version>): Boolean =
+public infix fun Constraint.satisfiedByAll(versions: Iterable<SemanticVersion>): Boolean =
     versions.all { version -> this.isSatisfiedBy(version) }
 
 /**
- * Determines whether a [Constraint] is satisfied by at least one [Version] in a collection or not.
+ * Determines whether a [Constraint] is satisfied by at least one [SemanticVersion] in a collection or not.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedByAny
  */
-public infix fun Constraint.satisfiedByAny(versions: Iterable<Version>): Boolean =
+public infix fun Constraint.satisfiedByAny(versions: Iterable<SemanticVersion>): Boolean =
     versions.any { version -> this.isSatisfiedBy(version) }
 
 /**

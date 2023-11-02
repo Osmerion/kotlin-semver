@@ -1,12 +1,12 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 
 internal interface VersionComparator {
-    fun isSatisfiedBy(version: Version): Boolean
+    fun isSatisfiedBy(version: SemanticVersion): Boolean
     fun opposite(): String
 
     companion object {
-        val greaterThanMin: VersionComparator = Condition(Op.GREATER_THAN_OR_EQUAL, Version.min)
+        val greaterThanMin: VersionComparator = Condition(Op.GREATER_THAN_OR_EQUAL, SemanticVersion.min)
     }
 }

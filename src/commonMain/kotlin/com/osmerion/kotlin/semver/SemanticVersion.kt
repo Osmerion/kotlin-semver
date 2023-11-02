@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.explode
  */
 @Serializable(with = VersionSerializer::class)
-public class Version private constructor(
+public class SemanticVersion private constructor(
     /** The MAJOR number of the version. */
     public val major: Int,
 
@@ -23,7 +23,7 @@ public class Version private constructor(
 
     /** The BUILD metadata of the version. */
     public val buildMetadata: String? = null
-) : Comparable<Version> {
+) : Comparable<SemanticVersion> {
 
     /**
      * Constructs a semantic version from the given arguments following the pattern:
@@ -62,7 +62,7 @@ public class Version private constructor(
     public val isStable: Boolean = major > 0 && parsedPreRelease == null
 
     /**
-     * Constructs a copy of the [Version]. The copied object's properties can be altered with the optional parameters.
+     * Constructs a copy of the [SemanticVersion]. The copied object's properties can be altered with the optional parameters.
      *
      * @sample com.osmerion.kotlin.semver.samples.VersionSamples.copy
      */
@@ -72,9 +72,9 @@ public class Version private constructor(
         patch: Int = this.patch,
         preRelease: String? = this.preRelease,
         buildMetadata: String? = this.buildMetadata
-    ): Version = Version(major, minor, patch, preRelease, buildMetadata)
+    ): SemanticVersion = SemanticVersion(major, minor, patch, preRelease, buildMetadata)
 
-    public override fun compareTo(other: Version): Int =
+    public override fun compareTo(other: SemanticVersion): Int =
         when {
             major > other.major -> 1
             major < other.major -> -1
@@ -90,7 +90,7 @@ public class Version private constructor(
         }
 
     public override fun equals(other: Any?): Boolean {
-        val version = other as? Version
+        val version = other as? SemanticVersion
         return when {
             version == null -> false
             compareTo(version) == 0 -> true
@@ -121,7 +121,7 @@ public class Version private constructor(
     /** Component function that returns the BUILD metadata of the version upon destructuring. */
     public operator fun component5(): String? = buildMetadata
 
-    /** Companion object of [Version]. */
+    /** Companion object of [SemanticVersion]. */
     public companion object {
         private val versionRegex: Regex = Patterns.VERSION_REGEX.toRegex()
         private val looseVersionRegex: Regex = Patterns.LOOSE_VERSION_REGEX.toRegex()
@@ -131,10 +131,10 @@ public class Version private constructor(
          *
          * @sample com.osmerion.kotlin.semver.samples.VersionSamples.min
          */
-        public val min: Version = Version()
+        public val min: SemanticVersion = SemanticVersion()
 
         /**
-         * Parses the [versionString] as a [Version] and returns the result or throws a [VersionFormatException]
+         * Parses the [versionString] as a [SemanticVersion] and returns the result or throws a [VersionFormatException]
          * if the string is not a valid representation of a semantic version.
          *
          * Strict mode is on by default, which means partial versions (e.g. '1.0' or '1') and versions with 'v' prefix
@@ -144,7 +144,7 @@ public class Version private constructor(
          * @sample com.osmerion.kotlin.semver.samples.VersionSamples.parseLoose
          */
         @Suppress("MagicNumber")
-        public fun parse(versionString: String, strict: Boolean = true): Version {
+        public fun parse(versionString: String, strict: Boolean = true): SemanticVersion {
             val regex = if (strict) versionRegex else looseVersionRegex
             val result = regex.matchEntire(versionString)
                 ?: throw VersionFormatException("Invalid version: $versionString")
@@ -156,9 +156,9 @@ public class Version private constructor(
 
             return when {
                 strict && major != null && minor != null && patch != null ->
-                    Version(major, minor, patch, preRelease, buildMetadata)
+                    SemanticVersion(major, minor, patch, preRelease, buildMetadata)
                 !strict && major != null ->
-                    Version(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
+                    SemanticVersion(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
                 else -> throw VersionFormatException("Invalid version: $versionString")
             }
         }
@@ -170,6 +170,6 @@ public class Version private constructor(
             patch: Int,
             preRelease: PreRelease?,
             buildMetadata: String? = null
-        ): Version = Version(major, minor, patch, preRelease, buildMetadata)
+        ): SemanticVersion = SemanticVersion(major, minor, patch, preRelease, buildMetadata)
     }
 }

@@ -3,7 +3,6 @@ package com.osmerion.kotlin.semver
 import com.osmerion.kotlin.semver.constraints.Constraint
 import com.osmerion.kotlin.semver.constraints.toConstraint
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -11,12 +10,12 @@ import kotlin.test.assertEquals
 
 class SerializationTests {
     @Serializable
-    data class ToSerialize(val version: Version)
+    data class ToSerialize(val version: SemanticVersion)
 
     @Serializable
     data class ToLooseSerialize(
         @Serializable(with = LooseVersionSerializer::class)
-        val version: Version
+        val version: SemanticVersion
     )
 
     @Serializable
@@ -30,7 +29,7 @@ class SerializationTests {
 
     @Test
     fun testVersionDeserialization() {
-        val decoded = Json.decodeFromString<Version>("\"1.0.0-alpha.1+build.3\"")
+        val decoded = Json.decodeFromString<SemanticVersion>("\"1.0.0-alpha.1+build.3\"")
         assertEquals("1.0.0-alpha.1+build.3".toVersion(), decoded)
     }
 

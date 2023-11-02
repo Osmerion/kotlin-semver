@@ -1,8 +1,7 @@
 package com.osmerion.kotlin.semver.samples
 
-import com.osmerion.kotlin.semver.Inc
 import com.osmerion.kotlin.semver.LooseVersionSerializer
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.VersionSerializer
 import com.osmerion.kotlin.semver.constraints.toConstraint
 import com.osmerion.kotlin.semver.inc
@@ -46,13 +45,13 @@ class VersionSamples {
     }
 
     fun parseStrict() {
-        println(Version.parse("1.0.0-alpha.1+build.1"))
+        println(SemanticVersion.parse("1.0.0-alpha.1+build.1"))
     }
 
     fun parseLoose() {
-        println(Version.parse("v1.0-alpha.1+build.1", strict = false))
-        println(Version.parse("1-alpha", strict = false))
-        println(Version.parse("2", strict = false))
+        println(SemanticVersion.parse("v1.0-alpha.1+build.1", strict = false))
+        println(SemanticVersion.parse("1-alpha", strict = false))
+        println(SemanticVersion.parse("2", strict = false))
     }
 
     fun exception() {
@@ -64,8 +63,8 @@ class VersionSamples {
     }
 
     fun construct() {
-        println(Version(major = 1, preRelease = "alpha"))
-        println(Version(major = 1, minor = 1, buildMetadata = "build"))
+        println(SemanticVersion(major = 1, preRelease = "alpha"))
+        println(SemanticVersion(major = 1, minor = 1, buildMetadata = "build"))
     }
 
     fun toVersionStrict() {
@@ -141,7 +140,7 @@ class VersionSamples {
     }
 
     fun min() {
-        print(Version.min)
+        print(SemanticVersion.min)
     }
 
     fun satisfies() {

@@ -1,6 +1,6 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.nextMajor
 import com.osmerion.kotlin.semver.nextMinor
 
@@ -39,11 +39,11 @@ internal data class VersionDescriptor(
             isMajorWildcard ->
                 when (operator) {
                     Op.GREATER_THAN, Op.LESS_THAN, Op.NOT_EQUAL ->
-                        Condition(Op.LESS_THAN, Version.min.copy(preRelease = ""))
+                        Condition(Op.LESS_THAN, SemanticVersion.min.copy(preRelease = ""))
                     else -> VersionComparator.greaterThanMin
                 }
             isMinorWildcard -> {
-                val version = Version(major = major, preRelease = preRelease, buildMetadata = buildMetadata)
+                val version = SemanticVersion(major = major, preRelease = preRelease, buildMetadata = buildMetadata)
                 Range(
                     start = Condition(Op.GREATER_THAN_OR_EQUAL, version),
                     end = Condition(Op.LESS_THAN, version.nextMajor(preRelease = "")),
@@ -52,7 +52,7 @@ internal data class VersionDescriptor(
             }
             isPatchWildcard -> {
                 val version =
-                    Version(major = major, minor = minor, preRelease = preRelease, buildMetadata = buildMetadata)
+                    SemanticVersion(major = major, minor = minor, preRelease = preRelease, buildMetadata = buildMetadata)
                 Range(
                     start = Condition(Op.GREATER_THAN_OR_EQUAL, version),
                     end = Condition(Op.LESS_THAN, version.nextMinor(preRelease = "")),
@@ -62,7 +62,7 @@ internal data class VersionDescriptor(
             else ->
                 Condition(
                     operator,
-                    Version(major = major, minor = minor, patch = patch, preRelease, buildMetadata)
+                    SemanticVersion(major = major, minor = minor, patch = patch, preRelease, buildMetadata)
                 )
         }
     }

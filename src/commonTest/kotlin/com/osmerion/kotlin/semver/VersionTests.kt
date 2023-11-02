@@ -26,33 +26,33 @@ class VersionTests {
         assertFailsWith<VersionFormatException> { "92233720368547758072.0.0".toVersion() }
         assertFailsWith<VersionFormatException> { "0.92233720368547758072.0".toVersion() }
         assertFailsWith<VersionFormatException> { "0.0.92233720368547758072".toVersion() }
-        assertFailsWith<VersionFormatException> { Version(major = 1, minor = 2, patch = 3, preRelease = ".alpha") }
-        assertFailsWith<VersionFormatException> { Version(1, 2, 3, "alpha.") }
-        assertFailsWith<VersionFormatException> { Version(1, 2, 3, ".alpha.") }
-        assertFailsWith<VersionFormatException> { Version(1, 2, 3, "alpha. ") }
-        assertFailsWith<VersionFormatException> { Version(-1, 2, 3) }
-        assertFailsWith<VersionFormatException> { Version(1, -2, 3) }
-        assertFailsWith<VersionFormatException> { Version(1, 2, -3) }
+        assertFailsWith<VersionFormatException> { SemanticVersion(major = 1, minor = 2, patch = 3, preRelease = ".alpha") }
+        assertFailsWith<VersionFormatException> { SemanticVersion(1, 2, 3, "alpha.") }
+        assertFailsWith<VersionFormatException> { SemanticVersion(1, 2, 3, ".alpha.") }
+        assertFailsWith<VersionFormatException> { SemanticVersion(1, 2, 3, "alpha. ") }
+        assertFailsWith<VersionFormatException> { SemanticVersion(-1, 2, 3) }
+        assertFailsWith<VersionFormatException> { SemanticVersion(1, -2, 3) }
+        assertFailsWith<VersionFormatException> { SemanticVersion(1, 2, -3) }
         assertFailsWith<VersionFormatException> { "v1.0.0".toVersion() }
         assertFailsWith<VersionFormatException> { "92233720368547758072".toVersion(strict = false) }
 
-        assertFailsWith<VersionFormatException> { Version.parse("-1.0.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("1.-1.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("0.0.-1") }
-        assertFailsWith<VersionFormatException> { Version.parse("1") }
-        assertFailsWith<VersionFormatException> { Version.parse("") }
-        assertFailsWith<VersionFormatException> { Version.parse("", strict = false) }
-        assertFailsWith<VersionFormatException> { Version.parse("1.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("1.0-alpha") }
-        assertFailsWith<VersionFormatException> { Version.parse("1.0-alpha.01") }
-        assertFailsWith<VersionFormatException> { Version.parse("a1.0.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("1.a0.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("1.0.a0") }
-        assertFailsWith<VersionFormatException> { Version.parse("92233720368547758072.0.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("0.92233720368547758072.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("0.0.92233720368547758072") }
-        assertFailsWith<VersionFormatException> { Version.parse("v1.0.0") }
-        assertFailsWith<VersionFormatException> { Version.parse("92233720368547758072", strict = false) }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("-1.0.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1.-1.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("0.0.-1") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("", strict = false) }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1.0-alpha") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1.0-alpha.01") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("a1.0.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1.a0.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("1.0.a0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("92233720368547758072.0.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("0.92233720368547758072.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("0.0.92233720368547758072") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("v1.0.0") }
+        assertFailsWith<VersionFormatException> { SemanticVersion.parse("92233720368547758072", strict = false) }
     }
 
     @Test
@@ -148,7 +148,7 @@ class VersionTests {
 
     @Test
     fun testVersionDefault() {
-        with(Version()) {
+        with(SemanticVersion()) {
             assertEquals(0, major)
             assertEquals(0, minor)
             assertEquals(0, patch)
@@ -158,7 +158,7 @@ class VersionTests {
             assertFalse(isPreRelease)
         }
 
-        with(Version(major = 1)) {
+        with(SemanticVersion(major = 1)) {
             assertEquals(1, major)
             assertEquals(0, minor)
             assertEquals(0, patch)
@@ -168,7 +168,7 @@ class VersionTests {
             assertFalse(isPreRelease)
         }
 
-        with(Version(major = 1, minor = 2)) {
+        with(SemanticVersion(major = 1, minor = 2)) {
             assertEquals(1, major)
             assertEquals(2, minor)
             assertEquals(0, patch)
@@ -178,7 +178,7 @@ class VersionTests {
             assertFalse(isPreRelease)
         }
 
-        with(Version(major = 1, minor = 2, patch = 3)) {
+        with(SemanticVersion(major = 1, minor = 2, patch = 3)) {
             assertEquals(1, major)
             assertEquals(2, minor)
             assertEquals(3, patch)
@@ -188,7 +188,7 @@ class VersionTests {
             assertFalse(isPreRelease)
         }
 
-        with(Version(major = 1, minor = 2, patch = 3, preRelease = "alpha")) {
+        with(SemanticVersion(major = 1, minor = 2, patch = 3, preRelease = "alpha")) {
             assertEquals(1, major)
             assertEquals(2, minor)
             assertEquals(3, patch)
@@ -198,7 +198,7 @@ class VersionTests {
             assertTrue(isPreRelease)
         }
 
-        with(Version(major = 1, minor = 2, patch = 3, preRelease = "alpha", buildMetadata = "build")) {
+        with(SemanticVersion(major = 1, minor = 2, patch = 3, preRelease = "alpha", buildMetadata = "build")) {
             assertEquals(1, major)
             assertEquals(2, minor)
             assertEquals(3, patch)

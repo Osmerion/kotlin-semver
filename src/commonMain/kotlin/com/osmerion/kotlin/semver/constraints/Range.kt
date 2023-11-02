@@ -1,6 +1,6 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 
 internal class Range(
     private val start: VersionComparator,
@@ -8,7 +8,7 @@ internal class Range(
     private val operator: Op
 ) : VersionComparator {
 
-    override fun isSatisfiedBy(version: Version): Boolean =
+    override fun isSatisfiedBy(version: SemanticVersion): Boolean =
         when (operator) {
             Op.EQUAL -> start.isSatisfiedBy(version) && end.isSatisfiedBy(version)
             Op.NOT_EQUAL -> !start.isSatisfiedBy(version) || !end.isSatisfiedBy(version)

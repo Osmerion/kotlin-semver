@@ -1,6 +1,6 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.nextMajor
 import com.osmerion.kotlin.semver.nextMinor
 import com.osmerion.kotlin.semver.nextPatch
@@ -24,7 +24,7 @@ internal class TildeComparatorBuilder : ComparatorBuilder {
         when {
             versionDescriptor.isWildcard -> versionDescriptor.toComparator()
             else -> {
-                val version = Version(
+                val version = SemanticVersion(
                     versionDescriptor.major,
                     versionDescriptor.minor,
                     versionDescriptor.patch,
@@ -49,7 +49,7 @@ internal class CaretComparatorBuilder : ComparatorBuilder {
             versionDescriptor.isMinorWildcard -> fromMinorWildcardCaret(versionDescriptor)
             versionDescriptor.isPatchWildcard -> fromPatchWildcardCaret(versionDescriptor)
             else -> {
-                val version = Version(
+                val version = SemanticVersion(
                     versionDescriptor.major,
                     versionDescriptor.minor,
                     versionDescriptor.patch,
@@ -60,7 +60,7 @@ internal class CaretComparatorBuilder : ComparatorBuilder {
                     versionDescriptor.majorString != "0" -> version.nextMajor(preRelease = "")
                     versionDescriptor.minorString != "0" -> version.nextMinor(preRelease = "")
                     versionDescriptor.patchString != "0" -> version.nextPatch(preRelease = "")
-                    else -> Version(patch = 1, preRelease = "") // ^0.0.0 -> <0.0.1-0
+                    else -> SemanticVersion(patch = 1, preRelease = "") // ^0.0.0 -> <0.0.1-0
                 }
                 Range(
                     start = Condition(Op.GREATER_THAN_OR_EQUAL, version),
@@ -75,7 +75,7 @@ internal class CaretComparatorBuilder : ComparatorBuilder {
             "0" ->
                 Range(
                     VersionComparator.greaterThanMin,
-                    Condition(Op.LESS_THAN, Version(major = 1, preRelease = "")),
+                    Condition(Op.LESS_THAN, SemanticVersion(major = 1, preRelease = "")),
                     Op.EQUAL
                 )
             else -> versionDescriptor.toComparator()
@@ -86,11 +86,11 @@ internal class CaretComparatorBuilder : ComparatorBuilder {
             versionDescriptor.majorString == "0" && versionDescriptor.minorString == "0" ->
                 Range(
                     VersionComparator.greaterThanMin,
-                    Condition(Op.LESS_THAN, Version(minor = 1, preRelease = "")),
+                    Condition(Op.LESS_THAN, SemanticVersion(minor = 1, preRelease = "")),
                     Op.EQUAL
                 )
             versionDescriptor.majorString != "0" -> {
-                val version = Version(major = versionDescriptor.major, minor = versionDescriptor.minor)
+                val version = SemanticVersion(major = versionDescriptor.major, minor = versionDescriptor.minor)
                 Range(
                     Condition(Op.GREATER_THAN_OR_EQUAL, version),
                     Condition(Op.LESS_THAN, version.nextMajor(preRelease = "")),

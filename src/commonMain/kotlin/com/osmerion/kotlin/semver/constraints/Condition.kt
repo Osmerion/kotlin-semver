@@ -1,10 +1,10 @@
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.Version
+import com.osmerion.kotlin.semver.SemanticVersion
 
-internal class Condition(private val operator: Op, private val version: Version) : VersionComparator {
+internal class Condition(private val operator: Op, private val version: SemanticVersion) : VersionComparator {
 
-    override fun isSatisfiedBy(version: Version): Boolean {
+    override fun isSatisfiedBy(version: SemanticVersion): Boolean {
         return when (operator) {
             Op.EQUAL -> version == this.version
             Op.NOT_EQUAL -> version != this.version
