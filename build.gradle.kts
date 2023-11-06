@@ -23,6 +23,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.binary.compatibility.validator)
@@ -120,7 +121,16 @@ kotlin {
 
 tasks {
     withType<JavaCompile>().configureEach {
+        options.javaModuleVersion = "$version"
         options.release = 11
+    }
+
+    named<JavaCompile>("compileJava") {
+        val files = named<KotlinCompile>("compileKotlinJvm").get().outputs.files
+
+        options.compilerArgumentProviders += CommandLineArgumentProvider {
+            listOf("--patch-module", "com.osmerion.kotlin.semver=${files.asPath}")
+        }
     }
 }
 
