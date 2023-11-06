@@ -22,8 +22,7 @@
  */
 package com.osmerion.kotlin.semver
 
-import com.osmerion.kotlin.semver.constraints.Constraint
-import com.osmerion.kotlin.semver.constraints.toConstraint
+import com.osmerion.kotlin.semver.serializers.LooseVersionSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -41,7 +40,7 @@ class SerializationTests {
     )
 
     @Serializable
-    data class ToConstraintSerialize(val constraint: Constraint)
+    data class ToConstraintSerialize(val constraint: SemanticVersionConstraint)
 
     @Test
     fun testVersionSerialization() {
@@ -83,19 +82,19 @@ class SerializationTests {
 
     @Test
     fun testConstraintSerialization() {
-        val encoded = Json.encodeToString("> 1.2.3".toConstraint())
+        val encoded = Json.encodeToString(SemanticVersionConstraint.parse("> 1.2.3"))
         assertEquals("\">1.2.3\"", encoded)
     }
 
     @Test
     fun testConstraintDeserialization() {
-        val decoded = Json.decodeFromString<Constraint>("\"> 1.2.3\"")
-        assertEquals("> 1.2.3".toConstraint(), decoded)
+        val decoded = Json.decodeFromString<SemanticVersionConstraint>("\"> 1.2.3\"")
+        assertEquals(SemanticVersionConstraint.parse("> 1.2.3"), decoded)
     }
 
     @Test
     fun testMemberConstraintSerialization() {
-        val obj = ToConstraintSerialize(constraint = "> 1.2.3".toConstraint())
+        val obj = ToConstraintSerialize(constraint = SemanticVersionConstraint.parse("> 1.2.3"))
         val encoded = Json.encodeToString(obj)
         assertEquals("{\"constraint\":\">1.2.3\"}", encoded)
     }
@@ -103,6 +102,6 @@ class SerializationTests {
     @Test
     fun testMemberConstraintDeserialization() {
         val decoded = Json.decodeFromString<ToConstraintSerialize>("{\"constraint\":\"> 1.2.3\"}")
-        assertEquals("> 1.2.3".toConstraint(), decoded.constraint)
+        assertEquals(SemanticVersionConstraint.parse("> 1.2.3"), decoded.constraint)
     }
 }

@@ -20,28 +20,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver.internal.constraints
 
-internal enum class Op(private val stringValue: String) {
-    EQUAL("="),
-    NOT_EQUAL("!="),
-    LESS_THAN("<"),
-    LESS_THAN_OR_EQUAL("<="),
-    GREATER_THAN(">"),
-    GREATER_THAN_OR_EQUAL(">=");
+import com.osmerion.kotlin.semver.SemanticVersion
 
-    override fun toString(): String {
-        return stringValue
+internal interface VersionComparator {
+    fun isSatisfiedBy(version: SemanticVersion): Boolean
+    fun opposite(): String
+
+    companion object {
+        val greaterThanMin: VersionComparator = Condition(Op.GREATER_THAN_OR_EQUAL, SemanticVersion.min)
     }
 }
-
-internal fun String.toOperator(): Op =
-    when (this) {
-        "=" -> Op.EQUAL
-        "!=" -> Op.NOT_EQUAL
-        ">" -> Op.GREATER_THAN
-        "<" -> Op.LESS_THAN
-        ">=", "=>" -> Op.GREATER_THAN_OR_EQUAL
-        "<=", "=<" -> Op.LESS_THAN_OR_EQUAL
-        else -> Op.EQUAL
-    }

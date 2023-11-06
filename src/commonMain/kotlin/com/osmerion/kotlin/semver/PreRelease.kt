@@ -22,6 +22,7 @@
  */
 package com.osmerion.kotlin.semver
 
+import com.osmerion.kotlin.semver.internal.Patterns
 import kotlin.math.min
 
 internal class PreRelease private constructor(private val parts: List<String>) : Comparable<PreRelease> {

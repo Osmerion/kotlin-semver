@@ -20,12 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver.internal.constraints
 
 import com.osmerion.kotlin.semver.SemanticVersion
-import com.osmerion.kotlin.semver.nextMajor
-import com.osmerion.kotlin.semver.nextMinor
-import com.osmerion.kotlin.semver.nextPatch
 
 internal interface ComparatorBuilder {
     val acceptedOperators: Array<String>

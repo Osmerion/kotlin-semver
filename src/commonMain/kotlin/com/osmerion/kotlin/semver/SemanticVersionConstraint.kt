@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2019-2023 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver
 
-import com.osmerion.kotlin.semver.SemanticVersion
-import com.osmerion.kotlin.semver.satisfies
+import com.osmerion.kotlin.semver.internal.constraints.HyphenConditionProcessor
+import com.osmerion.kotlin.semver.internal.constraints.OperatorConditionProcessor
+import com.osmerion.kotlin.semver.internal.constraints.VersionComparator
+import com.osmerion.kotlin.semver.serializers.ConstraintSerializer
 import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmStatic
 
 /**
  * This class describes a semantic version constraint. It provides ability to verify whether a version
@@ -33,40 +35,34 @@ import kotlinx.serialization.Serializable
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.constraint
  */
 @Serializable(with = ConstraintSerializer::class)
-public class Constraint private constructor(private val comparators: List<List<VersionComparator>>) {
-    /**
-     * Determines whether a [Constraint] is satisfied by a [SemanticVersion] or not.
-     *
-     * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedBy
-     */
-    public fun isSatisfiedBy(version: SemanticVersion): Boolean =
-        comparators.any { comparator -> comparator.all { condition -> condition.isSatisfiedBy(version) } }
+public class SemanticVersionConstraint private constructor(private val comparators: List<List<VersionComparator>>) {
 
     override fun toString(): String = comparators.joinToString(" || ") { it.joinToString(" ") }
 
     public override fun equals(other: Any?): Boolean =
-        when (val constraint = other as? Constraint) {
+        when (val constraint = other as? SemanticVersionConstraint) {
             null -> false
             else -> toString() == constraint.toString()
         }
 
     public override fun hashCode(): Int = toString().hashCode()
 
-    /** Companion object of [Constraint]. */
+    /** Companion object of [SemanticVersionConstraint]. */
     public companion object {
-        private val default: Constraint = Constraint(listOf(listOf(VersionComparator.greaterThanMin)))
+        private val default: SemanticVersionConstraint = SemanticVersionConstraint(listOf(listOf(VersionComparator.greaterThanMin)))
         private val conditionProcessors = arrayOf(
             HyphenConditionProcessor(),
             OperatorConditionProcessor()
         )
 
         /**
-         * Parses the [constraintString] as a [Constraint] and returns the result or throws
+         * Parses the [constraintString] as a [SemanticVersionConstraint] and returns the result or throws
          * a [ConstraintFormatException] if the string is not a valid representation of a constraint.
          *
          * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.parse
          */
-        public fun parse(constraintString: String): Constraint {
+        @JvmStatic
+        public fun parse(constraintString: String): SemanticVersionConstraint {
             if (constraintString.isBlank()) {
                 return default
             }
@@ -88,8 +84,47 @@ public class Constraint private constructor(private val comparators: List<List<V
             return when {
                 comparators.isEmpty() || comparators.all { it.isEmpty() } ->
                     throw ConstraintFormatException("Invalid constraint: $constraintString")
-                else -> Constraint(comparators)
+                else -> SemanticVersionConstraint(comparators)
             }
         }
+
+        public fun tryParse(constraintString: String): SemanticVersionConstraint? =
+            try {
+                parse(constraintString)
+            } catch (_: Exception) {
+                null
+            }
     }
+
+    /**
+     * Determines whether a [SemanticVersionConstraint] is satisfied by a [SemanticVersion] or not.
+     *
+     * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedBy
+     */
+    public fun isSatisfiedBy(version: SemanticVersion): Boolean =
+        comparators.any { comparator -> comparator.all { condition -> condition.isSatisfiedBy(version) } }
+
+    /**
+     * Determines whether a [SemanticVersionConstraint] is satisfied by a [SemanticVersion] or not.
+     *
+     * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedBy
+     */
+    public infix fun satisfiedBy(version: SemanticVersion): Boolean = this.isSatisfiedBy(version)
+
+    /**
+     * Determines whether a [SemanticVersionConstraint] is satisfied by each [SemanticVersion] in a collection or not.
+     *
+     * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedByAll
+     */
+    public infix fun satisfiedByAll(versions: Iterable<SemanticVersion>): Boolean =
+        versions.all { version -> this.isSatisfiedBy(version) }
+
+    /**
+     * Determines whether a [SemanticVersionConstraint] is satisfied by at least one [SemanticVersion] in a collection or not.
+     *
+     * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.satisfiedByAny
+     */
+    public infix fun satisfiedByAny(versions: Iterable<SemanticVersion>): Boolean =
+        versions.any { version -> this.isSatisfiedBy(version) }
+
 }

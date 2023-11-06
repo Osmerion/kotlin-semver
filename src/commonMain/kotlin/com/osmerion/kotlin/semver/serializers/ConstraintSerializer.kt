@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2019-2023 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver.serializers
 
+import com.osmerion.kotlin.semver.SemanticVersionConstraint
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -30,13 +30,13 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 /**
- * Built-in [kotlinx.serialization] serializer that encodes and decodes [Constraint] as its string representation.
+ * Built-in [kotlinx.serialization] serializer that encodes and decodes [SemanticVersionConstraint] as its string representation.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.serialization
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.deserialization
  */
-public object ConstraintSerializer : KSerializer<Constraint> {
-    override fun deserialize(decoder: Decoder): Constraint = decoder.decodeString().toConstraint()
-    override fun serialize(encoder: Encoder, value: Constraint): Unit = encoder.encodeString(value.toString())
+public object ConstraintSerializer : KSerializer<SemanticVersionConstraint> {
+    override fun deserialize(decoder: Decoder): SemanticVersionConstraint = SemanticVersionConstraint.parse(decoder.decodeString())
+    override fun serialize(encoder: Encoder, value: SemanticVersionConstraint): Unit = encoder.encodeString(value.toString())
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Constraint", PrimitiveKind.STRING)
 }

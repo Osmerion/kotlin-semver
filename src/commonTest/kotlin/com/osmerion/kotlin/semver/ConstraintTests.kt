@@ -22,16 +22,11 @@
  */
 package com.osmerion.kotlin.semver
 
-import com.osmerion.kotlin.semver.constraints.Condition
-import com.osmerion.kotlin.semver.constraints.ConstraintFormatException
-import com.osmerion.kotlin.semver.constraints.Op
-import com.osmerion.kotlin.semver.constraints.Range
-import com.osmerion.kotlin.semver.constraints.VersionDescriptor
-import com.osmerion.kotlin.semver.constraints.satisfiedByAll
-import com.osmerion.kotlin.semver.constraints.satisfiedByAny
-import com.osmerion.kotlin.semver.constraints.toConstraint
-import com.osmerion.kotlin.semver.constraints.toConstraintOrNull
-import com.osmerion.kotlin.semver.constraints.toOperator
+import com.osmerion.kotlin.semver.internal.constraints.Condition
+import com.osmerion.kotlin.semver.internal.constraints.Op
+import com.osmerion.kotlin.semver.internal.constraints.Range
+import com.osmerion.kotlin.semver.internal.constraints.VersionDescriptor
+import com.osmerion.kotlin.semver.internal.constraints.toOperator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -42,54 +37,54 @@ import kotlin.test.assertTrue
 class ConstraintTests {
     @Test
     fun testInvalidConstraints() {
-        assertFailsWith<ConstraintFormatException> { "a".toConstraint() }
-        assertFailsWith<ConstraintFormatException> { "||".toConstraint() }
-        assertFailsWith<ConstraintFormatException> { ">1.a".toConstraint() }
-        assertFailsWith<ConstraintFormatException> { "1.1-3".toConstraint() }
-        assertFailsWith<ConstraintFormatException> { ">0-alpha".toConstraint() }
-        assertFailsWith<ConstraintFormatException> { ">=0.0-0".toConstraint() }
-        assertFailsWith<ConstraintFormatException> { ">=1.2a".toConstraint() }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse("a") }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse("||") }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse(">1.a") }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse("1.1-3") }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse(">0-alpha") }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse(">=0.0-0") }
+        assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse(">=1.2a") }
     }
 
     @Test
     fun testInvalidConstraintsNull() {
-        assertNull("a".toConstraintOrNull())
-        assertNull("||".toConstraintOrNull())
-        assertNull(">1.a".toConstraintOrNull())
-        assertNull("1.1-3".toConstraintOrNull())
-        assertNull(">0-alpha".toConstraintOrNull())
-        assertNull(">=0.0-0".toConstraintOrNull())
-        assertNull(">=1.2a".toConstraintOrNull())
+        assertNull(SemanticVersionConstraint.tryParse("a"))
+        assertNull(SemanticVersionConstraint.tryParse("||"))
+        assertNull(SemanticVersionConstraint.tryParse(">1.a"))
+        assertNull(SemanticVersionConstraint.tryParse("1.1-3"))
+        assertNull(SemanticVersionConstraint.tryParse(">0-alpha"))
+        assertNull(SemanticVersionConstraint.tryParse(">=0.0-0"))
+        assertNull(SemanticVersionConstraint.tryParse(">=1.2a"))
     }
 
     @Test
     fun testConstraintsEquals() {
-        assertEquals(">1.0".toConstraint(), "> 1.0".toConstraint())
-        assertEquals(">=1.1.0-0".toConstraint(), ">1.0".toConstraint())
-        assertEquals(">=1.0.0 <2.1.0-0".toConstraint(), "1.0 - 2.0".toConstraint())
-        assertEquals("<1.0.0 || >=1.1.0-0".toConstraint(), "!=1.0".toConstraint())
+        assertEquals(SemanticVersionConstraint.parse(">1.0"), SemanticVersionConstraint.parse("> 1.0"))
+        assertEquals(SemanticVersionConstraint.parse(">=1.1.0-0"), SemanticVersionConstraint.parse(">1.0"))
+        assertEquals(SemanticVersionConstraint.parse(">=1.0.0 <2.1.0-0"), SemanticVersionConstraint.parse("1.0 - 2.0"))
+        assertEquals(SemanticVersionConstraint.parse("<1.0.0 || >=1.1.0-0"), SemanticVersionConstraint.parse("!=1.0"))
     }
 
     @Test
     fun testSatisfiesAll() {
-        val constraints = listOf("!=1.2.4", "=1.2.3", ">1.0.0").map { it.toConstraint() }
+        val constraints = listOf("!=1.2.4", "=1.2.3", ">1.0.0").map { SemanticVersionConstraint.parse(it) }
         assertTrue(SemanticVersion.parse("1.2.3") satisfiesAll constraints)
         assertFalse(SemanticVersion.parse("1.2.4") satisfiesAll constraints)
 
         val versions = listOf("1.0.0", "1.0.1").map(SemanticVersion::parse)
-        assertTrue(">=1.0.0".toConstraint() satisfiedByAll versions)
-        assertFalse(">=1.0.1".toConstraint() satisfiedByAll versions)
+        assertTrue(SemanticVersionConstraint.parse(">=1.0.0") satisfiedByAll versions)
+        assertFalse(SemanticVersionConstraint.parse(">=1.0.1") satisfiedByAll versions)
     }
 
     @Test
     fun testSatisfiesAny() {
-        val constraints = listOf("!=1.2.4", "=1.2.3", ">1.0.0").map { it.toConstraint() }
+        val constraints = listOf("!=1.2.4", "=1.2.3", ">1.0.0").map { SemanticVersionConstraint.parse(it) }
         assertTrue(SemanticVersion.parse("1.2.3") satisfiesAny constraints)
         assertTrue(SemanticVersion.parse("1.2.4") satisfiesAny constraints)
 
         val versions = listOf("1.0.0", "1.0.1").map(SemanticVersion::parse)
-        assertTrue(">=1.0.0".toConstraint() satisfiedByAny versions)
-        assertTrue(">=1.0.1".toConstraint() satisfiedByAny versions)
+        assertTrue(SemanticVersionConstraint.parse(">=1.0.0") satisfiedByAny versions)
+        assertTrue(SemanticVersionConstraint.parse(">=1.0.1") satisfiedByAny versions)
     }
 
     @Test
@@ -162,11 +157,13 @@ class ConstraintTests {
 
     @Test
     fun testEquals() {
-        assertEquals("> 0.0.0".toConstraint(), ">0.0.0".toConstraint())
-        assertEquals("1.2 - 2.0".toConstraint(), ">=1.2.0 <2.1.0-0".toConstraint())
-        assertEquals("> 0.1.0".toConstraint().hashCode(), ">0.1.0".toConstraint().hashCode())
-        assertEquals("1.2 - 2.0".toConstraint().hashCode(), ">=1.2.0 <2.1.0-0".toConstraint().hashCode())
-        assertFalse("~1".toConstraint().equals(null))
+        assertEquals(SemanticVersionConstraint.parse("> 0.0.0"), SemanticVersionConstraint.parse(">0.0.0"))
+        assertEquals(SemanticVersionConstraint.parse("1.2 - 2.0"), SemanticVersionConstraint.parse(">=1.2.0 <2.1.0-0"))
+        assertEquals(SemanticVersionConstraint.parse("> 0.1.0").hashCode(),
+            SemanticVersionConstraint.parse(">0.1.0").hashCode())
+        assertEquals(SemanticVersionConstraint.parse("1.2 - 2.0").hashCode(),
+            SemanticVersionConstraint.parse(">=1.2.0 <2.1.0-0").hashCode())
+        assertFalse(SemanticVersionConstraint.parse("~1").equals(null))
     }
 
     @Test
@@ -350,7 +347,7 @@ class ConstraintTests {
         )
 
         data.forEach {
-            assertTrue { SemanticVersion.parse(it.second) satisfies it.first.toConstraint() }
+            assertTrue { SemanticVersion.parse(it.second) satisfies SemanticVersionConstraint.parse(it.first) }
         }
     }
 
@@ -534,7 +531,7 @@ class ConstraintTests {
         )
 
         data.forEach {
-            assertFalse(SemanticVersion.parse(it.second) satisfies it.first.toConstraint())
+            assertFalse(SemanticVersion.parse(it.second) satisfies SemanticVersionConstraint.parse(it.first))
         }
     }
 
@@ -783,7 +780,7 @@ class ConstraintTests {
         )
 
         data.forEach {
-            assertEquals(it.second, it.first.toConstraint().toString())
+            assertEquals(it.second, SemanticVersionConstraint.parse(it.first).toString())
         }
     }
 }

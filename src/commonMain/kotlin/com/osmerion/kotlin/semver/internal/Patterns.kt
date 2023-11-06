@@ -20,9 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.internal
 
 internal object Patterns {
+
     // Numeric identifier pattern. (used for parsing major, minor, and patch)
     private const val NUMERIC = "0|[1-9]\\d*"
 
@@ -59,8 +60,7 @@ internal object Patterns {
     private const val X_RANGE_NUMERIC = "$NUMERIC|x|X|\\*"
 
     // X-RANGE version: 1.x | 1.2.* | 1.1.X
-    private const val X_RANGE_VERSION =
-        "($X_RANGE_NUMERIC)(?:\\.($X_RANGE_NUMERIC)(?:\\.($X_RANGE_NUMERIC)(?:$PRE_RELEASE)?$BUILD?)?)?"
+    private const val X_RANGE_VERSION = "($X_RANGE_NUMERIC)(?:\\.($X_RANGE_NUMERIC)(?:\\.($X_RANGE_NUMERIC)(?:$PRE_RELEASE)?$BUILD?)?)?"
 
     // Pattern that only matches numbers.
     internal const val ONLY_NUMBER_REGEX: String = "^[0-9]+$"
@@ -79,4 +79,5 @@ internal object Patterns {
 
     // Hyphen range condition: 1.2.* - 2.0.0
     internal const val HYPHEN_CONDITION_REGEX = "\\s*v?(?:$X_RANGE_VERSION)\\s+-\\s+v?(?:$X_RANGE_VERSION)\\s*"
+
 }

@@ -20,15 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver
 
-import com.osmerion.kotlin.semver.SemanticVersion
-
-internal interface VersionComparator {
-    fun isSatisfiedBy(version: SemanticVersion): Boolean
-    fun opposite(): String
-
-    companion object {
-        val greaterThanMin: VersionComparator = Condition(Op.GREATER_THAN_OR_EQUAL, SemanticVersion.min)
-    }
-}
+/**
+ * [Constraint] throws this exception when the constraint parsing fails due to an invalid format.
+ *
+ * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.exception
+ */
+public class ConstraintFormatException(message: String) : Exception(message)

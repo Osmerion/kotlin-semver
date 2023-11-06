@@ -20,11 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver.internal.constraints
 
+import com.osmerion.kotlin.semver.ConstraintFormatException
 import com.osmerion.kotlin.semver.SemanticVersion
-import com.osmerion.kotlin.semver.nextMajor
-import com.osmerion.kotlin.semver.nextMinor
 
 internal data class VersionDescriptor(
     val majorString: String,

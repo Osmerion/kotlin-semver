@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2019-2023 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.serializers
 
+import com.osmerion.kotlin.semver.SemanticVersion
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

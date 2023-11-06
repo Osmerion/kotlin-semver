@@ -22,19 +22,10 @@
  */
 package com.osmerion.kotlin.semver.samples
 
-import com.osmerion.kotlin.semver.LooseVersionSerializer
 import com.osmerion.kotlin.semver.SemanticVersion
-import com.osmerion.kotlin.semver.VersionSerializer
-import com.osmerion.kotlin.semver.constraints.toConstraint
-import com.osmerion.kotlin.semver.inc
-import com.osmerion.kotlin.semver.nextMajor
-import com.osmerion.kotlin.semver.nextMinor
-import com.osmerion.kotlin.semver.nextPatch
-import com.osmerion.kotlin.semver.nextPreRelease
-import com.osmerion.kotlin.semver.satisfies
-import com.osmerion.kotlin.semver.satisfiesAll
-import com.osmerion.kotlin.semver.satisfiesAny
-import com.osmerion.kotlin.semver.withoutSuffixes
+import com.osmerion.kotlin.semver.SemanticVersionConstraint
+import com.osmerion.kotlin.semver.serializers.LooseVersionSerializer
+import com.osmerion.kotlin.semver.serializers.VersionSerializer
 import kotlinx.serialization.json.Json
 
 class VersionSamples {
@@ -164,19 +155,19 @@ class VersionSamples {
     }
 
     fun satisfies() {
-        val constraint = ">=1.1.0".toConstraint()
+        val constraint = SemanticVersionConstraint.parse(">=1.1.0")
         val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies $constraint? ${version satisfies constraint}")
     }
 
     fun satisfiesAll() {
-        val constraints = listOf(">=1.1.0", "~1").map { it.toConstraint() }
+        val constraints = listOf(">=1.1.0", "~1").map { SemanticVersionConstraint.parse(it) }
         val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" and ")}? ${version satisfiesAll constraints}")
     }
 
     fun satisfiesAny() {
-        val constraints = listOf(">=1.1.0", "~1").map { it.toConstraint() }
+        val constraints = listOf(">=1.1.0", "~1").map { SemanticVersionConstraint.parse(it) }
         val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" or ")}? ${version satisfiesAny constraints}")
     }

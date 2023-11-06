@@ -20,9 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.constraints
+package com.osmerion.kotlin.semver.internal.constraints
 
-import com.osmerion.kotlin.semver.Patterns
+import com.osmerion.kotlin.semver.ConstraintFormatException
+import com.osmerion.kotlin.semver.internal.Patterns
 
 internal interface ConditionProcessor {
     val regex: Regex

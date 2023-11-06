@@ -1,3 +1,7 @@
+public final class com/osmerion/kotlin/semver/ConstraintFormatException : java/lang/Exception {
+	public fun <init> (Ljava/lang/String;)V
+}
+
 public final class com/osmerion/kotlin/semver/Inc : java/lang/Enum {
 	public static final field MAJOR Lcom/osmerion/kotlin/semver/Inc;
 	public static final field MINOR Lcom/osmerion/kotlin/semver/Inc;
@@ -6,15 +10,6 @@ public final class com/osmerion/kotlin/semver/Inc : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/Inc;
 	public static fun values ()[Lcom/osmerion/kotlin/semver/Inc;
-}
-
-public final class com/osmerion/kotlin/semver/LooseVersionSerializer : kotlinx/serialization/KSerializer {
-	public static final field INSTANCE Lcom/osmerion/kotlin/semver/LooseVersionSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
-	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/osmerion/kotlin/semver/SemanticVersion;)V
-	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 }
 
 public final class com/osmerion/kotlin/semver/SemanticVersion : java/lang/Comparable {
@@ -38,13 +33,30 @@ public final class com/osmerion/kotlin/semver/SemanticVersion : java/lang/Compar
 	public final fun getPatch ()I
 	public final fun getPreRelease ()Ljava/lang/String;
 	public fun hashCode ()I
+	public final fun inc (Lcom/osmerion/kotlin/semver/Inc;Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun inc$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Lcom/osmerion/kotlin/semver/Inc;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun isPreRelease ()Z
 	public final fun isStable ()Z
+	public final fun nextMajor (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun nextMajor$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun nextMinor (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun nextMinor$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun nextPatch (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun nextPatch$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun nextPreRelease (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun nextPreRelease$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static final fun parse (Ljava/lang/String;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun satisfies (Lcom/osmerion/kotlin/semver/SemanticVersionConstraint;)Z
+	public final fun satisfiesAll (Ljava/lang/Iterable;)Z
+	public final fun satisfiesAny (Ljava/lang/Iterable;)Z
 	public fun toString ()Ljava/lang/String;
+	public final fun withoutSuffixes ()Lcom/osmerion/kotlin/semver/SemanticVersion;
 }
 
 public final class com/osmerion/kotlin/semver/SemanticVersion$Companion {
 	public final fun getMin ()Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun parse (Ljava/lang/String;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public static synthetic fun parse$default (Lcom/osmerion/kotlin/semver/SemanticVersion$Companion;Ljava/lang/String;ZILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
@@ -52,29 +64,40 @@ public final class com/osmerion/kotlin/semver/SemanticVersion$Companion {
 	public static synthetic fun tryParse$default (Lcom/osmerion/kotlin/semver/SemanticVersion$Companion;Ljava/lang/String;ZILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 }
 
-public final class com/osmerion/kotlin/semver/VersionExtensionsKt {
-	public static final fun inc (Lcom/osmerion/kotlin/semver/SemanticVersion;Lcom/osmerion/kotlin/semver/Inc;Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun inc$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Lcom/osmerion/kotlin/semver/Inc;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun nextMajor (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun nextMajor$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun nextMinor (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun nextMinor$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun nextPatch (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun nextPatch$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun nextPreRelease (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun nextPreRelease$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun satisfies (Lcom/osmerion/kotlin/semver/SemanticVersion;Lcom/osmerion/kotlin/semver/constraints/Constraint;)Z
-	public static final fun satisfiesAll (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/Iterable;)Z
-	public static final fun satisfiesAny (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/Iterable;)Z
-	public static final fun withoutSuffixes (Lcom/osmerion/kotlin/semver/SemanticVersion;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+public final class com/osmerion/kotlin/semver/SemanticVersionConstraint {
+	public static final field Companion Lcom/osmerion/kotlin/semver/SemanticVersionConstraint$Companion;
+	public synthetic fun <init> (Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public final fun isSatisfiedBy (Lcom/osmerion/kotlin/semver/SemanticVersion;)Z
+	public static final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersionConstraint;
+	public final fun satisfiedBy (Lcom/osmerion/kotlin/semver/SemanticVersion;)Z
+	public final fun satisfiedByAll (Ljava/lang/Iterable;)Z
+	public final fun satisfiedByAny (Ljava/lang/Iterable;)Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/osmerion/kotlin/semver/SemanticVersionConstraint$Companion {
+	public final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersionConstraint;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+	public final fun tryParse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersionConstraint;
 }
 
 public final class com/osmerion/kotlin/semver/VersionFormatException : java/lang/Exception {
 	public fun <init> (Ljava/lang/String;)V
 }
 
-public final class com/osmerion/kotlin/semver/VersionSerializer : kotlinx/serialization/KSerializer {
-	public static final field INSTANCE Lcom/osmerion/kotlin/semver/VersionSerializer;
+public final class com/osmerion/kotlin/semver/serializers/ConstraintSerializer : kotlinx/serialization/KSerializer {
+	public static final field INSTANCE Lcom/osmerion/kotlin/semver/serializers/ConstraintSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/osmerion/kotlin/semver/SemanticVersionConstraint;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/osmerion/kotlin/semver/SemanticVersionConstraint;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public final class com/osmerion/kotlin/semver/serializers/LooseVersionSerializer : kotlinx/serialization/KSerializer {
+	public static final field INSTANCE Lcom/osmerion/kotlin/semver/serializers/LooseVersionSerializer;
 	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
@@ -82,38 +105,12 @@ public final class com/osmerion/kotlin/semver/VersionSerializer : kotlinx/serial
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 }
 
-public final class com/osmerion/kotlin/semver/constraints/Constraint {
-	public static final field Companion Lcom/osmerion/kotlin/semver/constraints/Constraint$Companion;
-	public synthetic fun <init> (Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public final fun isSatisfiedBy (Lcom/osmerion/kotlin/semver/SemanticVersion;)Z
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/osmerion/kotlin/semver/constraints/Constraint$Companion {
-	public final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/constraints/Constraint;
-	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-}
-
-public final class com/osmerion/kotlin/semver/constraints/ConstraintExtensionsKt {
-	public static final fun satisfiedBy (Lcom/osmerion/kotlin/semver/constraints/Constraint;Lcom/osmerion/kotlin/semver/SemanticVersion;)Z
-	public static final fun satisfiedByAll (Lcom/osmerion/kotlin/semver/constraints/Constraint;Ljava/lang/Iterable;)Z
-	public static final fun satisfiedByAny (Lcom/osmerion/kotlin/semver/constraints/Constraint;Ljava/lang/Iterable;)Z
-	public static final fun toConstraint (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/constraints/Constraint;
-	public static final fun toConstraintOrNull (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/constraints/Constraint;
-}
-
-public final class com/osmerion/kotlin/semver/constraints/ConstraintFormatException : java/lang/Exception {
-	public fun <init> (Ljava/lang/String;)V
-}
-
-public final class com/osmerion/kotlin/semver/constraints/ConstraintSerializer : kotlinx/serialization/KSerializer {
-	public static final field INSTANCE Lcom/osmerion/kotlin/semver/constraints/ConstraintSerializer;
-	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/osmerion/kotlin/semver/constraints/Constraint;
+public final class com/osmerion/kotlin/semver/serializers/VersionSerializer : kotlinx/serialization/KSerializer {
+	public static final field INSTANCE Lcom/osmerion/kotlin/semver/serializers/VersionSerializer;
+	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
 	public fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
-	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/osmerion/kotlin/semver/constraints/Constraint;)V
+	public fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/osmerion/kotlin/semver/SemanticVersion;)V
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 }
 
