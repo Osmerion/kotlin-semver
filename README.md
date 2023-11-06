@@ -6,7 +6,7 @@
 ![Java](https://img.shields.io/badge/Java-11-green.svg?style=for-the-badge&color=b07219&logo=Java)
 
 Semantic Versioning library for [Kotlin Multiplatform](https://kotlinlang.org/docs/mpp-intro.html).
-It implements the full [semantic version 2.0.0](https://semver.org/spec/v2.0.0.html) specification and 
+It implements the full [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) specification and 
 provides the ability to **parse**, **compare**, and **increment** semantic versions along with validation against **constraints**.
 
 The API Documentation is available [here](https://z4kn4fein.github.io/kotlin-semver/).
