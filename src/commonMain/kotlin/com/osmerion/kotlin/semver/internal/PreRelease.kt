@@ -20,9 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.internal
 
-import com.osmerion.kotlin.semver.internal.Patterns
+import com.osmerion.kotlin.semver.VersionFormatException
 import kotlin.math.min
 
 internal class PreRelease private constructor(private val parts: List<String>) : Comparable<PreRelease> {

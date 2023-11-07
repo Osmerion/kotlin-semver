@@ -24,6 +24,7 @@ package com.osmerion.kotlin.semver.internal.constraints
 
 import com.osmerion.kotlin.semver.ConstraintFormatException
 import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.SemanticVersionConstraint
 
 internal data class VersionDescriptor(
     val majorString: String,
@@ -60,14 +61,14 @@ internal data class VersionDescriptor(
             isMajorWildcard ->
                 when (operator) {
                     Op.GREATER_THAN, Op.LESS_THAN, Op.NOT_EQUAL ->
-                        Condition(Op.LESS_THAN, SemanticVersion.min.copy(preRelease = ""))
+                        Condition(Op.LESS_THAN, VersionComparator.min.copy(preRelease = ""))
                     else -> VersionComparator.greaterThanMin
                 }
             isMinorWildcard -> {
                 val version = SemanticVersion(major = major, preRelease = preRelease, buildMetadata = buildMetadata)
                 Range(
                     start = Condition(Op.GREATER_THAN_OR_EQUAL, version),
-                    end = Condition(Op.LESS_THAN, version.nextMajor(preRelease = "")),
+                    end = Condition(Op.LESS_THAN, version.toNextMajor(preRelease = "")),
                     operator
                 )
             }
@@ -76,7 +77,7 @@ internal data class VersionDescriptor(
                     SemanticVersion(major = major, minor = minor, preRelease = preRelease, buildMetadata = buildMetadata)
                 Range(
                     start = Condition(Op.GREATER_THAN_OR_EQUAL, version),
-                    end = Condition(Op.LESS_THAN, version.nextMinor(preRelease = "")),
+                    end = Condition(Op.LESS_THAN, version.toNextMinor(preRelease = "")),
                     operator
                 )
             }

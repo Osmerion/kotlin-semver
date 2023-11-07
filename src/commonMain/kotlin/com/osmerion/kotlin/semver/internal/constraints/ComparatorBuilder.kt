@@ -52,7 +52,7 @@ internal class TildeComparatorBuilder : ComparatorBuilder {
                 )
                 Range(
                     start = Condition(Op.GREATER_THAN_OR_EQUAL, version),
-                    end = Condition(Op.LESS_THAN, version.nextMinor(preRelease = "")),
+                    end = Condition(Op.LESS_THAN, version.toNextMinor(preRelease = "")),
                     Op.EQUAL
                 )
             }
@@ -76,9 +76,9 @@ internal class CaretComparatorBuilder : ComparatorBuilder {
                     versionDescriptor.buildMetadata
                 )
                 val endVersion = when {
-                    versionDescriptor.majorString != "0" -> version.nextMajor(preRelease = "")
-                    versionDescriptor.minorString != "0" -> version.nextMinor(preRelease = "")
-                    versionDescriptor.patchString != "0" -> version.nextPatch(preRelease = "")
+                    versionDescriptor.majorString != "0" -> version.toNextMajor(preRelease = "")
+                    versionDescriptor.minorString != "0" -> version.toNextMinor(preRelease = "")
+                    versionDescriptor.patchString != "0" -> version.toNextPatch(preRelease = "")
                     else -> SemanticVersion(patch = 1, preRelease = "") // ^0.0.0 -> <0.0.1-0
                 }
                 Range(
@@ -112,7 +112,7 @@ internal class CaretComparatorBuilder : ComparatorBuilder {
                 val version = SemanticVersion(major = versionDescriptor.major, minor = versionDescriptor.minor)
                 Range(
                     Condition(Op.GREATER_THAN_OR_EQUAL, version),
-                    Condition(Op.LESS_THAN, version.nextMajor(preRelease = "")),
+                    Condition(Op.LESS_THAN, version.toNextMajor(preRelease = "")),
                     Op.EQUAL
                 )
             }

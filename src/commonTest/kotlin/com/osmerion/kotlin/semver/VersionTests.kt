@@ -31,6 +31,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class VersionTests {
+
     @Test
     fun testInvalidVersions() {
         assertFailsWith<VersionFormatException> { SemanticVersion.parse("-1.0.0") }
@@ -259,11 +260,27 @@ class VersionTests {
     }
 
     @Test
-    fun testWithoutSuffixes() {
-        assertEquals("1.2.3", SemanticVersion.parse("1.2.3-alpha+build").withoutSuffixes().toString())
-        assertEquals("1.2.4", SemanticVersion.parse("1.2.4").withoutSuffixes().toString())
-        assertEquals("1.2.4", SemanticVersion.parse("1.2.4-alpha").withoutSuffixes().toString())
-        assertEquals("1.2.4", SemanticVersion.parse("1.2.4+build").withoutSuffixes().toString())
+    fun testRemovePreRelease() {
+        assertEquals("1.2.3+build", SemanticVersion.parse("1.2.3-alpha+build").removePreRelease().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4").removePreRelease().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4-alpha").removePreRelease().toString())
+        assertEquals("1.2.4+build", SemanticVersion.parse("1.2.4+build").removePreRelease().toString())
+    }
+
+    @Test
+    fun testRemoveBuildMetadata() {
+        assertEquals("1.2.3-alpha", SemanticVersion.parse("1.2.3-alpha+build").removeBuildMetadata().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4").removeBuildMetadata().toString())
+        assertEquals("1.2.4-alpha", SemanticVersion.parse("1.2.4-alpha").removeBuildMetadata().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4+build").removeBuildMetadata().toString())
+    }
+
+    @Test
+    fun testToNormalVersion() {
+        assertEquals("1.2.3", SemanticVersion.parse("1.2.3-alpha+build").toNormalVersion().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4").toNormalVersion().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4-alpha").toNormalVersion().toString())
+        assertEquals("1.2.4", SemanticVersion.parse("1.2.4+build").toNormalVersion().toString())
     }
 
     @Test
@@ -291,4 +308,5 @@ class VersionTests {
         assertTrue((SemanticVersion.parse("1.0.0")..SemanticVersion.parse("1.1.0")).contains(SemanticVersion.parse("1.0.1")))
         assertTrue(SemanticVersion.parse("1.1.0-alpha") in SemanticVersion.parse("1.0.0")..SemanticVersion.parse("1.1.0"))
     }
+
 }

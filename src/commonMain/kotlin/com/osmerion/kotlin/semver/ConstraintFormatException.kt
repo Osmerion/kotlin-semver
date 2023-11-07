@@ -23,8 +23,11 @@
 package com.osmerion.kotlin.semver
 
 /**
- * [Constraint] throws this exception when the constraint parsing fails due to an invalid format.
+ * Thrown to indicate that an attempt was made to convert a string to a [SemanticVersionConstraint] for a string that
+ * does not have the appropriate format.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.exception
+ *
+ * @since   0.1.0
  */
-public class ConstraintFormatException(message: String) : Exception(message)
+public class ConstraintFormatException internal constructor(message: String) : IllegalArgumentException(message)

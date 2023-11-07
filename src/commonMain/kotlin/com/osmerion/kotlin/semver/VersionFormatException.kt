@@ -23,9 +23,12 @@
 package com.osmerion.kotlin.semver
 
 /**
- * [SemanticVersion] throws this exception when the semantic version parsing fails due to an invalid format.
+ * Thrown to indicate that an attempt was made to convert a string to a [SemanticVersion] for a string that does not
+ * have the appropriate format.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.exception
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.preReleaseException
+ *
+ * @since   0.1.0
  */
-public class VersionFormatException(message: String) : Exception(message)
+public class VersionFormatException internal constructor(message: String) : IllegalArgumentException(message)

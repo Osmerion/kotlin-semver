@@ -28,6 +28,7 @@ import com.osmerion.kotlin.semver.serializers.ConstraintSerializer
 import kotlinx.serialization.json.Json
 
 class ConstraintSamples {
+
     fun constraint() {
         val constraints = listOf(
             "1.0.0",
@@ -48,11 +49,7 @@ class ConstraintSamples {
         print(SemanticVersionConstraint.parse(">=1.0.0 || <5.x"))
     }
 
-    fun toConstraint() {
-        print(SemanticVersionConstraint.parse(">=1.0"))
-    }
-
-    fun toConstraintOrNull() {
+    fun tryParse() {
         println(SemanticVersionConstraint.tryParse(">=1.2"))
         println(SemanticVersionConstraint.tryParse(">=1.2a"))
     }
@@ -61,22 +58,22 @@ class ConstraintSamples {
         SemanticVersionConstraint.parse(">=1.2a|^3")
     }
 
-    fun satisfiedBy() {
+    fun isSatisfiedBy() {
         val constraint = SemanticVersionConstraint.parse(">=1.1.0")
         val version = SemanticVersion.parse("1.1.0")
-        print("$constraint satisfiedBy $version? ${constraint satisfiedBy version}")
+        print("$constraint satisfiedBy $version? ${constraint isSatisfiedBy version}")
     }
 
-    fun satisfiedByAll() {
+    fun isSatisfiedByAll() {
         val constraint = SemanticVersionConstraint.parse(">=1.1.0")
         val versions = listOf("1.1.0", "1.2.0").map(SemanticVersion::parse)
-        print("$constraint satisfied by ${versions.joinToString(" and ")}? ${constraint satisfiedByAll versions}")
+        print("$constraint satisfied by ${versions.joinToString(" and ")}? ${constraint isSatisfiedByAll versions}")
     }
 
-    fun satisfiedByAny() {
+    fun isSatisfiedByAny() {
         val constraint = SemanticVersionConstraint.parse(">=1.1.0")
         val versions = listOf("1.1.0", "1.0.0").map(SemanticVersion::parse)
-        print("$constraint satisfied by ${versions.joinToString(" or ")}? ${constraint satisfiedByAny versions}")
+        print("$constraint satisfied by ${versions.joinToString(" or ")}? ${constraint isSatisfiedByAny versions}")
     }
 
     fun serialization() {
@@ -87,4 +84,5 @@ class ConstraintSamples {
         val decoded = Json.decodeFromString(ConstraintSerializer, "\">1.2\"")
         print(decoded)
     }
+
 }

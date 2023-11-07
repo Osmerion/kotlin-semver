@@ -35,6 +35,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ConstraintTests {
+
     @Test
     fun testInvalidConstraints() {
         assertFailsWith<ConstraintFormatException> { SemanticVersionConstraint.parse("a") }
@@ -72,8 +73,8 @@ class ConstraintTests {
         assertFalse(SemanticVersion.parse("1.2.4") satisfiesAll constraints)
 
         val versions = listOf("1.0.0", "1.0.1").map(SemanticVersion::parse)
-        assertTrue(SemanticVersionConstraint.parse(">=1.0.0") satisfiedByAll versions)
-        assertFalse(SemanticVersionConstraint.parse(">=1.0.1") satisfiedByAll versions)
+        assertTrue(SemanticVersionConstraint.parse(">=1.0.0") isSatisfiedByAll versions)
+        assertFalse(SemanticVersionConstraint.parse(">=1.0.1") isSatisfiedByAll versions)
     }
 
     @Test
@@ -83,8 +84,8 @@ class ConstraintTests {
         assertTrue(SemanticVersion.parse("1.2.4") satisfiesAny constraints)
 
         val versions = listOf("1.0.0", "1.0.1").map(SemanticVersion::parse)
-        assertTrue(SemanticVersionConstraint.parse(">=1.0.0") satisfiedByAny versions)
-        assertTrue(SemanticVersionConstraint.parse(">=1.0.1") satisfiedByAny versions)
+        assertTrue(SemanticVersionConstraint.parse(">=1.0.0") isSatisfiedByAny versions)
+        assertTrue(SemanticVersionConstraint.parse(">=1.0.1") isSatisfiedByAny versions)
     }
 
     @Test
@@ -783,4 +784,5 @@ class ConstraintTests {
             assertEquals(it.second, SemanticVersionConstraint.parse(it.first).toString())
         }
     }
+
 }

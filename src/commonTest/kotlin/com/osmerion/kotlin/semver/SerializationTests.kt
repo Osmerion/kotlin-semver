@@ -30,6 +30,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SerializationTests {
+
     @Serializable
     data class ToSerialize(val version: SemanticVersion)
 
@@ -104,4 +105,5 @@ class SerializationTests {
         val decoded = Json.decodeFromString<ToConstraintSerialize>("{\"constraint\":\"> 1.2.3\"}")
         assertEquals(SemanticVersionConstraint.parse("> 1.2.3"), decoded.constraint)
     }
+
 }

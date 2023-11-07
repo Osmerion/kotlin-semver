@@ -29,6 +29,7 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class CompareTests {
+
     @Test
     fun testLessThanByNumbers() {
         val version = SemanticVersion.parse("5.2.3")
@@ -105,9 +106,9 @@ class CompareTests {
     }
 
     @Test
-    fun testEqualIgnoreBuild() {
-        assertEquals(SemanticVersion.parse("5.2.3-alpha.2+build.34"), SemanticVersion.parse("5.2.3-alpha.2"))
-        assertEquals(SemanticVersion.parse("5.2.3-alpha.2+build.34"), SemanticVersion.parse("5.2.3-alpha.2+build.35"))
+    fun testHashcodeIgnoreBuild() {
+        assertEquals(SemanticVersion.parse("5.2.3-alpha.2+build.34").hashCode(), SemanticVersion.parse("5.2.3-alpha.2").hashCode())
+        assertEquals(SemanticVersion.parse("5.2.3-alpha.2+build.34").hashCode(), SemanticVersion.parse("5.2.3-alpha.2+build.35").hashCode())
     }
 
     @Test
@@ -135,4 +136,5 @@ class CompareTests {
             list.sorted()
         )
     }
+
 }

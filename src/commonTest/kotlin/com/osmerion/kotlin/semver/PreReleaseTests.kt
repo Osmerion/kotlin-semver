@@ -22,6 +22,7 @@
  */
 package com.osmerion.kotlin.semver
 
+import com.osmerion.kotlin.semver.internal.PreRelease
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -29,6 +30,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
 class PreReleaseTests {
+
     @Test
     fun testInvalidVersions() {
         assertFailsWith<VersionFormatException> { PreRelease(".alpha") }
@@ -71,4 +73,5 @@ class PreReleaseTests {
     fun testDefault() {
         assertEquals("0", PreRelease.default.toString())
     }
+
 }

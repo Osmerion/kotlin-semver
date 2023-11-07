@@ -29,6 +29,7 @@ import com.osmerion.kotlin.semver.serializers.VersionSerializer
 import kotlinx.serialization.json.Json
 
 class VersionSamples {
+
     fun explode() {
         val version = SemanticVersion.parse("1.2.3-alpha.1+build.1")
         println("Version: $version")
@@ -70,7 +71,7 @@ class VersionSamples {
     }
 
     fun preReleaseException() {
-        SemanticVersion.parse("1.0.1").nextPatch(preRelease = "alpha.01")
+        SemanticVersion.parse("1.0.1").toNextPatch(preRelease = "alpha.01")
     }
 
     fun construct() {
@@ -88,14 +89,14 @@ class VersionSamples {
         println(SemanticVersion.parse("2", strict = false))
     }
 
-    fun toVersionOrNullStrict() {
+    fun tryParseStrict() {
         println(SemanticVersion.tryParse("1.0.0-alpha.1+build.1"))
         println(SemanticVersion.tryParse("1.1.a"))
         println(SemanticVersion.tryParse("v1.1.0"))
         println(SemanticVersion.tryParse("1.1"))
     }
 
-    fun toVersionOrNullLoose() {
+    fun tryParseLoose() {
         println(SemanticVersion.tryParse("v1.1.0", strict = false))
         println(SemanticVersion.tryParse("1.1-alpha.1+build.1", strict = false))
         println(SemanticVersion.tryParse("1", strict = false))
@@ -107,51 +108,28 @@ class VersionSamples {
         print(version.copy(minor = 1, preRelease = "beta.0"))
     }
 
-    fun inc() {
+    fun toNextMajor() {
         val version = SemanticVersion.parse("1.0.0-alpha.1")
-        println(version.inc(by = com.osmerion.kotlin.semver.Inc.MAJOR))
-        println(version.inc(by = com.osmerion.kotlin.semver.Inc.MINOR))
-        println(version.inc(by = com.osmerion.kotlin.semver.Inc.PATCH))
-        println(version.inc(by = com.osmerion.kotlin.semver.Inc.PRE_RELEASE))
-
-        println(version.inc(by = com.osmerion.kotlin.semver.Inc.MAJOR, preRelease = ""))
-        println(version.inc(by = com.osmerion.kotlin.semver.Inc.MINOR, preRelease = "beta"))
+        println(version.toNextMajor())
+        println(version.toNextMajor(preRelease = ""))
+        println(version.toNextMajor(preRelease = "alpha"))
+        println(version.toNextMajor(preRelease = "SNAPSHOT"))
     }
 
-    fun nextMajor() {
+    fun toNextMinor() {
         val version = SemanticVersion.parse("1.0.0-alpha.1")
-        println(version.nextMajor())
-        println(version.nextMajor(preRelease = ""))
-        println(version.nextMajor(preRelease = "alpha"))
-        println(version.nextMajor(preRelease = "SNAPSHOT"))
+        println(version.toNextMinor())
+        println(version.toNextMinor(preRelease = ""))
+        println(version.toNextMinor(preRelease = "alpha"))
+        println(version.toNextMinor(preRelease = "SNAPSHOT"))
     }
 
-    fun nextMinor() {
+    fun toNextPatch() {
         val version = SemanticVersion.parse("1.0.0-alpha.1")
-        println(version.nextMinor())
-        println(version.nextMinor(preRelease = ""))
-        println(version.nextMinor(preRelease = "alpha"))
-        println(version.nextMinor(preRelease = "SNAPSHOT"))
-    }
-
-    fun nextPatch() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1")
-        println(version.nextPatch())
-        println(version.nextPatch(preRelease = ""))
-        println(version.nextPatch(preRelease = "alpha"))
-        println(version.nextPatch(preRelease = "SNAPSHOT"))
-    }
-
-    fun nextPreRelease() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1")
-        println(version.nextPreRelease())
-        println(version.nextPreRelease(preRelease = ""))
-        println(version.nextPreRelease(preRelease = "alpha"))
-        println(version.nextPreRelease(preRelease = "SNAPSHOT"))
-    }
-
-    fun min() {
-        print(SemanticVersion.min)
+        println(version.toNextPatch())
+        println(version.toNextPatch(preRelease = ""))
+        println(version.toNextPatch(preRelease = "alpha"))
+        println(version.toNextPatch(preRelease = "SNAPSHOT"))
     }
 
     fun satisfies() {
@@ -172,9 +150,19 @@ class VersionSamples {
         print("$version satisfies ${constraints.joinToString(" or ")}? ${version satisfiesAny constraints}")
     }
 
-    fun withoutSuffixes() {
+    fun removePreRelease() {
         val version = SemanticVersion.parse("1.0.0-alpha.1+build")
-        print(version.withoutSuffixes())
+        print(version.removePreRelease())
+    }
+
+    fun removeBuildMetadata() {
+        val version = SemanticVersion.parse("1.0.0-alpha.1+build")
+        print(version.removeBuildMetadata())
+    }
+
+    fun toNormalVersion() {
+        val version = SemanticVersion.parse("1.0.0-alpha.1+build")
+        print(version.toNormalVersion())
     }
 
     fun serialization() {
@@ -204,4 +192,5 @@ class VersionSamples {
         println(decoded.preRelease)
         println(decoded.buildMetadata)
     }
+
 }

@@ -29,6 +29,13 @@ internal interface VersionComparator {
     fun opposite(): String
 
     companion object {
-        val greaterThanMin: VersionComparator = Condition(Op.GREATER_THAN_OR_EQUAL, SemanticVersion.min)
+        /**
+         * The 0.0.0 semantic version.
+         *
+         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.min
+         */
+        val min: SemanticVersion = SemanticVersion()
+
+        val greaterThanMin: VersionComparator = Condition(Op.GREATER_THAN_OR_EQUAL, min)
     }
 }

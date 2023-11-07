@@ -23,14 +23,19 @@
 package com.osmerion.kotlin.semver
 
 import com.osmerion.kotlin.semver.internal.Patterns
+import com.osmerion.kotlin.semver.internal.PreRelease
 import com.osmerion.kotlin.semver.serializers.VersionSerializer
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 /**
- * This class describes a semantic version and related operations following the semver 2.0.0 specification.
- * Instances of this class are immutable, which makes them thread-safe.
+ * A semantic version according to the [Semantic Versioning 2.0.0 specification](https://semver.org/spec/v2.0.0.html).
+ *
+ * The natural ordering of this class is inconsistent with [equals] since [build metadata][buildMetadata] does not
+ * factor into semantic version precedence. For more information refer to [compareTo].
+ *
+ * Instances of this class are immutable and can safely be used across multiple threads.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.explode
  *
@@ -38,18 +43,39 @@ import kotlin.jvm.JvmStatic
  */
 @Serializable(with = VersionSerializer::class)
 public class SemanticVersion private constructor(
-    /** The MAJOR number of the version. */
+    /**
+     * The `MAJOR` number of the version.
+     *
+     * The major version must be incremented whenever an API incompatible change is made. See [toNextMajor] for more
+     * information on incrementing major version numbers.
+     *
+     * @since   0.1.0
+     */
     public val major: Int,
-
-    /** The MINOR number of the version. */
+    /**
+     * The `MINOR` number of the version.
+     *
+     * The minor version must be incremented whenever functionality is added in a backward compatible manner. See
+     * [toNextMinor] for more information on incrementing minor version numbers.
+     *
+     * @since   0.1.0
+     */
     public val minor: Int,
-
-    /** The PATCH number of the version. */
+    /**
+     * The `PATCH` number of the version.
+     *
+     * The patch version must be incremented whenever backward compatible bug fixes are made. See [toNextPatch] for more
+     * information on incrementing patch version numbers.
+     *
+     * @since   0.1.0
+     */
     public val patch: Int,
-
-    internal val parsedPreRelease: PreRelease? = null,
-
-    /** The BUILD metadata of the version. */
+    private val parsedPreRelease: PreRelease? = null,
+    /**
+     * The build metadata of the version.
+     *
+     * @since   0.1.0
+     */
     public val buildMetadata: String? = null
 ) : Comparable<SemanticVersion> {
 
@@ -57,7 +83,15 @@ public class SemanticVersion private constructor(
      * Constructs a semantic version from the given arguments following the pattern:
      * <[major]>.<[minor]>.<[patch]>-<[preRelease]>+<[buildMetadata]>
      *
+     * @param major         the `MAJOR` version number
+     * @param minor         the `MINOR` version number
+     * @param patch         the `PATCH` version number
+     * @param preRelease    the pre-release identifier
+     * @param buildMetadata the build metadata
+     *
      * @sample com.osmerion.kotlin.semver.samples.VersionSamples.construct
+     *
+     * @since   0.1.0
      */
     public constructor(
         major: Int = 0,
@@ -75,109 +109,40 @@ public class SemanticVersion private constructor(
         }
     }
 
-    /** The PRE-RELEASE identifier of the version. */
-    public val preRelease: String? = parsedPreRelease?.toString()
-
     /**
-     * Determines whether the version is pre-release or not.
-     */
-    public val isPreRelease: Boolean = parsedPreRelease != null
-
-    /**
-     * Determines whether the version is considered stable or not.
-     * Stable versions have a positive major number and no pre-release identifier.
-     */
-    public val isStable: Boolean = major > 0 && parsedPreRelease == null
-
-    /**
-     * Constructs a copy of the [SemanticVersion]. The copied object's properties can be altered with the optional parameters.
+     * Companion object of [SemanticVersion].
      *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.copy
+     * @since   0.1.0
      */
-    public fun copy(
-        major: Int = this.major,
-        minor: Int = this.minor,
-        patch: Int = this.patch,
-        preRelease: String? = this.preRelease,
-        buildMetadata: String? = this.buildMetadata
-    ): SemanticVersion = SemanticVersion(major, minor, patch, preRelease, buildMetadata)
-
-    public override fun compareTo(other: SemanticVersion): Int =
-        when {
-            major > other.major -> 1
-            major < other.major -> -1
-            minor > other.minor -> 1
-            minor < other.minor -> -1
-            patch > other.patch -> 1
-            patch < other.patch -> -1
-            parsedPreRelease != null && other.parsedPreRelease == null -> -1
-            parsedPreRelease == null && other.parsedPreRelease != null -> 1
-            parsedPreRelease != null && other.parsedPreRelease != null ->
-                parsedPreRelease.compareTo(other.parsedPreRelease)
-            else -> 0
-        }
-
-    public override fun equals(other: Any?): Boolean {
-        val version = other as? SemanticVersion
-        return when {
-            version == null -> false
-            compareTo(version) == 0 -> true
-            else -> false
-        }
-    }
-
-    public override fun hashCode(): Int {
-        var hash = major.hashCode()
-        hash *= 31 + minor.hashCode()
-        hash *= 31 + patch.hashCode()
-        hash *= parsedPreRelease?.let { 31 + parsedPreRelease.hashCode() } ?: 1
-        return hash
-    }
-
-    public override fun toString(): String =
-        "$major.$minor.$patch${parsedPreRelease?.let { "-$parsedPreRelease" } ?: ""}" +
-            (buildMetadata?.let { "+$buildMetadata" } ?: "")
-
-    /** Component function that returns the MAJOR number of the version upon destructuring. */
-    public operator fun component1(): Int = major
-    /** Component function that returns the MINOR number of the version upon destructuring. */
-    public operator fun component2(): Int = minor
-    /** Component function that returns the PATCH number of the version upon destructuring. */
-    public operator fun component3(): Int = patch
-    /** Component function that returns the PRE-RELEASE identifier of the version upon destructuring. */
-    public operator fun component4(): String? = preRelease
-    /** Component function that returns the BUILD metadata of the version upon destructuring. */
-    public operator fun component5(): String? = buildMetadata
-
-    /** Companion object of [SemanticVersion]. */
     public companion object {
-        private val versionRegex: Regex = Patterns.VERSION_REGEX.toRegex()
-        private val looseVersionRegex: Regex = Patterns.LOOSE_VERSION_REGEX.toRegex()
+
+        private val versionRegex: Regex by lazy { Patterns.VERSION_REGEX.toRegex() }
+        private val looseVersionRegex: Regex by lazy { Patterns.LOOSE_VERSION_REGEX.toRegex() }
 
         /**
-         * The 0.0.0 semantic version.
+         * Parses the given [string] argument as a [SemanticVersion]. If the string does not represent a semantic
+         * version, a [VersionFormatException] is thrown.
          *
-         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.min
-         */
-        public val min: SemanticVersion = SemanticVersion()
-
-        /**
-         * Parses the [versionString] as a [SemanticVersion] and returns the result or throws a [VersionFormatException]
-         * if the string is not a valid representation of a semantic version.
+         * By default, this function only accepts version strings that conform to the Semantic Versioning Specification
+         * 2.0.0. Thus, partial versions (e.g. `1.0` or `1`) and versions with `v` prefix are considered invalid. This
+         * _strict_ behavior can be turned off by setting [strict] to false.
          *
-         * Strict mode is on by default, which means partial versions (e.g. '1.0' or '1') and versions with 'v' prefix
-         * are considered invalid. This behaviour can be turned off by setting [strict] to false.
+         * @param string    the string to parse
+         * @param strict    whether to strictly match spec-compliant version strings only
+         *
+         * @return  the semantic version represented by the argument
          *
          * @sample com.osmerion.kotlin.semver.samples.VersionSamples.parseStrict
          * @sample com.osmerion.kotlin.semver.samples.VersionSamples.parseLoose
+         *
+         * @since   0.1.0
          */
         @JvmOverloads
         @JvmStatic
         @Suppress("MagicNumber")
-        public fun parse(versionString: String, strict: Boolean = true): SemanticVersion {
+        public fun parse(string: String, strict: Boolean = true): SemanticVersion {
             val regex = if (strict) versionRegex else looseVersionRegex
-            val result = regex.matchEntire(versionString)
-                ?: throw VersionFormatException("Invalid version: $versionString")
+            val result = regex.matchEntire(string) ?: throw VersionFormatException("Invalid version string: $string")
             val major = result.groupValues[1].toIntOrNull()
             val minor = result.groupValues[2].toIntOrNull()
             val patch = result.groupValues[3].toIntOrNull()
@@ -185,163 +150,376 @@ public class SemanticVersion private constructor(
             val buildMetadata = result.groups[5]?.value
 
             return when {
-                strict && major != null && minor != null && patch != null ->
-                    SemanticVersion(major, minor, patch, preRelease, buildMetadata)
-                !strict && major != null ->
-                    SemanticVersion(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
-                else -> throw VersionFormatException("Invalid version: $versionString")
+                strict && major != null && minor != null && patch != null -> SemanticVersion(major, minor, patch, preRelease, buildMetadata)
+                !strict && major != null -> SemanticVersion(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
+                else -> throw VersionFormatException("Invalid version string: $string")
             }
         }
 
         /**
-         * Parses the string as a [SemanticVersion] and returns the result or null
-         * if the string is not a valid representation of a semantic version.
+         * Parses the given [string] argument as a [SemanticVersion]. If the string does not represent a semantic
+         * version, `null` is returned instead.
          *
-         * Strict mode is on by default, which means partial versions (e.g. '1.0' or '1') and versions with 'v' prefix are
-         * considered invalid. This behaviour can be turned off by setting [strict] to false.
+         * By default, this function only accepts version strings that conform to the Semantic Versioning Specification
+         * 2.0.0. Thus, partial versions (e.g. `1.0` or `1`) and versions with `v` prefix are considered invalid. This
+         * _strict_ behavior can be turned off by setting [strict] to false.
          *
-         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionOrNullStrict
-         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toVersionOrNullLoose
+         * @param string    the string to parse
+         * @param strict    whether to strictly match spec-compliant version strings only
+         *
+         * @return  the semantic version represented by the argument, or `null`
+         *
+         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.tryParseStrict
+         * @sample com.osmerion.kotlin.semver.samples.VersionSamples.tryParseLoose
+         *
+         * @since   0.1.0
          */
-        public fun tryParse(versionString: String, strict: Boolean = true): SemanticVersion? =
-            try {
-                parse(versionString, strict)
-            } catch (_: Exception) {
-                null
-            }
+        @JvmOverloads
+        @JvmStatic
+        public fun tryParse(string: String, strict: Boolean = true): SemanticVersion? = try {
+            parse(string, strict)
+        } catch (_: VersionFormatException) {
+            null
+        }
 
-        // used by extensions only
-        internal operator fun invoke(
-            major: Int,
-            minor: Int,
-            patch: Int,
-            preRelease: PreRelease?,
-            buildMetadata: String? = null
-        ): SemanticVersion = SemanticVersion(major, minor, patch, preRelease, buildMetadata)
     }
 
     /**
-     * Increments the version by its MAJOR number. When the [preRelease] parameter is set, a pre-release version
-     * will be produced from the next MAJOR version. The value of [preRelease] will be the first
-     * pre-release identifier of the new version.
+     * The pre-release identifier of the version.
      *
-     * Returns a new version while the original remains unchanged.
-     *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextMajor
+     * @since   0.1.0
      */
-    public fun nextMajor(preRelease: String? = null): SemanticVersion = SemanticVersion(
-        major + 1,
-        0,
-        0,
-        preRelease?.let { PreRelease(preRelease) }
+    public val preRelease: String?
+        get() = parsedPreRelease?.toString()
+
+    /**
+     * Constructs a copy of this [SemanticVersion].
+     *
+     * The copied object's properties can be altered with the optional parameters.
+     *
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.copy
+     *
+     * @since   0.1.0
+     */
+    public fun copy(
+        major: Int = this.major,
+        minor: Int = this.minor,
+        patch: Int = this.patch,
+        preRelease: String? = this.preRelease,
+        buildMetadata: String? = this.buildMetadata
+    ): SemanticVersion =
+        SemanticVersion(major, minor, patch, preRelease, buildMetadata)
+
+    /**
+     * Compares this version with the given [other] version for order.
+     *
+     * The ordering of [semantic versions][SemanticVersion] is consistent with the definition from the Semantic
+     * Versioning 2.0.0 specification:
+     *
+     *  1. Precedence is determined by the first difference when comparing the major, minor, patch and pre-release
+     *     identifiers in this order.
+     *
+     *  2. A pre-release version has a lower precedence than a normal version.
+     *
+     *  3. Precedence of two pre-release versions is determined by comparing each dot-separated part of the pre-release
+     *     identifier from left to right as follows:
+     *
+     *      1. Parts consisting of only digits are compared numerically.
+     *      2. Parts with letters or hyphens are compared lexically in ASCII sort order.
+     *      3. Numeric parts always have lower precedence than non-numeric parts.
+     *      4. A larger set of pre-release parts has a higher precedence than a smaller set, if all the preceding parts
+     *         are equal.
+     *
+     * The build metadata of a version is ignored when determining its relative order. Since the build metadata is
+     * included in equality checks, the natural ordering of [SemanticVersion] is inconsistent with [equals].
+     * Specifically, `e1.compareTo(e2) == 0` does not imply `e1.equals(e2)` exactly if `e1.buildMetadata != e2.buildMetadata`.
+     *
+     * @param other the version to be compared
+     *
+     * @return  a negative integer, zero, or a positive integer as this version is less than, equal to, or greater than
+     *          the given other version
+     *
+     * @since   0.1.0
+     */
+    public override fun compareTo(other: SemanticVersion): Int = when {
+        major > other.major -> 1
+        major < other.major -> -1
+        minor > other.minor -> 1
+        minor < other.minor -> -1
+        patch > other.patch -> 1
+        patch < other.patch -> -1
+        parsedPreRelease != null && other.parsedPreRelease == null -> -1
+        parsedPreRelease == null && other.parsedPreRelease != null -> 1
+        parsedPreRelease != null && other.parsedPreRelease != null -> parsedPreRelease.compareTo(other.parsedPreRelease)
+        else -> 0
+    }
+
+    public override fun equals(other: Any?): Boolean = when {
+        this === other -> true
+        other is SemanticVersion -> major == other.major
+            && minor == other.minor
+            && patch == other.patch
+            && parsedPreRelease == other.parsedPreRelease
+            && buildMetadata == other.buildMetadata
+        else -> false
+    }
+
+    public override fun hashCode(): Int {
+        /*
+         * Implementation Note:
+         * We do not let build metadata factor into the hashcode calculation. Thus, it is possible that
+         * `e1.hashCode() == e2.hashCode()` while `e1 != e2`. This is in line with the specification though, since we
+         * are only required to return the same hashcode for equal objects. (Same hashcode DOES NOT imply object
+         * equality.)
+         *
+         * The advantage of this approach is that we have a better locality for any hash-based collection that works
+         * with semantic versions. This is useful, since build metadata does not factor into version precedence.
+         */
+        var hash = major.hashCode()
+        hash *= 31 + minor.hashCode()
+        hash *= 31 + patch.hashCode()
+        hash *= parsedPreRelease?.let { 31 + parsedPreRelease.hashCode() } ?: 1
+        return hash
+    }
+
+    /**
+     * Returns the string representation of this version.
+     *
+     * The returned string has the format: <[major]>.<[minor]>.<[patch]>(-<[preRelease]>?)(+<[buildMetadata]>?)
+     *
+     * @return  the string representation of this version
+     *
+     * @since   0.1.0
+     */
+    public override fun toString(): String =
+        "$major.$minor.$patch${parsedPreRelease?.let { "-$parsedPreRelease" } ?: ""}${(buildMetadata?.let { "+$buildMetadata" } ?: "")}"
+
+    /**
+     * Component function that returns the [major] number of this version upon destructuring.
+     *
+     * @return  the major number of this version
+     *
+     * @since   0.1.0
+     */
+    public operator fun component1(): Int = major
+
+    /**
+     * Component function that returns the [minor] number of this version upon destructuring.
+     *
+     * @return  the minor number of this version
+     *
+     * @since   0.1.0
+     */
+    public operator fun component2(): Int = minor
+
+    /**
+     * Component function that returns the [patch] number of this version upon destructuring.
+     *
+     * @return  the patch number of this version
+     *
+     * @since   0.1.0
+     */
+    public operator fun component3(): Int = patch
+
+    /**
+     * Component function that returns the [pre-release][preRelease] identifier of this version upon destructuring.
+     *
+     * @return  the pre-release identifier of this version, or `null`
+     *
+     * @since   0.1.0
+     */
+    public operator fun component4(): String? = preRelease
+
+    /**
+     * Component function that returns the [build metadata][buildMetadata] of this version upon destructuring.
+     *
+     * @return  the build metadata of this version, or `null`
+     *
+     * @since   0.1.0
+     */
+    public operator fun component5(): String? = buildMetadata
+
+    /**
+     * Returns whether this version represents a normal version number.
+     *
+     * A normal version number has the format <[major]>.<[minor]>.<[patch]> without any [pre-release][preRelease]
+     * identifier or [build metadata][buildMetadata].
+     *
+     * @since   0.1.0
+     */
+    public val isNormal: Boolean
+        get() = parsedPreRelease == null && buildMetadata == null
+
+    /**
+     * Returns whether this version is a pre-release version.
+     *
+     * A version is a pre-release version exactly when it has a [pre-release][preRelease] identifier.
+     *
+     * @since   0.1.0
+     */
+    public val isPreRelease: Boolean
+        get () = parsedPreRelease != null
+
+    /**
+     * Returns whether this version is considered stable.
+     *
+     * A version is stable exactly when the [major] number is greater than zero  and when it has no [pre-release][preRelease]
+     * identifier.
+     *
+     * @since   0.1.0
+     */
+    public val isStable: Boolean
+        get() = major > 0 && parsedPreRelease == null
+
+    /**
+     * Produces a copy of this version incremented to the next major version.
+     *
+     * In accordance with the Semantic Versioning Specification 2.0.0, the minor and patch version numbers are set to
+     * zero.
+     *
+     * If [preRelease] is not `null`, it is included in the returned version and, hence, the parameter may be used to
+     * create a pre-release version instead of a normal version.
+     *
+     * @return  a new version that represents the result of incrementing the major version number of this version
+     *
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toNextMajor
+     *
+     * @since   0.1.0
+     */
+    @JvmOverloads
+    public fun toNextMajor(preRelease: String? = null): SemanticVersion = SemanticVersion(
+        major = major + 1,
+        minor = 0,
+        patch = 0,
+        parsedPreRelease = preRelease?.let(PreRelease.Companion::invoke)
     )
 
     /**
-     * Increments the version by its MINOR number. When the [preRelease] parameter is set, a pre-release version
-     * will be produced from the next MINOR version. The value of [preRelease] will be the first
-     * pre-release identifier of the new version.
+     * Produces a copy of this version incremented to the next minor version.
      *
-     * Returns a new version while the original remains unchanged.
+     * In accordance with the Semantic Versioning Specification 2.0.0, the major version number is left untouched and
+     * the patch version number is set to zero.
      *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextMinor
+     * If [preRelease] is not `null`, it is included in the returned version and, hence, the parameter may be used to
+     * create a pre-release version instead of a normal version.
+     *
+     * @return  a new version that represents the result of incrementing the minor version number of this version
+     *
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toNextMinor
+     *
+     * @since   0.1.0
      */
-    public fun nextMinor(preRelease: String? = null): SemanticVersion = SemanticVersion(
-        major,
-        minor + 1,
-        0,
-        preRelease?.let { PreRelease(preRelease) }
+    @JvmOverloads
+    public fun toNextMinor(preRelease: String? = null): SemanticVersion = SemanticVersion(
+        major = major,
+        minor = minor + 1,
+        patch = 0,
+        parsedPreRelease = preRelease?.let(PreRelease.Companion::invoke)
     )
 
     /**
-     * Increments the version by its PATCH number. When the version is pre-release, the PATCH number will not be
-     * incremented, only the pre-release identifier will be removed.
+     * Produces a copy of this version incremented to the next patch version.
      *
-     * When the [preRelease] parameter is set, a pre-release version will be produced from the next PATCH version.
-     * The value of [preRelease] will be the first pre-release identifier of the new version.
+     * In accordance with the Semantic Versioning Specification 2.0.0, the major and minor version numbers are left
+     * untouched.
      *
-     * Returns a new version while the original remains unchanged.
+     * If this [SemanticVersion] represents a pre-release version and [preRelease] is `null`, the patch version number
+     * is not incremented. Instead, the pre-release identifier of this version is simply dropped to produce the next
+     * patch version.
      *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextPatch
+     * If [preRelease] is not `null`, it is included in the returned version and, hence, the parameter may be used to
+     * create a pre-release version instead of a normal version.
+     *
+     * @return  the result of incrementing this version to the next patch version
+     *
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.toNextPatch
+     *
+     * @since   0.1.0
      */
-    public fun nextPatch(preRelease: String? = null): SemanticVersion = SemanticVersion(
-        major,
-        minor,
-        if (parsedPreRelease == null || preRelease != null) patch + 1 else patch,
-        preRelease?.let { PreRelease(preRelease) }
+    @JvmOverloads
+    public fun toNextPatch(preRelease: String? = null): SemanticVersion = SemanticVersion(
+        major = major,
+        minor = minor,
+        patch = if (parsedPreRelease == null || preRelease != null) patch + 1 else patch,
+        parsedPreRelease = preRelease?.let(PreRelease.Companion::invoke)
     )
 
     /**
-     * Increments the version by its PRE-RELEASE identifier or produces the next pre-release of a stable version.
-     * The [preRelease] parameter's value is used for setting the pre-release identity when the version is stable or has
-     * a different pre-release name. If the version is already pre-release and the first identifier matches with
-     * the [preRelease] parameter, a simple incrementation will apply.
+     * Produces a copy of this version without [pre-release][preRelease] identifier.
      *
-     * Returns a new version while the original remains unchanged.
+     * @return  a copy of this version without pre-release identifier
      *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.nextPreRelease
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.removePreRelease
+     *
+     * @since   0.1.0
      */
-    public fun nextPreRelease(preRelease: String? = null): SemanticVersion = SemanticVersion(
-        major,
-        minor,
-        parsedPreRelease?.let { patch } ?: (patch + 1),
-        preRelease?.let {
-            if (parsedPreRelease?.identity == it) parsedPreRelease.increment() else PreRelease(
-                preRelease
-            )
-        } ?: parsedPreRelease?.increment() ?: PreRelease.default
-    )
+    public fun removePreRelease(): SemanticVersion =
+        copy(preRelease = null)
 
     /**
-     * Increases the version [by] its [Inc.MAJOR], [Inc.MINOR], [Inc.PATCH], or [Inc.PRE_RELEASE] segment.
+     * Produces a copy of this version without [build metadata][buildMetadata].
      *
-     * [Inc.MAJOR] -> [nextMajor]
+     * @return  a copy of this version without build metadata
      *
-     * [Inc.MINOR] -> [nextMinor]
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.removeBuildMetadata
      *
-     * [Inc.PATCH] -> [nextPatch]
-     *
-     * [Inc.PRE_RELEASE] -> [nextPreRelease]
-     *
-     * Returns a new version while the original remains unchanged.
-     *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.inc
+     * @since   0.1.0
      */
-    public fun inc(by: Inc, preRelease: String? = null): SemanticVersion =
-        when (by) {
-            Inc.MAJOR -> nextMajor(preRelease)
-            Inc.MINOR -> nextMinor(preRelease)
-            Inc.PATCH -> nextPatch(preRelease)
-            Inc.PRE_RELEASE -> nextPreRelease(preRelease)
-        }
+    public fun removeBuildMetadata(): SemanticVersion =
+        copy(buildMetadata = null)
 
     /**
-     * Produces a copy of the [SemanticVersion] without the PRE-RELEASE and BUILD METADATA identities.
+     * Produces a copy of this version without [pre-release][preRelease] identifier and [build metadata][buildMetadata].
      *
-     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.withoutSuffixes
+     * @return  a copy of this version without pre-release identifier and build metadata
+     *
+     * @sample com.osmerion.kotlin.semver.samples.VersionSamples.removePreRelease
+     *
+     * @since   0.1.0
      */
-    public fun withoutSuffixes(): SemanticVersion = this.copy(preRelease = null, buildMetadata = null)
+    public fun toNormalVersion(): SemanticVersion =
+        copy(preRelease = null, buildMetadata = null)
 
     /**
-     * Determines whether a [SemanticVersion] satisfies a [SemanticVersionConstraint] or not.
+     * Determines whether this version satisfies the given [constraint].
+     *
+     * @param constraint    the [constraint][SemanticVersionConstraint] to check
+     *
+     * @return  whether the given constraint is satisfied by this version
      *
      * @sample com.osmerion.kotlin.semver.samples.VersionSamples.satisfies
+     *
+     * @since   0.1.0
      */
-    public infix fun satisfies(constraint: SemanticVersionConstraint): Boolean = constraint satisfiedBy this
+    public infix fun satisfies(constraint: SemanticVersionConstraint): Boolean =
+        constraint isSatisfiedBy this
 
     /**
-     * Determines whether a [SemanticVersion] satisfies each [SemanticVersionConstraint] in a collection or not.
+     * Determines whether this version satisfies all the given [constraints].
+     *
+     * @param constraints   the  [constraints][SemanticVersionConstraint] to check
+     *
+     * @return  whether all given constraints are satisfied by this version
      *
      * @sample com.osmerion.kotlin.semver.samples.VersionSamples.satisfiesAll
+     *
+     * @since   0.1.0
      */
     public infix fun satisfiesAll(constraints: Iterable<SemanticVersionConstraint>): Boolean =
-        constraints.all { constraint -> constraint satisfiedBy this }
+        constraints.all { constraint -> constraint isSatisfiedBy this }
 
     /**
-     * Determines whether a [SemanticVersion] satisfies at least one [SemanticVersionConstraint] in a collection or not.
+     * Determines whether this version satisfies any of the given [constraints].
+     *
+     * @param constraints   the  [constraints][SemanticVersionConstraint] to check
+     *
+     * @return  whether any of the given constraints is satisfied by this version
      *
      * @sample com.osmerion.kotlin.semver.samples.VersionSamples.satisfiesAny
+     *
+     * @since   0.1.0
      */
     public infix fun satisfiesAny(constraints: Iterable<SemanticVersionConstraint>): Boolean =
-        constraints.any { constraint -> constraint satisfiedBy this }
+        constraints.any { constraint -> constraint isSatisfiedBy this }
 
 }
