@@ -5,11 +5,24 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-1%2E9-green.svg?style=for-the-badge&color=a97bff&logo=Kotlin)
 ![Java](https://img.shields.io/badge/Java-11-green.svg?style=for-the-badge&color=b07219&logo=Java)
 
-Semantic Versioning library for [Kotlin Multiplatform](https://kotlinlang.org/docs/mpp-intro.html).
-It implements the full [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) specification and 
-provides the ability to **parse**, **compare**, and **increment** semantic versions along with validation against **constraints**.
+A [Kotlin Multiplatform](https://kotlinlang.org/docs/mpp-intro.html)
+implementation of the [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
+specification with support for **parsing**, **comparing** and **incrementing**
+semantic versions accompanied by support for **version constraints**.
 
-The API Documentation is available [here](https://z4kn4fein.github.io/kotlin-semver/).
+The library is fully written in common Kotlin code. Prebuilt binaries are
+available for JVM (Java 11 or later), JS and all native targets.[^1]
+
+[^1]: Since this library does not rely on any platform-specific APIs, we aim to
+      provide prebuilt libraries for all native targets supported by Kotlin.
+      Despite that, some targets may be missing as target support may change
+      over time. In case something is missing, please make sure to let us know.
+
+The API Documentation is available [here](https://osmerion.github.io/kotlin-semver/).
+
+This project was forked from https://github.com/z4kn4fein/kotlin-semver. The
+fork gives up a few idiomatic Kotlin design decisions to provide a significantly
+improved Java interoperability.
 
 ## Install with Gradle
 This library is available in Maven Central, so you have to add it to your repositories.
