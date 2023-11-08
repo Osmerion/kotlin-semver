@@ -46,13 +46,14 @@ publishing {
     publications.withType<MavenPublication>().configureEach {
         pom {
             name = project.name
-            url = "https://github.com/Osmerion/gradle-liquibase"
+            description = "A Kotlin Multiplatform implementation of the Semantic Versioning 2.0.0 specification with support for parsing, comparing and incrementing semantic versions accompanied by support for version constraints."
+            url = "https://github.com/Osmerion/kotlin-semver"
             packaging = "jar"
 
             licenses {
                 license {
-                    name = "Apache-2.0"
-                    url = "https://github.com/Osmerion/gradle-liquibase/blob/master/LICENSE"
+                    name = "MIT"
+                    url = "https://github.com/Osmerion/kotlin-semver/blob/master/LICENSE"
                     distribution = "repo"
                 }
             }
@@ -67,9 +68,9 @@ publishing {
             }
 
             scm {
-                connection = "scm:git:git://github.com/Osmerion/gradle-liquibase.git"
-                developerConnection = "scm:git:git://github.com/Osmerion/gradle-liquibase.git"
-                url = "https://github.com/Osmerion/gradle-liquibase.git"
+                connection = "scm:git:git://github.com/Osmerion/kotlin-semver.git"
+                developerConnection = "scm:git:git://github.com/Osmerion/kotlin-semver.git"
+                url = "https://github.com/Osmerion/kotlin-semver.git"
             }
         }
     }
