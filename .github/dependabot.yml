@@ -3,4 +3,11 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    open-pull-requests-limit: 20
+    commit-message:
+      prefix: "build"
+    labels:
+      - "a:chore"
+      - "in:build"
+      - "in:dependencies"
