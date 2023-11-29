@@ -23,10 +23,8 @@
 package com.osmerion.kotlin.semver
 
 /**
- * Thrown to indicate that an attempt was made to convert a string to a [SemanticVersionConstraint] for a string that
+ * Thrown to indicate that an attempt was made to convert a string to a [VersionConstraint] for a string that
  * does not have the appropriate format.
- *
- * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.exception
  *
  * @since   0.1.0
  */

@@ -27,21 +27,48 @@ import kotlin.math.min
 
 internal class PreRelease private constructor(private val parts: List<String>) : Comparable<PreRelease> {
 
-    val identity: String get() = parts[0]
+    constructor(string: String): this(validate(string))
 
-    fun increment(): PreRelease {
-        val newParts = parts.toMutableList()
+    companion object {
 
-        val lastNumericItem = newParts.lastOrNull { it.toIntOrNull() != null }
-        lastNumericItem?.let {
-            val lastNumericIndex = newParts.indexOf(lastNumericItem)
-            newParts[lastNumericIndex] = (lastNumericItem.toInt() + 1).toString()
-        } ?: newParts.add(DEFAULT_INIT_PART)
+        val MIN = PreRelease(listOf("0"))
 
-        return PreRelease(newParts)
+        private val onlyNumberRegex: Regex by lazy { Patterns.ONLY_NUMBER_REGEX.toRegex() }
+        private val onlyAlphaNumericAndHyphenRegex: Regex by lazy { Patterns.ONLY_ALPHANUMERIC_OR_HYPHEN_REGEX.toRegex() }
+
+        private fun validate(preReleaseString: String): List<String> {
+            if (preReleaseString.isBlank()) throw VersionFormatException("Pre-release identifier may not be blank")
+
+            val parts = preReleaseString.trim().split('.')
+            for (part in parts) {
+                val error = when {
+                    part.isBlank() -> "Pre-release identity contains an empty part."
+                    part.matches(onlyNumberRegex) && part.length > 1 && part[0] == '0' -> "Pre-release part '$part' is numeric but contains a leading zero."
+                    !part.matches(onlyAlphaNumericAndHyphenRegex) -> "Pre-release part '$part' contains an invalid character."
+                    else -> null
+                }
+
+                error?.let { throw VersionFormatException("$error ($preReleaseString)") } ?: continue
+            }
+
+            return parts
+        }
+
     }
 
     override fun compareTo(other: PreRelease): Int {
+        fun compareParts(part1: String, part2: String): Int {
+            val firstPart = part1.toIntOrNull()
+            val secondPart = part2.toIntOrNull()
+
+            return when {
+                firstPart != null && secondPart == null -> -1
+                firstPart == null && secondPart != null -> 1
+                firstPart != null && secondPart != null -> firstPart.compareTo(secondPart)
+                else -> part1.compareTo(part2)
+            }
+        }
+
         val thisSize = parts.size
         val otherSize = other.parts.size
 
@@ -55,65 +82,15 @@ internal class PreRelease private constructor(private val parts: List<String>) :
         return thisSize.compareTo(otherSize)
     }
 
-    override fun equals(other: Any?): Boolean {
-        val preRelease = other as? PreRelease
-        return when {
-            preRelease == null -> false
-            compareTo(preRelease) == 0 -> true
-            else -> false
-        }
+    override fun equals(other: Any?): Boolean = when {
+        this === other -> true
+        other is PreRelease -> parts == other.parts
+        else -> false
     }
 
-    override fun hashCode(): Int {
-        return toString().hashCode()
-    }
-
+    override fun hashCode(): Int = toString().hashCode()
     override fun toString(): String = parts.joinToString(".")
 
-    private fun compareParts(part1: String, part2: String): Int {
-        val firstPart = part1.toIntOrNull()
-        val secondPart = part2.toIntOrNull()
+    fun toSmallestLargerVersion(): PreRelease = PreRelease(parts + "0")
 
-        return when {
-            firstPart != null && secondPart == null -> -1
-            firstPart == null && secondPart != null -> 1
-            firstPart != null && secondPart != null -> firstPart.compareTo(secondPart)
-            else -> part1.compareTo(part2)
-        }
-    }
-
-    companion object {
-        private const val DEFAULT_INIT_PART = "0"
-        private val onlyNumberRegex: Regex = Patterns.ONLY_NUMBER_REGEX.toRegex()
-        private val onlyAlphaNumericAndHyphenRegex: Regex = Patterns.ONLY_ALPHANUMERIC_OR_HYPHEN_REGEX.toRegex()
-        val default: PreRelease =
-            PreRelease(listOf(DEFAULT_INIT_PART))
-
-        operator fun invoke(preReleaseString: String): PreRelease =
-            PreRelease(
-                validate(preReleaseString)
-            )
-
-        private fun validate(preReleaseString: String): List<String> {
-            if (preReleaseString.isBlank()) {
-                return listOf(DEFAULT_INIT_PART)
-            }
-
-            val parts = preReleaseString.trim().split('.')
-            for (part in parts) {
-                val error = when {
-                    part.isBlank() -> "Pre-release identity contains an empty part."
-                    part.matches(onlyNumberRegex) && part.length > 1 && part[0] == '0' ->
-                        "Pre-release part '$part' is numeric but contains a leading zero."
-                    !part.matches(onlyAlphaNumericAndHyphenRegex) ->
-                        "Pre-release part '$part' contains an invalid character."
-                    else -> null
-                }
-
-                error?.let { throw VersionFormatException("$error ($preReleaseString)") } ?: continue
-            }
-
-            return parts
-        }
-    }
 }

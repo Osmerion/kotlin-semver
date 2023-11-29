@@ -20,29 +20,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.internal.constraints
+package com.osmerion.kotlin.semver
 
-import com.osmerion.kotlin.semver.SemanticVersion
+/**
+ * Formats for version constraint strings.
+ *
+ * @since   0.1.0
+ */
+public enum class ConstraintFormat {
+    /**
+     * The version constraint format of Maven.
+     *
+     * Refer to [Maven](https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html)
+     * for more information.
+     *
+     * @since   0.1.0
+     */
+    MAVEN,
 
-internal class VersionComparator(val op: Op, val reference: SemanticVersion) {
+    /**
+     * The version constraint format of NPM.
+     *
+     * Refer to [node-semver](https://github.com/npm/node-semver) for more information.
+     *
+     * @since   0.1.0
+     */
+    NPM,
 
-    override fun equals(other: Any?): Boolean = when (other) {
-        this -> true
-        is VersionComparator -> op == other.op && reference == other.reference
-        else -> false
-    }
-
-    override fun hashCode(): Int {
-        var hash = op.hashCode()
-        hash *= 31 + reference.hashCode()
-        return hash
-    }
-
-    enum class Op {
-        LT,
-        GTE,
-        EQ,
-        NEQ
-    }
-
+    /**
+     * A custom version constraint format.
+     *
+     * TODO doc
+     *
+     * @since   0.1.0
+     */
+    @ExperimentalConstraintFormat
+    OSMERION
 }

@@ -70,7 +70,7 @@ public class SemanticVersion private constructor(
      * @since   0.1.0
      */
     public val patch: Int,
-    private val parsedPreRelease: PreRelease? = null,
+    internal val parsedPreRelease: PreRelease? = null,
     /**
      * The build metadata of the version.
      *
@@ -99,7 +99,7 @@ public class SemanticVersion private constructor(
         patch: Int = 0,
         preRelease: String? = null,
         buildMetadata: String? = null
-    ) : this(major, minor, patch, preRelease?.let(PreRelease.Companion::invoke), buildMetadata)
+    ) : this(major, minor, patch, preRelease?.let(::PreRelease), buildMetadata)
 
     init {
         when {
@@ -117,17 +117,17 @@ public class SemanticVersion private constructor(
     public companion object {
 
         private val versionRegex: Regex by lazy { Patterns.VERSION_REGEX.toRegex() }
-        private val looseVersionRegex: Regex by lazy { Patterns.LOOSE_VERSION_REGEX.toRegex() }
+        private val looseVersionRegex: Regex by lazy { Patterns.PREFIXED_LOOSE_VERSION_REGEX.toRegex() }
 
         /**
-         * Parses the given [string] argument as a [SemanticVersion]. If the string does not represent a semantic
+         * Parses the given [source] argument as a [SemanticVersion]. If the string does not represent a semantic
          * version, a [VersionFormatException] is thrown.
          *
          * By default, this function only accepts version strings that conform to the Semantic Versioning Specification
          * 2.0.0. Thus, partial versions (e.g. `1.0` or `1`) and versions with `v` prefix are considered invalid. This
          * _strict_ behavior can be turned off by setting [strict] to false.
          *
-         * @param string    the string to parse
+         * @param source    the source to parse
          * @param strict    whether to strictly match spec-compliant version strings only
          *
          * @return  the semantic version represented by the argument
@@ -140,9 +140,9 @@ public class SemanticVersion private constructor(
         @JvmOverloads
         @JvmStatic
         @Suppress("MagicNumber")
-        public fun parse(string: String, strict: Boolean = true): SemanticVersion {
+        public fun parse(source: CharSequence, strict: Boolean = true): SemanticVersion {
             val regex = if (strict) versionRegex else looseVersionRegex
-            val result = regex.matchEntire(string) ?: throw VersionFormatException("Invalid version string: $string")
+            val result = regex.matchEntire(source) ?: throw VersionFormatException("Invalid version string: $source")
             val major = result.groupValues[1].toIntOrNull()
             val minor = result.groupValues[2].toIntOrNull()
             val patch = result.groupValues[3].toIntOrNull()
@@ -152,19 +152,19 @@ public class SemanticVersion private constructor(
             return when {
                 strict && major != null && minor != null && patch != null -> SemanticVersion(major, minor, patch, preRelease, buildMetadata)
                 !strict && major != null -> SemanticVersion(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
-                else -> throw VersionFormatException("Invalid version string: $string")
+                else -> throw VersionFormatException("Invalid version string: $source")
             }
         }
 
         /**
-         * Parses the given [string] argument as a [SemanticVersion]. If the string does not represent a semantic
+         * Parses the given [source] argument as a [SemanticVersion]. If the string does not represent a semantic
          * version, `null` is returned instead.
          *
          * By default, this function only accepts version strings that conform to the Semantic Versioning Specification
          * 2.0.0. Thus, partial versions (e.g. `1.0` or `1`) and versions with `v` prefix are considered invalid. This
          * _strict_ behavior can be turned off by setting [strict] to false.
          *
-         * @param string    the string to parse
+         * @param source    the source to parse
          * @param strict    whether to strictly match spec-compliant version strings only
          *
          * @return  the semantic version represented by the argument, or `null`
@@ -176,8 +176,8 @@ public class SemanticVersion private constructor(
          */
         @JvmOverloads
         @JvmStatic
-        public fun tryParse(string: String, strict: Boolean = true): SemanticVersion? = try {
-            parse(string, strict)
+        public fun tryParse(source: CharSequence, strict: Boolean = true): SemanticVersion? = try {
+            parse(source, strict)
         } catch (_: VersionFormatException) {
             null
         }
@@ -391,7 +391,7 @@ public class SemanticVersion private constructor(
         major = major + 1,
         minor = 0,
         patch = 0,
-        parsedPreRelease = preRelease?.let(PreRelease.Companion::invoke)
+        parsedPreRelease = preRelease?.let(::PreRelease)
     )
 
     /**
@@ -414,7 +414,7 @@ public class SemanticVersion private constructor(
         major = major,
         minor = minor + 1,
         patch = 0,
-        parsedPreRelease = preRelease?.let(PreRelease.Companion::invoke)
+        parsedPreRelease = preRelease?.let(::PreRelease)
     )
 
     /**
@@ -441,7 +441,7 @@ public class SemanticVersion private constructor(
         major = major,
         minor = minor,
         patch = if (parsedPreRelease == null || preRelease != null) patch + 1 else patch,
-        parsedPreRelease = preRelease?.let(PreRelease.Companion::invoke)
+        parsedPreRelease = preRelease?.let(::PreRelease)
     )
 
     /**
@@ -483,7 +483,7 @@ public class SemanticVersion private constructor(
     /**
      * Determines whether this version satisfies the given [constraint].
      *
-     * @param constraint    the [constraint][SemanticVersionConstraint] to check
+     * @param constraint    the [constraint][VersionConstraint] to check
      *
      * @return  whether the given constraint is satisfied by this version
      *
@@ -491,13 +491,13 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun satisfies(constraint: SemanticVersionConstraint): Boolean =
+    public infix fun satisfies(constraint: VersionConstraint): Boolean =
         constraint isSatisfiedBy this
 
     /**
      * Determines whether this version satisfies all the given [constraints].
      *
-     * @param constraints   the  [constraints][SemanticVersionConstraint] to check
+     * @param constraints   the  [constraints][VersionConstraint] to check
      *
      * @return  whether all given constraints are satisfied by this version
      *
@@ -505,13 +505,13 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun satisfiesAll(constraints: Iterable<SemanticVersionConstraint>): Boolean =
+    public infix fun satisfiesAll(constraints: Iterable<VersionConstraint>): Boolean =
         constraints.all { constraint -> constraint isSatisfiedBy this }
 
     /**
      * Determines whether this version satisfies any of the given [constraints].
      *
-     * @param constraints   the  [constraints][SemanticVersionConstraint] to check
+     * @param constraints   the  [constraints][VersionConstraint] to check
      *
      * @return  whether any of the given constraints is satisfied by this version
      *
@@ -519,7 +519,19 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun satisfiesAny(constraints: Iterable<SemanticVersionConstraint>): Boolean =
+    public infix fun satisfiesAny(constraints: Iterable<VersionConstraint>): Boolean =
         constraints.any { constraint -> constraint isSatisfiedBy this }
+
+    internal fun toSmallestLargerVersion(): SemanticVersion {
+        var patch = patch
+        val preRelease = if (parsedPreRelease != null) {
+            parsedPreRelease.toSmallestLargerVersion()
+        } else {
+            patch += 1
+            PreRelease.MIN
+        }
+
+        return SemanticVersion(major, minor, patch, preRelease)
+    }
 
 }

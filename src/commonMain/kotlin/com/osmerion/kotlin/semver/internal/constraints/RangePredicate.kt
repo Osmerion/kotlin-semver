@@ -22,27 +22,38 @@
  */
 package com.osmerion.kotlin.semver.internal.constraints
 
+import com.osmerion.kotlin.semver.ConstraintFormatException
 import com.osmerion.kotlin.semver.SemanticVersion
 
-internal class VersionComparator(val op: Op, val reference: SemanticVersion) {
+internal abstract class RangePredicate(
+    private val startInclusive: SemanticVersion?,
+    private val endExclusive: SemanticVersion?
+) : VersionPredicate {
 
-    override fun equals(other: Any?): Boolean = when (other) {
-        this -> true
-        is VersionComparator -> op == other.op && reference == other.reference
+    init {
+        if (startInclusive != null && endExclusive != null && startInclusive >= endExclusive) {
+            @Suppress("LeakingThis")
+            throw ConstraintFormatException("Range predicate is invalid: $this")
+        }
+    }
+
+    override fun equals(other: Any?): Boolean = when {
+        this === other -> true
+        other is RangePredicate -> startInclusive == other.startInclusive
+            && endExclusive == other.endExclusive
         else -> false
     }
 
     override fun hashCode(): Int {
-        var hash = op.hashCode()
-        hash *= 31 + reference.hashCode()
+        var hash = startInclusive.hashCode()
+        hash *= 31 + endExclusive.hashCode()
         return hash
     }
 
-    enum class Op {
-        LT,
-        GTE,
-        EQ,
-        NEQ
-    }
+    override val comparators: Set<VersionComparator>
+        get() = buildSet {
+            if (startInclusive != null) add(VersionComparator(VersionComparator.Op.GTE, startInclusive))
+            if (endExclusive != null) add(VersionComparator(VersionComparator.Op.LT, endExclusive))
+        }
 
 }

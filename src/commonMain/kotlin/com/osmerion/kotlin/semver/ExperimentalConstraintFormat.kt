@@ -20,29 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.internal.constraints
+package com.osmerion.kotlin.semver
 
-import com.osmerion.kotlin.semver.SemanticVersion
-
-internal class VersionComparator(val op: Op, val reference: SemanticVersion) {
-
-    override fun equals(other: Any?): Boolean = when (other) {
-        this -> true
-        is VersionComparator -> op == other.op && reference == other.reference
-        else -> false
-    }
-
-    override fun hashCode(): Int {
-        var hash = op.hashCode()
-        hash *= 31 + reference.hashCode()
-        return hash
-    }
-
-    enum class Op {
-        LT,
-        GTE,
-        EQ,
-        NEQ
-    }
-
-}
+/**
+ * TODO doc
+ *
+ * @since   0.1.0
+ */
+@RequiresOptIn
+public annotation class ExperimentalConstraintFormat

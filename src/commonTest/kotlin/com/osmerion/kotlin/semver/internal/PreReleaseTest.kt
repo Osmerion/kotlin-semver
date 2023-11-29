@@ -20,19 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.internal
 
-import com.osmerion.kotlin.semver.internal.PreRelease
+import com.osmerion.kotlin.semver.VersionFormatException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 
-class PreReleaseTests {
+class PreReleaseTest {
 
     @Test
-    fun testInvalidVersions() {
+    fun testConstructorValidation() {
         assertFailsWith<VersionFormatException> { PreRelease(".alpha") }
         assertFailsWith<VersionFormatException> { PreRelease("alpha.") }
         assertFailsWith<VersionFormatException> { PreRelease(".alpha.") }
@@ -43,26 +43,6 @@ class PreReleaseTests {
     }
 
     @Test
-    fun testIncrement() {
-        assertEquals("alpha-3.Beta.0", PreRelease("alpha-3.Beta").increment().toString())
-        assertEquals("alpha-3.14.Beta", PreRelease("alpha-3.13.Beta").increment().toString())
-        assertEquals("alpha.5.Beta.8", PreRelease("alpha.5.Beta.7").increment().toString())
-    }
-
-    @Test
-    fun testEquality() {
-        assertEquals("alpha-3.Beta.0", PreRelease("alpha-3.Beta.0").toString())
-    }
-
-    @Test
-    fun testIdentity() {
-        assertEquals("alpha-3", PreRelease("alpha-3.beta.0").identity)
-        assertEquals("beta", PreRelease("beta.0").identity)
-        assertEquals("3", PreRelease("3.Beta.0").identity)
-        assertEquals("3", PreRelease("3.0").identity)
-    }
-
-    @Test
     fun testEquals() {
         assertEquals(PreRelease("alpha-3.Beta.0"), PreRelease("alpha-3.Beta.0"))
         assertNotEquals(PreRelease("alpha-3.Beta.0"), PreRelease("alpha-3.Beta.1"))
@@ -70,8 +50,9 @@ class PreReleaseTests {
     }
 
     @Test
-    fun testDefault() {
-        assertEquals("0", PreRelease.default.toString())
+    fun testToSmallestLargerVersion() {
+        assertEquals("alpha.0", PreRelease("alpha").toSmallestLargerVersion().toString())
+        assertEquals("alpha-0.0", PreRelease("alpha-0").toSmallestLargerVersion().toString())
     }
 
 }

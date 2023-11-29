@@ -22,7 +22,8 @@
  */
 package com.osmerion.kotlin.semver.serializers
 
-import com.osmerion.kotlin.semver.SemanticVersionConstraint
+import com.osmerion.kotlin.semver.ConstraintFormat
+import com.osmerion.kotlin.semver.VersionConstraint
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -31,16 +32,34 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 /**
- * Built-in [kotlinx.serialization] serializer that encodes and decodes [SemanticVersionConstraint] as its string
+ * Built-in [kotlinx.serialization] serializer that encodes and decodes [VersionConstraint] as its string
  * representation.
+ *
+ * This serializer expects [NPM][ConstraintFormat.NPM]-style version constraints during deserialization.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.serialization
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.deserialization
  *
  * @since   0.1.0
  */
-public object ConstraintSerializer : KSerializer<SemanticVersionConstraint> {
-    override fun deserialize(decoder: Decoder): SemanticVersionConstraint = SemanticVersionConstraint.parse(decoder.decodeString())
-    override fun serialize(encoder: Encoder, value: SemanticVersionConstraint): Unit = encoder.encodeString(value.toString())
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SemanticVersionConstraint", PrimitiveKind.STRING)
+public object DefaultConstraintSerializer : AbstractConstraintSerializer(ConstraintFormat.NPM)
+
+/**
+ * Built-in [kotlinx.serialization] serializer that encodes and decodes [VersionConstraint] as its string
+ * representation.
+ *
+ * @param format    the format to expect during deserialization
+ *
+ * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.serialization
+ * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.deserialization
+ *
+ * @since   0.1.0
+ */
+public open class AbstractConstraintSerializer(private val format: ConstraintFormat) : KSerializer<VersionConstraint> {
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("VersionConstraint", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): VersionConstraint = VersionConstraint.parse(decoder.decodeString(), format)
+    override fun serialize(encoder: Encoder, value: VersionConstraint): Unit = encoder.encodeString(value.toString())
+
 }
