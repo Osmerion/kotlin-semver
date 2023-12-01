@@ -132,6 +132,13 @@ tasks {
             listOf("--patch-module", "com.osmerion.kotlin.semver=${files.asPath}")
         }
     }
+
+    withType<Jar>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+
+        includeEmptyDirs = false
+    }
 }
 
 publishing {
