@@ -39,7 +39,7 @@ jobs:
       - name: Tar files
         run: tar -cvf ${{ env.WORKSPACE_ARCHIVE }} .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-${{ env.WORKSPACE_ARTIFACT }}
           path: ${{ env.WORKSPACE_ARCHIVE }}
