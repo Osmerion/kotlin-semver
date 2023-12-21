@@ -20,8 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsExec
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -45,16 +50,18 @@ java {
 
 kotlin {
     explicitApi()
+    applyDefaultHierarchyTemplate()
 
     targets.configureEach {
         compilations.configureEach {
-            compilerOptions.options.apiVersion = KotlinVersion.KOTLIN_1_9
-            compilerOptions.options.languageVersion = KotlinVersion.KOTLIN_1_9
+            compilerOptions.configure {
+                apiVersion = KotlinVersion.KOTLIN_1_9
+                languageVersion = KotlinVersion.KOTLIN_1_9
+            }
         }
     }
 
-
-    js(IR) {
+    js {
         browser()
         nodejs()
     }
@@ -90,6 +97,30 @@ kotlin {
 
     tvosSimulatorArm64()
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser {
+            testTask {
+                enabled = !Os.isFamily(Os.FAMILY_MAC)
+            }
+        }
+
+        nodejs {
+            testTask {
+                enabled = !Os.isFamily(Os.FAMILY_WINDOWS)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmWasi {
+        nodejs {
+            testTask {
+                enabled = !Os.isFamily(Os.FAMILY_WINDOWS)
+            }
+        }
+    }
+
     watchosArm32()
     watchosArm64()
     watchosX64()
@@ -119,6 +150,14 @@ kotlin {
     }
 }
 
+configure<NodeJsRootExtension> {
+    // We need canary builds of Node + V8 but there are none for Windows.
+    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+        nodeVersion = "21.0.0-v8-canary202309143a48826a08"
+        nodeDownloadBaseUrl = "https://nodejs.org/download/v8-canary"
+    }
+}
+
 tasks {
     withType<JavaCompile>().configureEach {
         options.javaModuleVersion = "$version"
@@ -138,6 +177,10 @@ tasks {
         isReproducibleFileOrder = true
 
         includeEmptyDirs = false
+    }
+
+    withType<KotlinNpmInstallTask>().configureEach {
+        args += "--ignore-engines"
     }
 }
 
