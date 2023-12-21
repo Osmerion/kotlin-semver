@@ -49,7 +49,6 @@ publishing {
             name = project.name
             description = "A Kotlin Multiplatform implementation of the Semantic Versioning 2.0.0 specification with support for parsing, comparing and incrementing semantic versions accompanied by support for version constraints."
             url = "https://github.com/Osmerion/kotlin-semver"
-            packaging = "jar"
 
             licenses {
                 license {
