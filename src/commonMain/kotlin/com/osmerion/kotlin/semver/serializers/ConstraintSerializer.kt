@@ -42,7 +42,7 @@ import kotlinx.serialization.encoding.Encoder
  *
  * @since   0.1.0
  */
-public object DefaultConstraintSerializer : AbstractConstraintSerializer(ConstraintFormat.NPM)
+public object DefaultConstraintSerializer : ConstraintSerializer(ConstraintFormat.NPM)
 
 /**
  * Built-in [kotlinx.serialization] serializer that encodes and decodes [VersionConstraint] as its string
@@ -55,7 +55,7 @@ public object DefaultConstraintSerializer : AbstractConstraintSerializer(Constra
  *
  * @since   0.1.0
  */
-public open class AbstractConstraintSerializer(private val format: ConstraintFormat) : KSerializer<VersionConstraint> {
+public open class ConstraintSerializer(private val format: ConstraintFormat) : KSerializer<VersionConstraint> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("VersionConstraint", PrimitiveKind.STRING)
 
