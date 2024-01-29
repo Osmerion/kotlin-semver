@@ -70,7 +70,9 @@ kotlin {
         withJava()
 
         compilations.configureEach {
-            compilerOptions.options.jvmTarget = JvmTarget.JVM_11
+            compilerOptions.configure {
+                jvmTarget = JvmTarget.JVM_11
+            }
         }
     }
 
