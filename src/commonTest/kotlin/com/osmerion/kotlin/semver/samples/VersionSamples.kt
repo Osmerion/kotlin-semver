@@ -23,7 +23,7 @@
 package com.osmerion.kotlin.semver.samples
 
 import com.osmerion.kotlin.semver.SemanticVersion
-import com.osmerion.kotlin.semver.SemanticVersionConstraint
+import com.osmerion.kotlin.semver.VersionConstraint
 import com.osmerion.kotlin.semver.serializers.LooseVersionSerializer
 import com.osmerion.kotlin.semver.serializers.VersionSerializer
 import kotlinx.serialization.json.Json
@@ -133,19 +133,19 @@ class VersionSamples {
     }
 
     fun satisfies() {
-        val constraint = SemanticVersionConstraint.parse(">=1.1.0")
+        val constraint = VersionConstraint.parse(">=1.1.0")
         val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies $constraint? ${version satisfies constraint}")
     }
 
     fun satisfiesAll() {
-        val constraints = listOf(">=1.1.0", "~1").map { SemanticVersionConstraint.parse(it) }
+        val constraints = listOf(">=1.1.0", "~1").map { VersionConstraint.parse(it) }
         val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" and ")}? ${version satisfiesAll constraints}")
     }
 
     fun satisfiesAny() {
-        val constraints = listOf(">=1.1.0", "~1").map { SemanticVersionConstraint.parse(it) }
+        val constraints = listOf(">=1.1.0", "~1").map { VersionConstraint.parse(it) }
         val version = SemanticVersion.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" or ")}? ${version satisfiesAny constraints}")
     }

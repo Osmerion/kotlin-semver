@@ -20,9 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.serializers
 
-import com.osmerion.kotlin.semver.serializers.LooseVersionSerializer
+import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.VersionConstraint
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -41,7 +42,7 @@ class SerializationTests {
     )
 
     @Serializable
-    data class ToConstraintSerialize(val constraint: SemanticVersionConstraint)
+    data class ToConstraintSerialize(val constraint: VersionConstraint)
 
     @Test
     fun testVersionSerialization() {
@@ -83,19 +84,19 @@ class SerializationTests {
 
     @Test
     fun testConstraintSerialization() {
-        val encoded = Json.encodeToString(SemanticVersionConstraint.parse("> 1.2.3"))
+        val encoded = Json.encodeToString(VersionConstraint.parse("> 1.2.3"))
         assertEquals("\">1.2.3\"", encoded)
     }
 
     @Test
     fun testConstraintDeserialization() {
-        val decoded = Json.decodeFromString<SemanticVersionConstraint>("\"> 1.2.3\"")
-        assertEquals(SemanticVersionConstraint.parse("> 1.2.3"), decoded)
+        val decoded = Json.decodeFromString<VersionConstraint>("\"> 1.2.3\"")
+        assertEquals(VersionConstraint.parse("> 1.2.3"), decoded)
     }
 
     @Test
     fun testMemberConstraintSerialization() {
-        val obj = ToConstraintSerialize(constraint = SemanticVersionConstraint.parse("> 1.2.3"))
+        val obj = ToConstraintSerialize(constraint = VersionConstraint.parse("> 1.2.3"))
         val encoded = Json.encodeToString(obj)
         assertEquals("{\"constraint\":\">1.2.3\"}", encoded)
     }
@@ -103,7 +104,7 @@ class SerializationTests {
     @Test
     fun testMemberConstraintDeserialization() {
         val decoded = Json.decodeFromString<ToConstraintSerialize>("{\"constraint\":\"> 1.2.3\"}")
-        assertEquals(SemanticVersionConstraint.parse("> 1.2.3"), decoded.constraint)
+        assertEquals(VersionConstraint.parse("> 1.2.3"), decoded.constraint)
     }
 
 }

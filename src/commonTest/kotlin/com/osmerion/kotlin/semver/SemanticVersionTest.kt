@@ -30,7 +30,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class VersionTests {
+class SemanticVersionTest {
 
     @Test
     fun testInvalidVersions() {

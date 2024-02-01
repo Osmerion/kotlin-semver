@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2023-2026 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.constraints
+
+import com.osmerion.kotlin.semver.SemanticVersion
 
 /**
- * TODO doc
+ * A predicate is a conjunction of [comparators][VersionComparator].
  *
  * @since   0.1.0
  */
-@RequiresOptIn
-public annotation class ExperimentalConstraintFormat
+@ExperimentalConstraintApi
+public interface VersionPredicate {
+
+    /**
+     * A set of comparators that all have to be satisfied in order to for a [version][SemanticVersion] to pass the test
+     * against this predicate.
+     *
+     * @since   0.1.0
+     */
+    public val comparators: Set<VersionComparator>
+
+}

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2023-2026 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.internal.constraints
+package com.osmerion.kotlin.semver.constraints
 
-internal interface VersionPredicate {
-
-    val comparators: Set<VersionComparator>
-
-}
+/**
+ * Marks APIs required for defining custom [constraint formats][com.osmerion.kotlin.semver.ConstraintFormat] as
+ * experimental.
+ *
+ * These APIs are not subject to the regular compatibility guarantees of kotlin-semver and may be changed at any time
+ * without prior notice.
+ *
+ * @since   0.1.0
+ */
+@RequiresOptIn(message = "The APIs for defining custom version constraint formats are experimental and require explicit opt-in.")
+public annotation class ExperimentalConstraintApi

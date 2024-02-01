@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2019-2025 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,43 +19,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver
+package com.osmerion.kotlin.semver.constraints.npm
 
+import com.osmerion.kotlin.semver.ConstraintFormat
+import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
+import com.osmerion.kotlin.semver.constraints.npm.internal.Options
+import com.osmerion.kotlin.semver.constraints.npm.internal.parseRange
 
 /**
- * Formats for version constraint strings.
+ * The version constraint format of NPM.
  *
- * Implementing third-party constraint formats is experimentally supported.
+ * Refer to [node-semver](https://github.com/npm/node-semver) for more information.
  *
  * @since   0.1.0
  */
-@SubclassOptInRequired(ExperimentalConstraintApi::class)
-public interface ConstraintFormat {
+@OptIn(ExperimentalConstraintApi::class)
+public sealed class NpmConstraintFormat : ConstraintFormat {
 
-    /**
-     * Parses the given [source] into a pair of predicates and an optional preferred version.
-     *
-     * @param source    the source to parse
-     *
-     * @return  a list of predicates paired with the preferred version or `null`
-     *
-     * @since   0.1.0
-     */
-    @ExperimentalConstraintApi
-    public fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?>
+  public companion object Default : NpmConstraintFormat()
 
-    /**
-     * Converts the list of predicates into the string representation.
-     *
-     * @param predicates    the predicates that make up the constraint
-     *
-     * @return  the string representation of the constraint
-     *
-     * @since   0.1.0
-     */
-    @ExperimentalConstraintApi
-    public fun toString(predicates: List<List<VersionPredicate>>): String
+  @ExperimentalConstraintApi
+  override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?> {
+    val source = source.replace("\\s+".toRegex(), " ")
+
+    val predicates = source.split("||")
+      .map { parseRange(it.trim(), Options(loose = false, includePrerelease = true)) }
+
+    return predicates to null
+  }
+
+  @ExperimentalConstraintApi
+  override fun toString(predicates: List<List<VersionPredicate>>): String =
+    predicates.joinToString(separator = "||") { it.joinToString(separator = " ") }
 
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023 Leon Linhart
+ * Copyright (c) 2023-2026 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.internal.constraints
+package com.osmerion.kotlin.semver.constraints
 
 import com.osmerion.kotlin.semver.SemanticVersion
 
-internal class VersionComparator(val op: Op, val reference: SemanticVersion) {
+/**
+ * A comparator defines a test for a version through an [operation][op] and a [reference].
+ *
+ * @since   0.1.0
+ */
+public class VersionComparator(public val op: Op, public val reference: SemanticVersion) {
 
-    override fun equals(other: Any?): Boolean = when (other) {
-        this -> true
-        is VersionComparator -> op == other.op && reference == other.reference
+    override fun equals(other: Any?): Boolean = when {
+        this === other -> true
+        other is VersionComparator -> op == other.op && reference == other.reference
         else -> false
     }
 
@@ -38,7 +43,12 @@ internal class VersionComparator(val op: Op, val reference: SemanticVersion) {
         return hash
     }
 
-    enum class Op {
+    /**
+     * A comparison operator.
+     *
+     * @since   0.1.0
+     */
+    public enum class Op {
         LT,
         GTE,
         EQ,

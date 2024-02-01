@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019-2023 Leon Linhart
+ * Copyright (c) 2022 Peter Csajtai
+ * Copyright (c) 2023-2026 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,12 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.internal.constraints.formats.maven
+@file:OptIn(ExperimentalConstraintApi::class)
+package com.osmerion.kotlin.semver.constraints.maven.internal
 
 import com.osmerion.kotlin.semver.ConstraintFormatException
-import com.osmerion.kotlin.semver.internal.constraints.*
+import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
+import com.osmerion.kotlin.semver.constraints.RangePredicate
 
-internal class ExactVersionMatch(private val descriptor: VersionDescriptor) : RangePredicate(
+internal class ExactVersionMatch(private val descriptor: MavenVersionDescriptor) : RangePredicate(
     startInclusive = descriptor.toVersion(),
     endExclusive = descriptor.toVersion(increment = true)
 ) {
@@ -32,9 +35,9 @@ internal class ExactVersionMatch(private val descriptor: VersionDescriptor) : Ra
 }
 
 internal class IntervalVersionRange private constructor(
-    private val lowerBound: VersionDescriptor?,
+    private val lowerBound: MavenVersionDescriptor?,
     private val lowerBoundInclusive: Boolean,
-    private val upperBound: VersionDescriptor?,
+    private val upperBound: MavenVersionDescriptor?,
     private val upperBoundInclusive: Boolean
 ) : RangePredicate(
     startInclusive = lowerBound.toVersion(increment = !lowerBoundInclusive),
@@ -44,9 +47,9 @@ internal class IntervalVersionRange private constructor(
     companion object {
 
         operator fun invoke(
-            lowerBound: VersionDescriptor?,
+            lowerBound: MavenVersionDescriptor?,
             lowerBoundInclusive: Boolean,
-            upperBound: VersionDescriptor?,
+            upperBound: MavenVersionDescriptor?,
             upperBoundInclusive: Boolean
         ): IntervalVersionRange {
             if (lowerBound == null && lowerBoundInclusive) throw ConstraintFormatException("Invalid interval with unspecified inclusive lower bound")
@@ -67,7 +70,7 @@ internal class IntervalVersionRange private constructor(
 
 }
 
-internal class MinimumVersion(private val descriptor: VersionDescriptor) : RangePredicate(
+internal class MinimumVersion(private val descriptor: MavenVersionDescriptor) : RangePredicate(
     startInclusive = descriptor.toVersion(),
     endExclusive = null
 ) {

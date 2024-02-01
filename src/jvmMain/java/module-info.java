@@ -28,6 +28,9 @@ module com.osmerion.kotlin.semver {
     requires kotlin.stdlib;
 
     exports com.osmerion.kotlin.semver;
+    exports com.osmerion.kotlin.semver.constraints;
+    exports com.osmerion.kotlin.semver.constraints.maven;
+    exports com.osmerion.kotlin.semver.constraints.npm;
     exports com.osmerion.kotlin.semver.serializers;
 
 }

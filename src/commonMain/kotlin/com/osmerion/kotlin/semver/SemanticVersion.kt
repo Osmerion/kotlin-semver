@@ -28,6 +28,7 @@ import com.osmerion.kotlin.semver.serializers.VersionSerializer
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmSynthetic
 
 /**
  * A semantic version according to the [Semantic Versioning 2.0.0 specification](https://semver.org/spec/v2.0.0.html).
@@ -522,6 +523,7 @@ public class SemanticVersion private constructor(
     public infix fun satisfiesAny(constraints: Iterable<VersionConstraint>): Boolean =
         constraints.any { constraint -> constraint isSatisfiedBy this }
 
+    @JvmSynthetic
     internal fun toSmallestLargerVersion(): SemanticVersion {
         var patch = patch
         val preRelease = if (parsedPreRelease != null) {

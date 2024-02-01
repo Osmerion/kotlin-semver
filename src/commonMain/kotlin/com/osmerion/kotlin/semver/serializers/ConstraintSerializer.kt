@@ -24,6 +24,7 @@ package com.osmerion.kotlin.semver.serializers
 
 import com.osmerion.kotlin.semver.ConstraintFormat
 import com.osmerion.kotlin.semver.VersionConstraint
+import com.osmerion.kotlin.semver.constraints.npm.NpmConstraintFormat
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -35,14 +36,14 @@ import kotlinx.serialization.encoding.Encoder
  * Built-in [kotlinx.serialization] serializer that encodes and decodes [VersionConstraint] as its string
  * representation.
  *
- * This serializer expects [NPM][ConstraintFormat.NPM]-style version constraints during deserialization.
+ * This serializer expects [NPM][NpmConstraintFormat]-style version constraints during deserialization.
  *
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.serialization
  * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.deserialization
  *
  * @since   0.1.0
  */
-public object DefaultConstraintSerializer : ConstraintSerializer(ConstraintFormat.NPM)
+public object DefaultConstraintSerializer : ConstraintSerializer(NpmConstraintFormat)
 
 /**
  * Built-in [kotlinx.serialization] serializer that encodes and decodes [VersionConstraint] as its string

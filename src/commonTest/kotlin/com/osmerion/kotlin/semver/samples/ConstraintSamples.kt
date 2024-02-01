@@ -23,8 +23,8 @@
 package com.osmerion.kotlin.semver.samples
 
 import com.osmerion.kotlin.semver.SemanticVersion
-import com.osmerion.kotlin.semver.SemanticVersionConstraint
-import com.osmerion.kotlin.semver.serializers.ConstraintSerializer
+import com.osmerion.kotlin.semver.VersionConstraint
+import com.osmerion.kotlin.semver.serializers.DefaultConstraintSerializer
 import kotlinx.serialization.json.Json
 
 class ConstraintSamples {
@@ -32,7 +32,6 @@ class ConstraintSamples {
     fun constraint() {
         val constraints = listOf(
             "1.0.0",
-            "!=1.0.0",
             "~1.0",
             "^1.x",
             "1.1.0 - 1.2.*",
@@ -42,46 +41,46 @@ class ConstraintSamples {
             ">=v2.3"
         )
 
-        constraints.forEach { println("[$it]: [${SemanticVersionConstraint.parse(it)}]") }
+        constraints.forEach { println("[$it]: [${VersionConstraint.parse(it)}]") }
     }
 
     fun parse() {
-        print(SemanticVersionConstraint.parse(">=1.0.0 || <5.x"))
+        print(VersionConstraint.parse(">=1.0.0 || <5.x"))
     }
 
     fun tryParse() {
-        println(SemanticVersionConstraint.tryParse(">=1.2"))
-        println(SemanticVersionConstraint.tryParse(">=1.2a"))
+        println(VersionConstraint.tryParse(">=1.2"))
+        println(VersionConstraint.tryParse(">=1.2a"))
     }
 
     fun exception() {
-        SemanticVersionConstraint.parse(">=1.2a|^3")
+        VersionConstraint.parse(">=1.2a|^3")
     }
 
     fun isSatisfiedBy() {
-        val constraint = SemanticVersionConstraint.parse(">=1.1.0")
+        val constraint = VersionConstraint.parse(">=1.1.0")
         val version = SemanticVersion.parse("1.1.0")
         print("$constraint satisfiedBy $version? ${constraint isSatisfiedBy version}")
     }
 
     fun isSatisfiedByAll() {
-        val constraint = SemanticVersionConstraint.parse(">=1.1.0")
+        val constraint = VersionConstraint.parse(">=1.1.0")
         val versions = listOf("1.1.0", "1.2.0").map(SemanticVersion::parse)
         print("$constraint satisfied by ${versions.joinToString(" and ")}? ${constraint isSatisfiedByAll versions}")
     }
 
     fun isSatisfiedByAny() {
-        val constraint = SemanticVersionConstraint.parse(">=1.1.0")
+        val constraint = VersionConstraint.parse(">=1.1.0")
         val versions = listOf("1.1.0", "1.0.0").map(SemanticVersion::parse)
         print("$constraint satisfied by ${versions.joinToString(" or ")}? ${constraint isSatisfiedByAny versions}")
     }
 
     fun serialization() {
-        print(Json.encodeToString(ConstraintSerializer, SemanticVersionConstraint.parse(">1.2")))
+        print(Json.encodeToString(DefaultConstraintSerializer, VersionConstraint.parse(">1.2")))
     }
 
     fun deserialization() {
-        val decoded = Json.decodeFromString(ConstraintSerializer, "\">1.2\"")
+        val decoded = Json.decodeFromString(DefaultConstraintSerializer, "\">1.2\"")
         print(decoded)
     }
 

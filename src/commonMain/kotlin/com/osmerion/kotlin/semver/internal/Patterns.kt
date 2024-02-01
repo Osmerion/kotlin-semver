@@ -25,7 +25,7 @@ package com.osmerion.kotlin.semver.internal
 internal object Patterns {
 
     // Numeric identifier pattern. (used for parsing major, minor, and patch)
-    private const val NUMERIC = "0|[1-9]\\d*"
+    const val NUMERIC = "0|[1-9]\\d*"
 
     // Alphanumeric or hyphen pattern.
     private const val ALPHANUMERIC_OR_HYPHEN = "[0-9a-zA-Z-]"
@@ -47,20 +47,17 @@ internal object Patterns {
 
     // Pre-release identifier pattern. A hyphen followed by dot-separated
     // numeric or non-numeric pre-release parts.
-    private const val PRE_RELEASE = "(?:-($PRE_RELEASE_PART(?:\\.$PRE_RELEASE_PART)*))"
+
+    /**
+     * A pattern for the pre-release identifier of a semantic version.
+     *
+     * Grammar: `'-' <pre-release-part> ('.' <pre-release-part>)*`
+     */
+    const val PRE_RELEASE = "(?:-($PRE_RELEASE_PART(?:\\.$PRE_RELEASE_PART)*))"
 
     // Build-metadata identifier pattern. A + sign followed by dot-separated
     // alphanumeric build-metadata parts.
     private const val BUILD = "(?:\\+($ALPHANUMERIC_OR_HYPHEN+(?:\\.$ALPHANUMERIC_OR_HYPHEN+)*))"
-
-    // List of allowed operations in a condition.
-    private const val ALLOWED_OPERATORS = "||=|!=|<|<=|=<|>|>=|=>|\\^|~>|~"
-
-    // Numeric identifier pattern for parsing conditions.
-    private const val X_RANGE_NUMERIC = "$NUMERIC|x|X|\\*"
-
-    // X-RANGE version: 1.x | 1.2.* | 1.1.X
-    private const val X_RANGE_VERSION = "($X_RANGE_NUMERIC)(?:\\.($X_RANGE_NUMERIC)(?:\\.($X_RANGE_NUMERIC)(?:$PRE_RELEASE)?$BUILD?)?)?"
 
     // Pattern that only matches numbers.
     internal const val ONLY_NUMBER_REGEX: String = "^[0-9]+$"
@@ -72,12 +69,6 @@ internal object Patterns {
     internal const val VERSION_REGEX: String = "^$CORE_VERSION$PRE_RELEASE?$BUILD?\$"
 
     // Prefixed version parsing pattern: v1.2-alpha+build
-    internal const val LOOSE_VERSION_REGEX: String = "^v?$LOOSE_CORE_VERSION$PRE_RELEASE?$BUILD?\$"
-
-    // Operator condition: >=1.2.*
-    internal const val OPERATOR_CONDITION_REGEX = "($ALLOWED_OPERATORS)\\s*v?(?:$X_RANGE_VERSION)"
-
-    // Hyphen range condition: 1.2.* - 2.0.0
-    internal const val HYPHEN_CONDITION_REGEX = "\\s*v?(?:$X_RANGE_VERSION)\\s+-\\s+v?(?:$X_RANGE_VERSION)\\s*"
+    internal const val PREFIXED_LOOSE_VERSION_REGEX: String = "^v?$LOOSE_CORE_VERSION$PRE_RELEASE?$BUILD?\$"
 
 }

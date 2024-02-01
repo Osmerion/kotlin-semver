@@ -22,11 +22,10 @@
  */
 package com.osmerion.kotlin.semver
 
+import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
+import com.osmerion.kotlin.semver.constraints.npm.NpmConstraintFormat
 import com.osmerion.kotlin.semver.internal.VersionRange
-import com.osmerion.kotlin.semver.internal.constraints.VersionPredicate
-import com.osmerion.kotlin.semver.internal.constraints.formats.maven.parseMavenConstraint
-import com.osmerion.kotlin.semver.internal.constraints.formats.npm.parseNpmConstraint
-import com.osmerion.kotlin.semver.internal.constraints.formats.osmerion.parseOsmerionConstraint
+import com.osmerion.kotlin.semver.constraints.VersionPredicate
 import com.osmerion.kotlin.semver.internal.toVersionRanges
 import com.osmerion.kotlin.semver.serializers.DefaultConstraintSerializer
 import kotlinx.serialization.Serializable
@@ -59,7 +58,7 @@ import kotlin.jvm.JvmStatic
  *
  * @since   0.1.0
  */
-@OptIn(ExperimentalConstraintFormat::class)
+@OptIn(ExperimentalConstraintApi::class)
 @Serializable(with = DefaultConstraintSerializer::class)
 public class VersionConstraint private constructor(
     private val predicates: List<List<VersionPredicate>>,
@@ -87,15 +86,10 @@ public class VersionConstraint private constructor(
          */
         @JvmOverloads
         @JvmStatic
-        public fun parse(source: CharSequence, format: ConstraintFormat = ConstraintFormat.NPM): VersionConstraint {
+        public fun parse(source: CharSequence, format: ConstraintFormat = NpmConstraintFormat): VersionConstraint {
             if (source.isBlank()) throw ConstraintFormatException("Constraint strings may not be blank")
 
-            val (comparators, preferredVersion) = when (format) {
-                ConstraintFormat.MAVEN -> parseMavenConstraint(source)
-                ConstraintFormat.NPM -> parseNpmConstraint(source)
-                ConstraintFormat.OSMERION -> parseOsmerionConstraint(source)
-            }
-
+            val (comparators, preferredVersion) = format.parse(source)
             return when {
                 comparators.isEmpty() || comparators.all(List<VersionPredicate>::isEmpty) -> throw ConstraintFormatException("Invalid constraint: $source")
                 else -> VersionConstraint(comparators, format, preferredVersion)
@@ -117,7 +111,7 @@ public class VersionConstraint private constructor(
          */
         @JvmOverloads
         @JvmStatic
-        public fun tryParse(source: CharSequence, format: ConstraintFormat = ConstraintFormat.NPM): VersionConstraint? = try {
+        public fun tryParse(source: CharSequence, format: ConstraintFormat = NpmConstraintFormat): VersionConstraint? = try {
             parse(source, format)
         } catch (_: ConstraintFormatException) {
             null
@@ -142,11 +136,7 @@ public class VersionConstraint private constructor(
         return hash
     }
 
-    override fun toString(): String = when (format) {
-        ConstraintFormat.OSMERION -> predicates.joinToString(separator = "||") { "${it.single()}" }
-        ConstraintFormat.MAVEN -> predicates.joinToString(separator = ",") { "${it.single()}" }
-        ConstraintFormat.NPM -> predicates.joinToString(separator = "||") { it.joinToString(separator = " ") }
-    }
+    override fun toString(): String = format.toString(predicates)
 
     /**
      * Determines whether this constraint is satisfied by the given [version].
@@ -170,7 +160,18 @@ public class VersionConstraint private constructor(
             if ((midRange.startInclusive == null || midRange.startInclusive <= version)
                 && (midRange.endExclusive == null || version < midRange.endExclusive)
             ) {
-                return true
+                /*
+                 * Pre-release versions only satisfy a constraint, if their normal version number is equal to the normal
+                 * version number of either bound.
+                 *
+                 * For example:
+                 * - [1.0.0-0, 1.2.3-2) is satisfied by 1.0.0-1 and 1.2.3-1 but not by 1.1.1-2.
+                 * - [1.0.0, 1.2.0-0) is not satisfied by any pre-release version because none smaller than the upper
+                 *   bound exists. (This is important for the correctness of inclusive constraints like [1.0.0, 1.1.0]!)
+                 */
+                return !version.isPreRelease
+                    || (midRange.startInclusive?.isPreRelease == true && midRange.startInclusive.toNormalVersion() == version.toNormalVersion())
+                    || (midRange.endExclusive?.isPreRelease == true && midRange.endExclusive.toNormalVersion() == version.toNormalVersion())
             } else if (midRange.startInclusive == null || version < midRange.startInclusive) {
                 high = mid - 1
             } else {
