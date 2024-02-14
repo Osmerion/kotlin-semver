@@ -151,6 +151,32 @@ kotlin {
     }
 }
 
+dokkatoo {
+    dokkatooSourceSets.configureEach {
+        reportUndocumented = true
+        skipEmptyPackages = true
+        jdkVersion = 8
+
+        val localKotlinSourceDir = layout.projectDirectory.dir("src/$name/kotlin")
+        val version = project.version
+
+        sourceLink {
+            localDirectory = localKotlinSourceDir
+
+            remoteUrl("https://github.com/Osmerion/kotlin-semver/tree/v${version}/src/${this@configureEach.name}/kotlin")
+            remoteLineSuffix = "#L"
+        }
+    }
+
+    dokkatooPublications.configureEach {
+        failOnWarning = true
+    }
+
+    versions {
+        jetbrainsDokka = libs.versions.dokka
+    }
+}
+
 configure<NodeJsRootExtension> {
     // We need canary builds of Node + V8 but there are none for Windows.
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
