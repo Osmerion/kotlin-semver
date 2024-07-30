@@ -24,8 +24,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -177,14 +175,6 @@ dokkatoo {
     }
 }
 
-configure<NodeJsRootExtension> {
-    // We need canary builds of Node + V8 but there are none for Windows.
-    if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-        nodeVersion = "21.0.0-v8-canary202309143a48826a08"
-        nodeDownloadBaseUrl = "https://nodejs.org/download/v8-canary"
-    }
-}
-
 tasks {
     withType<JavaCompile>().configureEach {
         options.javaModuleVersion = "$version"
@@ -204,10 +194,6 @@ tasks {
         isReproducibleFileOrder = true
 
         includeEmptyDirs = false
-    }
-
-    withType<KotlinNpmInstallTask>().configureEach {
-        args += "--ignore-engines"
     }
 }
 
