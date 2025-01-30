@@ -141,7 +141,9 @@ public class VersionConstraint private constructor(
     /**
      * Determines whether this constraint is satisfied by the given [version].
      *
-     * @param version   the [version][SemanticVersion] to check
+     * This method is shorthand for `isSatisfiedBy(version, includePreRelease = false)`.
+     *
+     * @param version           the [version][SemanticVersion] to check
      *
      * @return  whether the given constraint is satisfied by this version
      *
@@ -149,7 +151,33 @@ public class VersionConstraint private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun isSatisfiedBy(version: SemanticVersion): Boolean {
+    public infix fun isSatisfiedBy(version: SemanticVersion): Boolean =
+        isSatisfiedBy(version, includePreRelease = false)
+
+    /**
+     * Determines whether this constraint is satisfied by the given [version].
+     *
+     * To check if a given version satisfies a constraint, the constraint is interpreted as a set of disjoint version
+     * ranges. The constraint is satisfied by a version, iff the version lies within one these constructed ranges.
+     *
+     * Unless, [includePreRelease] is set, a pre-release version may not satisfy a constraint despite being technically
+     * lying inside a range of versions for which this constraint is satisfied. Instead, pre-release versions usually
+     * only satisfy a constraint, if other pre-release versions with the same normal version tuples contributed directly
+     * to the constraint.
+     *
+     * For example, in [NPM][ConstraintFormat.NPM] constraint syntax, consider the constraint `>1.0.0-2`. Despite being
+     * semantically greater than `1.0.0-2`, `1.1.0-0` does not satisfy the constraint while `1.0.0-3` does.
+     *
+     * @param version           the [version][SemanticVersion] to check
+     * @param includePreRelease whether pre-release versions may satisfy the constraint
+     *
+     * @return  whether the given constraint is satisfied by this version
+     *
+     * @sample com.osmerion.kotlin.semver.samples.ConstraintSamples.isSatisfiedBy
+     *
+     * @since   0.1.0
+     */
+    public fun isSatisfiedBy(version: SemanticVersion, includePreRelease: Boolean): Boolean {
         var low = 0
         var high = ranges.size
 
@@ -170,6 +198,7 @@ public class VersionConstraint private constructor(
                  *   bound exists. (This is important for the correctness of inclusive constraints like [1.0.0, 1.1.0]!)
                  */
                 return !version.isPreRelease
+                    || includePreRelease
                     || (midRange.startInclusive?.isPreRelease == true && midRange.startInclusive.toNormalVersion() == version.toNormalVersion())
                     || (midRange.endExclusive?.isPreRelease == true && midRange.endExclusive.toNormalVersion() == version.toNormalVersion())
             } else if (midRange.startInclusive == null || version < midRange.startInclusive) {
