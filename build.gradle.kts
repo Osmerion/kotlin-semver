@@ -178,15 +178,6 @@ dokkatoo {
     }
 }
 
-tasks {
-    withType<Jar>().configureEach {
-        isPreserveFileTimestamps = false
-        isReproducibleFileOrder = true
-
-        includeEmptyDirs = false
-    }
-}
-
 publishing {
     publications {
         publications.withType<MavenPublication>().configureEach {
