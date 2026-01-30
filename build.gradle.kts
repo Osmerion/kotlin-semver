@@ -20,10 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import org.apache.tools.ant.taskdefs.condition.Os
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -49,13 +48,9 @@ kotlin {
     explicitApi()
     applyDefaultHierarchyTemplate()
 
-    targets.configureEach {
-        compilations.configureEach {
-            compilerOptions.configure {
-                apiVersion = KotlinVersion.KOTLIN_2_2
-                languageVersion = KotlinVersion.KOTLIN_2_2
-            }
-        }
+    compilerOptions {
+        apiVersion = KotlinVersion.KOTLIN_2_2
+        languageVersion = KotlinVersion.KOTLIN_2_2
     }
 
     js {
@@ -64,11 +59,32 @@ kotlin {
     }
 
     jvm {
-        withJava()
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+            freeCompilerArgs.add("-Xjdk-release=11")
+        }
 
         compilations.configureEach {
-            compilerOptions.configure {
-                jvmTarget = JvmTarget.JVM_11
+            compileJavaTaskProvider!!.configure {
+                options.javaModuleVersion = "$version"
+                options.release = 11
+            }
+        }
+
+        compilations.named("main") {
+            compileJavaTaskProvider!!.configure {
+                options.compilerArgumentProviders += object : CommandLineArgumentProvider {
+
+                    @InputFiles
+                    @PathSensitive(PathSensitivity.RELATIVE)
+                    val kotlinClasses = project.tasks.named<KotlinCompile>("compileKotlinJvm").flatMap(KotlinCompile::destinationDirectory)
+
+                    override fun asArguments() = listOf(
+                        "--patch-module",
+                        "com.osmerion.kotlin.semver=${kotlinClasses.get().asFile.absolutePath}"
+                    )
+
+                }
             }
         }
     }
@@ -98,26 +114,13 @@ kotlin {
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        browser {
-            testTask {
-                enabled = !Os.isFamily(Os.FAMILY_MAC)
-            }
-        }
-
-        nodejs {
-            testTask {
-                enabled = !Os.isFamily(Os.FAMILY_WINDOWS)
-            }
-        }
+        browser()
+        nodejs()
     }
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmWasi {
-        nodejs {
-            testTask {
-                enabled = !Os.isFamily(Os.FAMILY_WINDOWS)
-            }
-        }
+        nodejs()
     }
 
     watchosArm32()
@@ -176,19 +179,6 @@ dokkatoo {
 }
 
 tasks {
-    withType<JavaCompile>().configureEach {
-        options.javaModuleVersion = "$version"
-        options.release = 11
-    }
-
-    named<JavaCompile>("compileJava") {
-        val files = named<KotlinCompile>("compileKotlinJvm").get().outputs.files
-
-        options.compilerArgumentProviders += CommandLineArgumentProvider {
-            listOf("--patch-module", "com.osmerion.kotlin.semver=${files.asPath}")
-        }
-    }
-
     withType<Jar>().configureEach {
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
