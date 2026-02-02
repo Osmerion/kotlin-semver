@@ -18,346 +18,68 @@ available for JVM (Java 17 or later), JS, Wasm, and all native targets.[^1]
       Despite that, some targets may be missing as target support may change
       over time. In case something is missing, please make sure to let us know.
 
-The API Documentation is available [here](https://osmerion.github.io/kotlin-semver/).
-
 This project was forked from https://github.com/z4kn4fein/kotlin-semver. The
 fork gives up a few idiomatic Kotlin design decisions to provide a significantly
 improved Java interoperability.
 
-## Install with Gradle
-This library is available in Maven Central, so you have to add it to your repositories.
+
+## Versions
+
+The `SemanticVersion` class represents a full semantic version. A
+`SemanticVersion` can be constructed using either manually, part by part:
+
 ```kotlin
-repositories {
-    mavenCentral()
-}
-```
-Then, you can add the package to your dependencies.
-```kotlin
-val semver_version: String by project
-
-dependencies {
-    implementation("io.github.z4kn4fein:semver:$semver_version")
-}
-```
-In case of a multiplatform project, you can simply reference the package in your `commonMain` source set.
-```kotlin
-val semver_version: String by project
-
-kotlin {
-    sourceSets {
-        val commonMain by getting {
-            dependencies { 
-                implementation("io.github.z4kn4fein:semver:$semver_version")
-            }
-        }
-    }
-}
-```
-You can also use platform-specific packages that you can find [here](https://search.maven.org/search?q=g:io.github.z4kn4fein%20AND%20a:semver*) for each supported platform.
-
-## Usage
-The following options are available to construct a [`Version`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/-version/index.html):
-1. Building part by part.
-
-   ```kotlin
-   Version(major = 3, minor = 5, patch = 2, preRelease = "alpha", buildMetadata = "build")
-   ```
-   
-2. Parsing from a string with [`Version.parse()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/-version/-companion/parse.html).
-
-   ```kotlin
-   Version.parse("3.5.2-alpha+build")
-   ```
-   
-3. Using the [`toVersion()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/to-version.html) or [`toVersionOrNull()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/to-version-or-null.html) extension method on a string.
-
-   ```kotlin
-   "3.5.2-alpha+build".toVersion()
-   ```
-
-The constructed `Version` object provides the following information:
-```kotlin
-val version = "3.5.2-alpha.2+build".toVersion()
-version.major           // 3
-version.minor           // 5
-version.patch           // 2
-version.preRelease      // "alpha.2"
-version.buildMetadata   // "build"
-
-version.isPreRelease    // true
-version.isStable        // false
-version.toString()      // "3.5.2-alpha.2+build"
-
-version.withoutSuffixes().toString()   // "3.5.2"
+val version = SemanticVersion(major = 3, minor = 5, patch = 2, preRelease = "alpha", buildMetadata = "build")
+println(version) // 3.5.2-alpha+build
 ```
 
-### Destructuring
-`Version` supports destructuring by its public properties.
-```kotlin
-val version = "2.3.1-alpha.2+build".toVersion()
-val (major, minor, patch, preRelease, buildMetadata) = version
+Or parsed from text (i.e. a `String`):
 
-// major: 2
-// minor: 3
-// patch: 1
-// preRelease: "alpha.2"
-// buildMetadata: "build"
+```kotlin
+val version = SemanticVersion.parse("3.5.2-alpha+build")
+println(version) // 3.5.2-alpha+build
 ```
 
-### Strict vs. Loose Parsing
-By default, the version parser considers partial versions like `1.0` and versions starting with the `v` prefix invalid.
-This behaviour can be turned off by setting the `strict` parameter to `false`.
-```kotlin
-"v2.3-alpha".toVersion()                    // exception
-"2.1".toVersion()                           // exception
-"v3".toVersion()                            // exception
-
-SemanticVersion.parse("v2.3-alpha", strict = false)      // 2.3.0-alpha
-SemanticVersion.parse("2.1", strict = false)             // 2.1.0
-SemanticVersion.parse("v3", strict = false)              // 3.0.0
-```
-
-## Compare
-
-It is possible to compare two `Version` objects with [comparison operators](https://kotlinlang.org/docs/operator-overloading.html#comparison-operators) or with the `.compareTo()` method.
-```kotlin
-"0.1.0".toVersion() < "0.1.1".toVersion()                   // true
-"0.1.1".toVersion() <= "0.1.1".toVersion()                  // true
-"0.1.0-alpha.3".toVersion() < "0.1.0-alpha.4".toVersion()   // true
-
-"0.1.1".toVersion().compareTo("0.1.0".toVersion())          //  1
-"0.1.0".toVersion().compareTo("0.1.1".toVersion())          // -1
-"0.1.1".toVersion().compareTo("0.1.1".toVersion())          //  0
-```
-
-The equality of two `Version` objects can be determined with [equality operators](https://kotlinlang.org/docs/operator-overloading.html#equality-and-inequality-operators) or with the `equals()` method.
-```kotlin
-"0.1.1".toVersion() == "0.1.1".toVersion()       // true
-"0.1.1".toVersion() != "0.1.1".toVersion()       // false
-
-"0.1.1".toVersion().equals("0.1.1".toVersion())  // true
-"0.1.0".toVersion().equals("0.1.1".toVersion())  // false
-```
-
-### Sort
-As `Version` objects are comparable, you can get a sorted collection from them.
-```kotlin
-val list: List<Version> = listOf(
-    "1.0.1".toVersion(),
-    "1.0.1-alpha".toVersion(),
-    "1.0.1-alpha.beta".toVersion(),
-    "1.0.1-alpha.3".toVersion(),
-    "1.0.1-alpha.2".toVersion(),
-    "1.1.0".toVersion(),
-    "1.1.0+build".toVersion(),
-).sorted()
-
-// The result:
-//   "1.0.1-alpha"
-//   "1.0.1-alpha.2"
-//   "1.0.1-alpha.3"
-//   "1.0.1-alpha.beta"
-//   "1.0.1"
-//   "1.1.0"
-//   "1.1.0+build"
-```
-
-### Range
-Having an order provides the ability to determine whether a `Version` is in the range between two other versions.
-```kotlin
-val range = "1.0.0".toVersion().."1.1.0".toVersion()
-
-"1.0.1".toVersion() in range     // true
-"1.1.1".toVersion() in range     // false
-```
 
 ## Constraints
-With constraints, it's possible to validate whether a version satisfies a set of rules or not.
-A constraint can be described as one or more conditions combined with logical `OR` and `AND` operators.
 
-### Conditions
-Conditions are usually composed of a comparison operator and a version like `>=1.2.0`.
-The condition `>=1.2.0` would be met by any version that greater than or equal to `1.2.0`.
+In addition to exact versions, the library provides the `VersionConstraint`
+class to test if a version satisfies a set of rules. Version constraints are
+commonly used to specify dependencies.
 
-Supported comparison operators:
-- `=` Equal (equivalent to no operator: `1.2.0` means `=1.2.0`)
-- `!=` Not equal
-- `<` Less than
-- `<=` Less than or equal
-- `>` Greater than
-- `>=` Greater than or equal
+As there is no standard for version constraints in SemVer, the library supports
+multiple constraint formats and even provides (experimental) APIs to define
+custom constraint formats.
 
-Conditions can be joined together with whitespace, representing the `AND` logical operator between them.
-The `OR` operator can be expressed with `||` or `|` between condition sets.
+### Maven
 
-For example, the constraint `>=1.2.0 <3.0.0 || >4.0.0` translates to: *Only those versions are allowed that are either greater than or 
-equal to `1.2.0` {**AND**} less than `3.0.0` {**OR**} greater than `4.0.0`*.
+The `MavenConstraintFormat` implements the constraint format used by [Apache Maven](https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html).
 
-We can notice that the first part of the previous constraint (`>=1.2.0 <3.0.0`) is a simple semantic version range.
-There are more ways to express version ranges; the following section will go through all the available options.
-
-### Range Conditions
-There are particular range indicators which are sugars for more extended range expressions.
-
-- **X-Range**: The `x`, `X`, and `*` characters can be used as a wildcard for the numeric parts of a version.
-   - `1.2.x` translates to `>=1.2.0 <1.3.0-0`
-   - `1.x` translates to `>=1.0.0 <2.0.0-0`
-   - `*` translates to `>=0.0.0`
-
-  In partial version expressions, the missing numbers are treated as wildcards.
-   - `1.2` means `1.2.x` which finally translates to `>=1.2.0 <1.3.0-0`
-   - `1` means `1.x` or `1.x.x` which finally translates to `>=1.0.0 <2.0.0-0`
-
-- **Hyphen Range**: Describes an inclusive version range. Wildcards are evaluated and taken into account in the final range.
-   - `1.0.0 - 1.2.0` translates to `>=1.0.0 <=1.2.0`
-   - `1.1 - 1.4.0` means `>=(>=1.1.0 <1.2.0-0) <=1.4.0` which finally translates to `>=1.1.0 <=1.4.0`
-   - `1.1.0 - 2` means `>=1.1.0 <=(>=2.0.0 <3.0.0-0)` which finally translates to `>=1.1.0 <3.0.0-0`
-
-- **Tilde Range (`~`)**: Describes a patch level range when the minor version is specified or a minor level range when it's not.
-   - `~1.0.1` translates to `>=1.0.1 <1.1.0-0`
-   - `~1.0` translates to `>=1.0.0 <1.1.0-0`
-   - `~1` translates to `>=1.0.0 <2.0.0-0`
-   - `~1.0.0-alpha.1` translates to `>=1.0.1-alpha.1 <1.1.0-0`
-
-- **Caret Range (`^`)**: Describes a range with regard to the most left non-zero part of the version.
-   - `^1.1.2` translates to `>=1.1.2 <2.0.0-0`
-   - `^0.1.2` translates to `>=0.1.2 <0.2.0-0`
-   - `^0.0.2` translates to `>=0.0.2 <0.0.3-0`
-   - `^1.2` translates to `>=1.2.0 <2.0.0-0`
-   - `^1` translates to `>=1.0.0 <2.0.0-0`
-   - `^0.1.2-alpha.1` translates to `>=0.1.2-alpha.1 <0.2.0-0`
-
-### Validation
-The following options are available to construct a [`Constraint`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/-constraint/index.html):
-- Parsing from a string with [`Constraint.parse()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/-constraint/-companion/parse.html).
-   ```kotlin
-   Constraint.parse(">=1.2.0")
-   ```
-
-- Using the [`toConstraint()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/to-constraint.html) or [`toConstraintOrNull()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/to-constraint-or-null.html) extension method on a string.
-   ```kotlin
-   ">=1.2.0".toConstraint()
-   ```
-
-Let's see how we can determine whether a version [`satisfies`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/satisfies.html) a constraint or not.
 ```kotlin
-val constraint = ">=1.2.0".toConstraint()
-val version = "1.2.1".toVersion()
+val constraint = VersionConstraint.parse("[1.0,)", format = NpmConstraintFormat)
+val version = SemanticVersion(1, 2, 3)
 
-version satisfies constraint        // true
-constraint satisfiedBy version      // true
+assertTrue(version satisfies constraint)
 ```
 
-It's also possible to validate against a collection of constraints.
+
+### NPM
+
+The `NpmConstraintFormat` implements the constraint format used by [npm](https://github.com/npm/node-semver).
+
 ```kotlin
-val constraints = listOf(">=1.2.0", "<2.0.0").map { it.toConstraint() }
-val version = "1.2.1".toVersion()
+val constraint = VersionConstraint.parse("^1.2", format = NpmConstraintFormat)
+val version = SemanticVersion(1, 2, 3)
 
-version satisfiesAll constraints       // true
-version satisfiesAny constraints       // true
+assertTrue(version satisfies constraint)
 ```
-> [!NOTE]\
-> With [`satisfiesAll`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/satisfies-all.html) the version must satisfy each constraint within the collection. 
-> With [`satisfiesAny`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/satisfies-any.html) it must satisfy at least one constraint to pass the validation.
-
-Or to validate a collection of versions.
-```kotlin
-val constraint = ">=1.2.0".toConstraint()
-val versions = listOf("1.2.1", "1.1.0").map { it.toVersion() }
-
-constraint satisfiedByAll versions       // false
-constraint satisfiedByAny versions       // true
-```
-> [!NOTE]\
-> With [`satisfiedByAll`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/satisfied-by-all.html) the constraint must be satisfied by each version within the collection. 
-> With [`satisfiedByAny`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/satisfied-by-any.html) it must be satisfied by at least one version to pass the validation.
-
-## Increment
-`Version` objects can produce incremented versions of themselves with the [`nextMajor()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/next-major.html),
-[`nextMinor()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/next-minor.html),
-[`nextPatch()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/next-patch.html),
-[`nextPreRelease()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/next-pre-release.html),
-and [`inc()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/inc.html) methods.
-These methods can be used to determine the next version in order by increasing the appropriate identifier.
-`Version` objects are **immutable**, so each incrementing function creates a new `Version`.
-
-This example shows how the incrementation works on a stable version:
-```kotlin
-val stableVersion = "1.0.0".toVersion()
-
-val nextMajor = stableVersion.nextMajor()                               // 2.0.0
-val nextMinor = stableVersion.nextMinor()                               // 1.1.0
-val nextPatch = stableVersion.nextPatch()                               // 1.0.1
-val nextPreRelease = stableVersion.nextPreRelease()                     // 1.0.1-0
-
-// or with the inc() method:
-val incrementedByMajor = stableVersion.inc(by = Inc.MAJOR)              // 2.0.0
-val incrementedByMinor = stableVersion.inc(by = Inc.MINOR)              // 1.1.0
-val incrementedByPatch = stableVersion.inc(by = Inc.PATCH)              // 1.0.1
-val incrementedByPreRelease = stableVersion.inc(by = Inc.PRE_RELEASE)   // 1.0.1-0
-```
-
-In case of an unstable version:
-```kotlin
-val unstableVersion = "1.0.0-alpha.2+build.1".toVersion()
-
-val nextMajor = unstableVersion.nextMajor()                               // 2.0.0
-val nextMinor = unstableVersion.nextMinor()                               // 1.1.0
-val nextPatch = unstableVersion.nextPatch()                               // 1.0.0
-val nextPreRelease = unstableVersion.nextPreRelease()                     // 1.0.0-alpha.3
-
-// or with the inc() method:
-val incrementedByMajor = unstableVersion.inc(by = Inc.MAJOR)              // 2.0.0
-val incrementedByMinor = unstableVersion.inc(by = Inc.MINOR)              // 1.1.0
-val incrementedByPatch = unstableVersion.inc(by = Inc.PATCH)              // 1.0.0
-val incrementedByPreRelease = unstableVersion.inc(by = Inc.PRE_RELEASE)   // 1.0.0-alpha.3
-```
-
-Each incrementing function provides the option to set a pre-release identity on the incremented version.
-```kotlin
-val version = "1.0.0-alpha.1".toVersion()
-
-val nextPreMajor = version.nextMajor(preRelease = "beta")           // 2.0.0-beta
-val nextPreMinor = version.nextMinor(preRelease = "")               // 1.1.0-0
-val nextPrePatch = version.nextPatch(preRelease = "alpha")          // 1.0.1-alpha
-val nextPreRelease = version.nextPreRelease(preRelease = "alpha")   // 1.0.0-alpha.2
-
-// or with the inc() method:
-val incrementedByMajor = version.inc(by = Inc.MAJOR, preRelease = "beta")               // 2.0.0-beta
-val incrementedByMinor = version.inc(by = Inc.MINOR, preRelease = "")                   // 1.1.0-0
-val incrementedByPatch = version.inc(by = Inc.PATCH, preRelease = "alpha")              // 1.0.1-alpha
-val incrementedByPreRelease = version.inc(by = Inc.PRE_RELEASE, preRelease = "alpha")   // 1.0.0-alpha.2
-```
-
-## Copy
-It's possible to create a copy of a version with its [`copy()`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/-version/copy.html) method.
-It allows altering the copied version's properties with optional parameters.
-```kotlin
-val version = "1.0.0-alpha.2+build.1".toVersion()
-
-val exactCopy = version.copy()                                            // 1.0.0-alpha.2+build.1
-val withDifferentMajor = version.copy(major = 3)                          // 3.0.0-alpha.2+build.1
-val withDifferentMinor = version.copy(minor = 4)                          // 1.4.0-alpha.2+build.1
-val withDifferentPatch = version.copy(patch = 5)                          // 1.0.5-alpha.2+build.1
-val withDifferentPreRelease = version.copy(preRelease = "alpha.4")        // 1.0.0-alpha.4+build.1
-val withDifferentBuildMetadata = version.copy(buildMetadata = "build.3")  // 1.0.0-alpha.2+build.3
-val withDifferentNumbers = version.copy(major = 3, minor = 4, patch = 5)  // 3.4.5-alpha.2+build.1
-```
-> [!NOTE]\
-> Without setting any optional parameter, the `copy()` method will produce an exact copy of the original version.
-
-## Exceptions
-When the version parsing fails due to an invalid format, the library throws a specific [`VersionFormatException`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver/-version-format-exception/index.html).
-Similarly, when the constraint parsing fails, the library throws a [`ConstraintFormatException`](https://z4kn4fein.github.io/kotlin-semver/semver/io.github.z4kn4fein.semver.constraints/-constraint-format-exception/index.html).
-> [!NOTE]\
-> The `toVersionOrNull()` and `toConstraintOrNull()` methods can be used for exception-less conversions as they return `null` when the parsing fails.
 
 
 ## Building from source
 
 ### Setup
 
-This project uses [Gradle's toolchain support](https://docs.gradle.org/8.6/userguide/toolchains.html)
+This project uses [Gradle's toolchain support](https://docs.gradle.org/current/userguide/toolchains.html)
 to detect and select the JDKs required to run the build. Please refer to the
 build scripts to find out which toolchains are requested.
 
