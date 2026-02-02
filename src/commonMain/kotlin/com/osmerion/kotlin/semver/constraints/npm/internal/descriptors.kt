@@ -24,12 +24,13 @@ package com.osmerion.kotlin.semver.constraints.npm.internal
 
 import com.osmerion.kotlin.semver.ConstraintFormatException
 import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.constraints.npm.NpmConstraintFormat
 import com.osmerion.kotlin.semver.internal.PreRelease
 import kotlin.jvm.JvmName
 
-internal fun parseNpmVersionDescriptor(source: CharSequence): NpmVersionDescriptor {
+internal fun NpmConstraintFormat.parseNpmVersionDescriptor(source: CharSequence): NpmVersionDescriptor {
     if (source == "*") return StarVersionDescriptor
-    val result = SemVerPatterns.X_RANGE.matchEntire(source) ?: throw ConstraintFormatException("Invalid version descriptor: $source")
+    val result = (if (isStrict) SemVerPatterns.X_RANGE else SemVerPatterns.X_RANGE_LOOSE).matchEntire(source) ?: throw ConstraintFormatException("Invalid version descriptor: $source")
 
     val major = result.groupValues[3]
     val minor = result.groupValues[4].ifBlank { null }
@@ -39,7 +40,7 @@ internal fun parseNpmVersionDescriptor(source: CharSequence): NpmVersionDescript
     return RegularNpmVersionDescriptor(major, minor, patch, preRelease)
 }
 
-internal fun tryParseNpmVersionDescriptor(source: CharSequence): NpmVersionDescriptor? {
+internal fun NpmConstraintFormat.tryParseNpmVersionDescriptor(source: CharSequence): NpmVersionDescriptor? {
     return try {
         parseNpmVersionDescriptor(source)
     } catch (_: ConstraintFormatException) {
@@ -49,6 +50,33 @@ internal fun tryParseNpmVersionDescriptor(source: CharSequence): NpmVersionDescr
 
 internal fun NpmVersionDescriptor.toVersion(): SemanticVersion? = when (this) {
     is RegularNpmVersionDescriptor -> SemanticVersion(major ?: 0, minor ?: 0, patch ?: 0, preRelease?.toString())
+    is StarVersionDescriptor -> null
+}
+
+internal fun NpmVersionDescriptor.toLowVersion(format: NpmConstraintFormat, isUpperBound: Boolean): SemanticVersion? = when (this) {
+    is RegularNpmVersionDescriptor -> {
+        fun preRelease() = if (isUpperBound != format.includePreRelease) "0" else null
+        when {
+            isX(majorString) -> null
+            isX(minorString) -> SemanticVersion(major!!, 0, 0, preRelease())
+            isX(patchString) -> SemanticVersion(major!!, minor!!, 0, preRelease())
+            else -> SemanticVersion(major ?: 0, minor ?: 0, patch ?: 0, preRelease?.toString())
+        }
+    }
+    is StarVersionDescriptor -> null
+}
+
+internal fun NpmVersionDescriptor.toHighVersion(format: NpmConstraintFormat, isUpperBound: Boolean): SemanticVersion? = when (this) {
+    is RegularNpmVersionDescriptor -> {
+        fun preRelease() = if (isUpperBound != format.includePreRelease) "0" else null
+        when {
+            isX(majorString) -> null
+            isX(minorString) -> SemanticVersion(major!! + 1, 0, 0, preRelease())
+            isX(patchString) -> SemanticVersion(major!!, minor!! + 1, 0, preRelease())
+            preRelease == null -> SemanticVersion(major ?: 0, minor ?: 0, patch!! + 1, preRelease())
+            else -> SemanticVersion(major!!, minor!!, patch!!, preRelease.toSmallestLargerVersion().toString())
+        }
+    }
     is StarVersionDescriptor -> null
 }
 

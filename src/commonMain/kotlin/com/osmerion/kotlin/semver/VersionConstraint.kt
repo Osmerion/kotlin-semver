@@ -87,8 +87,6 @@ public class VersionConstraint private constructor(
         @JvmOverloads
         @JvmStatic
         public fun parse(source: CharSequence, format: ConstraintFormat = NpmConstraintFormat): VersionConstraint {
-            if (source.isBlank()) throw ConstraintFormatException("Constraint strings may not be blank")
-
             val (comparators, preferredVersion) = format.parse(source)
             return when {
                 comparators.isEmpty() || comparators.all(List<VersionPredicate>::isEmpty) -> throw ConstraintFormatException("Invalid constraint: $source")
@@ -179,7 +177,7 @@ public class VersionConstraint private constructor(
      */
     public fun isSatisfiedBy(version: SemanticVersion, includePreRelease: Boolean): Boolean {
         var low = 0
-        var high = ranges.size
+        var high = ranges.lastIndex
 
         while (low <= high) {
             val mid = (low + high).ushr(1)
@@ -201,7 +199,7 @@ public class VersionConstraint private constructor(
                     || includePreRelease
                     || (midRange.startInclusive?.isPreRelease == true && midRange.startInclusive.toNormalVersion() == version.toNormalVersion())
                     || (midRange.endExclusive?.isPreRelease == true && midRange.endExclusive.toNormalVersion() == version.toNormalVersion())
-            } else if (midRange.startInclusive == null || version < midRange.startInclusive) {
+            } else if (midRange.startInclusive != null && version < midRange.startInclusive) {
                 high = mid - 1
             } else {
                 low = mid + 1

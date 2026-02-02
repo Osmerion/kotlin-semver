@@ -25,7 +25,6 @@ import com.osmerion.kotlin.semver.ConstraintFormat
 import com.osmerion.kotlin.semver.SemanticVersion
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
-import com.osmerion.kotlin.semver.constraints.npm.internal.Options
 import com.osmerion.kotlin.semver.constraints.npm.internal.parseRange
 
 /**
@@ -36,22 +35,33 @@ import com.osmerion.kotlin.semver.constraints.npm.internal.parseRange
  * @since   0.1.0
  */
 @OptIn(ExperimentalConstraintApi::class)
-public sealed class NpmConstraintFormat : ConstraintFormat {
+public sealed class NpmConstraintFormat(
+    public val isStrict: Boolean = true,
+    public val includePreRelease: Boolean = false
+) : ConstraintFormat {
 
-  public companion object Default : NpmConstraintFormat()
+    public companion object Default : NpmConstraintFormat()
 
-  @ExperimentalConstraintApi
-  override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?> {
-    val source = source.replace("\\s+".toRegex(), " ")
+    public class Custom(
+        isStrict: Boolean = true,
+        includePreRelease: Boolean = false
+    ) : NpmConstraintFormat(
+        isStrict = isStrict,
+        includePreRelease = includePreRelease
+    )
 
-    val predicates = source.split("||")
-      .map { parseRange(it.trim(), Options(loose = false, includePrerelease = true)) }
+    @ExperimentalConstraintApi
+    override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?> {
+        val source = source.replace("\\s+".toRegex(), " ")
 
-    return predicates to null
-  }
+        val predicates = source.split("||")
+            .map { parseRange(it.trim()) }
 
-  @ExperimentalConstraintApi
-  override fun toString(predicates: List<List<VersionPredicate>>): String =
-    predicates.joinToString(separator = "||") { it.joinToString(separator = " ") }
+        return predicates to null
+    }
+
+    @ExperimentalConstraintApi
+    override fun toString(predicates: List<List<VersionPredicate>>): String =
+        predicates.joinToString(separator = "||") { it.joinToString(separator = " ") }
 
 }

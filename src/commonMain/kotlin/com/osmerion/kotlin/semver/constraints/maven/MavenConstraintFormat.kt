@@ -47,6 +47,8 @@ public sealed class MavenConstraintFormat : ConstraintFormat {
     public companion object Default : MavenConstraintFormat()
 
     override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?> {
+        if (source.isBlank()) throw ConstraintFormatException("Constraint strings may not be blank")
+
         var preferredVersion: SemanticVersion? = null
         val predicateSets = buildList {
             var pos = 0

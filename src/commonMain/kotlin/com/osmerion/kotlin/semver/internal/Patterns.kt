@@ -54,6 +54,7 @@ internal object Patterns {
      * Grammar: `'-' <pre-release-part> ('.' <pre-release-part>)*`
      */
     const val PRE_RELEASE = "(?:-($PRE_RELEASE_PART(?:\\.$PRE_RELEASE_PART)*))"
+    const val PRE_RELEASE_LOOSE = "(?:-?($PRE_RELEASE_PART(?:\\.$PRE_RELEASE_PART)*))"
 
     // Build-metadata identifier pattern. A + sign followed by dot-separated
     // alphanumeric build-metadata parts.
@@ -69,6 +70,6 @@ internal object Patterns {
     internal const val VERSION_REGEX: String = "^$CORE_VERSION$PRE_RELEASE?$BUILD?\$"
 
     // Prefixed version parsing pattern: v1.2-alpha+build
-    internal const val PREFIXED_LOOSE_VERSION_REGEX: String = "^v?$LOOSE_CORE_VERSION$PRE_RELEASE?$BUILD?\$"
+    internal const val PREFIXED_LOOSE_VERSION_REGEX: String = "^v?$LOOSE_CORE_VERSION$PRE_RELEASE_LOOSE?$BUILD?\$"
 
 }

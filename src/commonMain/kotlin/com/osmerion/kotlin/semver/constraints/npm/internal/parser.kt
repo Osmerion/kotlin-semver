@@ -25,11 +25,10 @@ package com.osmerion.kotlin.semver.constraints.npm.internal
 
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
+import com.osmerion.kotlin.semver.constraints.npm.NpmConstraintFormat
 import com.osmerion.kotlin.semver.internal.PreRelease
 
-internal data class Options(val loose: Boolean, val includePrerelease: Boolean)
-
-internal fun parseRange(source: CharSequence, options: Options): List<VersionPredicate> {
+internal fun NpmConstraintFormat.parseRange(source: CharSequence): List<VersionPredicate> {
     var source = SemVerPatterns.HYPHEN_RANGE.replace(source) { m ->
         if (tryParseNpmVersionDescriptor(m.value) != null) {
             m.value
@@ -45,7 +44,7 @@ internal fun parseRange(source: CharSequence, options: Options): List<VersionPre
 
     // Tilde Trim: `~ 1.2.3` => `~1.2.3`
     source = SemVerPatterns.TILDE_TRIM.replace(source) { m ->
-        "~${m.groupValues[1]}"
+        "~"
     }
 
     // Caret Trim: `^ 1.2.3` => `^1.2.3`
@@ -59,23 +58,24 @@ internal fun parseRange(source: CharSequence, options: Options): List<VersionPre
     }
 
     val predicates = source.split("(?<!-)\\s+(?!-)".toRegex())
-        .map { comp -> parsePredicate(comp, options) }
+        .map { comp -> parsePredicate(comp) }
 
     return predicates
 }
 
-private fun parsePredicate(comp: String, options: Options): VersionPredicate {
+private fun NpmConstraintFormat.parsePredicate(comp: String): VersionPredicate {
     val comp = comp.replace(SemVerPatterns.BUILD, "").trim()
 
     val descriptor = tryParseNpmVersionDescriptor(comp)
-    if (descriptor != null) return XVersionRange(descriptor = descriptor)
+    if (descriptor != null) return XVersionRange(format = this, descriptor = descriptor)
 
-    hyphenReplace(comp, options)?.let { return it }
+    hyphenReplace(comp)?.let { return it }
 
     val op = comp.startsWithOperator()
 
     return when {
         op != null -> ComparatorPredicate(
+            format = this,
             descriptor = parseNpmVersionDescriptor(comp.substring(startIndex = op.toString().length)),
             op = op
         )
@@ -84,23 +84,23 @@ private fun parsePredicate(comp: String, options: Options): VersionPredicate {
         comp.startsWith("~") -> parseTilde(comp)
         else -> {
             val descriptor = parseNpmVersionDescriptor(comp)
-            XVersionRange(descriptor = descriptor)
+            XVersionRange(format = this, descriptor = descriptor)
         }
     }
 }
 
-private fun parseTilde(comp: String): TildeVersionRange {
-    val (match) = SemVerPatterns.TILDE.matchEntire(comp)?.destructured ?: TODO()
-    return TildeVersionRange(parseNpmVersionDescriptor(match))
+private fun NpmConstraintFormat.parseTilde(comp: String): TildeVersionRange {
+    val (match) = (if (isStrict) SemVerPatterns.TILDE else SemVerPatterns.TILDE_LOOSE).matchEntire(comp)?.destructured ?: TODO()
+    return TildeVersionRange(format = this, parseNpmVersionDescriptor(match))
 }
 
-private fun parseCaret(comp: String): CaretVersionRange {
-    val (match) = SemVerPatterns.CARET.matchEntire(comp)?.destructured ?: TODO()
+private fun NpmConstraintFormat.parseCaret(comp: String): CaretVersionRange {
+    val (_, match) = (if (isStrict) SemVerPatterns.CARET else SemVerPatterns.CARET_LOOSE).matchEntire(comp)?.destructured ?: TODO()
     return CaretVersionRange(parseNpmVersionDescriptor(match))
 }
 
-private fun hyphenReplace(source: CharSequence, options: Options): VersionPredicate? {
-    val m = (if (options.loose) SemVerPatterns.HYPHEN_RANGE_LOOSE else SemVerPatterns.HYPHEN_RANGE).matchEntire(source) ?: return null
+private fun NpmConstraintFormat.hyphenReplace(source: CharSequence): VersionPredicate? {
+    val m = (if (isStrict) SemVerPatterns.HYPHEN_RANGE else SemVerPatterns.HYPHEN_RANGE_LOOSE).matchEntire(source) ?: return null
 
     // Groups:
     // 1=from, 2=fM, 3=fm, 4=fp, 5=fpr, 6=fb
@@ -135,6 +135,7 @@ private fun hyphenReplace(source: CharSequence, options: Options): VersionPredic
 //    else to = "<=$to"
 
     return HyphenVersionRange(
+        format = this,
         lowerBound = RegularNpmVersionDescriptor(fM, fm, fp, fpr),
         upperBound = RegularNpmVersionDescriptor(tM, tm, tp, tpr)
     )
@@ -183,7 +184,7 @@ internal object SemVerPatterns {
     // identifiers.
 
     private val PRERELEASE = "(?:-($PRERELEASE_IDENTIFIER(?:\\.$PRERELEASE_IDENTIFIER)*))".toRegex()
-    private val PRERELEASE_LOOSE = "(?:-($PRERELEASE_IDENTIFIER_LOOSE(?:\\.$PRERELEASE_IDENTIFIER_LOOSE)*))".toRegex()
+    private val PRERELEASE_LOOSE = "(?:-?($PRERELEASE_IDENTIFIER_LOOSE(?:\\.$PRERELEASE_IDENTIFIER_LOOSE)*))".toRegex()
 
     // ## Build Metadata Identifier
     // Any combination of digits, letters, or hyphens.
@@ -219,7 +220,7 @@ internal object SemVerPatterns {
     private val X_RANGE_IDENTIFIER_LOOSE = "$NUMERIC_IDENTIFIER_LOOSE|x|X|\\*".toRegex()
 
     private val X_RANGE_PLAIN = "([v=\\s]*)(($X_RANGE_IDENTIFIER)(?:\\.($X_RANGE_IDENTIFIER)(?:\\.($X_RANGE_IDENTIFIER)(?:$PRERELEASE)?$BUILD?)?)?)".toRegex()
-    private val X_RANGE_PLAIN_LOOSE = "([v=\\s]*)(($X_RANGE_IDENTIFIER_LOOSE)(?:\\.($X_RANGE_IDENTIFIER_LOOSE)(?:\\.($X_RANGE_IDENTIFIER_LOOSE)(?:$PRERELEASE)?$BUILD?)?)?)".toRegex()
+    private val X_RANGE_PLAIN_LOOSE = "([v=\\s]*)(($X_RANGE_IDENTIFIER_LOOSE)(?:\\.($X_RANGE_IDENTIFIER_LOOSE)(?:\\.($X_RANGE_IDENTIFIER_LOOSE)(?:$PRERELEASE_LOOSE)?$BUILD?)?)?)".toRegex()
 
     val X_RANGE = "^$X_RANGE_PLAIN$".toRegex()
     val X_RANGE_LOOSE = "^$X_RANGE_PLAIN_LOOSE$".toRegex()
@@ -249,6 +250,7 @@ internal object SemVerPatterns {
 //    exports.tildeTrimReplace = '$1~'
 
     val TILDE = "^$LONETILDE($X_RANGE_PLAIN)$".toRegex()
+    val TILDE_LOOSE = "^$LONETILDE($X_RANGE_PLAIN_LOOSE)$".toRegex()
 
     // Caret ranges.
     // Meaning is "at least and backwards compatible with"
@@ -258,6 +260,7 @@ internal object SemVerPatterns {
 //    exports.caretTrimReplace = '$1^'
 
     val CARET = "^$LONECARET$X_RANGE_PLAIN$".toRegex()
+    val CARET_LOOSE = "^$LONECARET$X_RANGE_PLAIN_LOOSE$".toRegex()
 
     // A simple gt/lt/eq thing, or just "" to indicate "any version"
     private val COMPARATOR = "^$GTLT\\s*($FULL_PLAIN)$|\\^$".toRegex()

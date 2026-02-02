@@ -134,8 +134,18 @@ public final class com/osmerion/kotlin/semver/constraints/maven/MavenConstraintF
 
 public abstract class com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat : com/osmerion/kotlin/semver/ConstraintFormat {
 	public static final field Default Lcom/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat$Default;
+	public synthetic fun <init> (ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (ZZLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getIncludePreRelease ()Z
+	public final fun isStrict ()Z
 	public fun parse (Ljava/lang/CharSequence;)Lkotlin/Pair;
 	public fun toString (Ljava/util/List;)Ljava/lang/String;
+}
+
+public final class com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat$Custom : com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat {
+	public fun <init> ()V
+	public fun <init> (ZZ)V
+	public synthetic fun <init> (ZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public final class com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat$Default : com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat {

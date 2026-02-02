@@ -39,7 +39,7 @@ public abstract class RangePredicate(
     init {
         if (startInclusive != null && endExclusive != null && startInclusive >= endExclusive) {
             @Suppress("LeakingThis")
-            throw ConstraintFormatException("Range predicate is invalid: $this")
+            throw ConstraintFormatException("Range predicate is invalid: $startInclusive - $endExclusive")
         }
     }
 

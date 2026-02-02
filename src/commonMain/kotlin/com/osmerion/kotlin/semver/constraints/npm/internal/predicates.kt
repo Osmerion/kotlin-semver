@@ -28,6 +28,7 @@ import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.RangePredicate
 import com.osmerion.kotlin.semver.constraints.VersionComparator
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
+import com.osmerion.kotlin.semver.constraints.npm.NpmConstraintFormat
 
 internal data class AnyVersion(val str: String) : RangePredicate(
     startInclusive = null,
@@ -46,7 +47,7 @@ internal data class CaretVersionRange(private val descriptor: NpmVersionDescript
                 descriptor.majorString.isX() -> null
                 descriptor.major != 0 || descriptor.minor == null || descriptor.minorString!!.isX() -> SemanticVersion(descriptor.major!! + 1, 0, 0, "0")
                 descriptor.minor != 0 || descriptor.patch == null || descriptor.patchString!!.isX() -> SemanticVersion(descriptor.major!!, descriptor.minor!! + 1, 0, "0")
-                else -> SemanticVersion(descriptor.major!!, descriptor.minor!!, descriptor.patch!!, "0")
+                else -> SemanticVersion(descriptor.major!!, descriptor.minor!!, descriptor.patch!! + 1, "0")
             }
         }
     }
@@ -58,35 +59,27 @@ internal data class CaretVersionRange(private val descriptor: NpmVersionDescript
 }
 
 internal data class ComparatorPredicate(
+    private val format: NpmConstraintFormat,
     private val descriptor: NpmVersionDescriptor,
     private val op: Op?
 ) : VersionPredicate {
 
     override val comparators: Set<VersionComparator> get() {
         val reference = when (op) {
-            null, Op.EQUAL, Op.GREATER_THAN_OR_EQUAL -> descriptor.toVersion()
-            Op.LESS_THAN_OR_EQUAL -> descriptor.toVersion()?.toSmallestLargerVersion()
+            null, Op.EQUAL, Op.GREATER_THAN_OR_EQUAL -> descriptor.toLowVersion(format, isUpperBound = false)
+            Op.LESS_THAN_OR_EQUAL -> descriptor.toHighVersion(format, isUpperBound = true)
             Op.LESS_THAN -> when (descriptor) {
                 is StarVersionDescriptor -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
                 is RegularNpmVersionDescriptor -> when {
                     isX(descriptor.majorString) -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
-                    else -> descriptor.toVersion()?.let {
-                        if (descriptor.minor == null || descriptor.patch == null) {
-                            it.copy(preRelease = "0")
-                        } else {
-                            it
-                        }
-                    }
+                    else -> descriptor.toLowVersion(format, isUpperBound = true)
                 }
             }
             Op.GREATER_THAN -> when (descriptor) {
                 is StarVersionDescriptor -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
                 is RegularNpmVersionDescriptor -> when {
                     isX(descriptor.majorString) -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
-                    descriptor.minor == null -> descriptor.toVersion()?.toNextMajor(preRelease = "0")
-                    descriptor.patch == null -> descriptor.toVersion()?.toNextMinor(preRelease = "0")
-                    descriptor.preRelease == null -> descriptor.toVersion()?.toNextPatch(preRelease = "0")
-                    else -> descriptor.toVersion()
+                    else ->descriptor.toHighVersion(format, isUpperBound = false)
                 }
             }
         }
@@ -123,30 +116,33 @@ internal data class ComparatorPredicate(
 }
 
 internal data class HyphenVersionRange(
+    private val format: NpmConstraintFormat,
     private val lowerBound: NpmVersionDescriptor,
     private val upperBound: NpmVersionDescriptor
 ) : RangePredicate(
-    startInclusive = lowerBound.toVersion(),
+    startInclusive = lowerBound.toLowVersion(format, isUpperBound = false),
     endExclusive = when (upperBound) {
         is StarVersionDescriptor -> null
-        is RegularNpmVersionDescriptor -> when {
-            isX(upperBound.majorString) -> null
-            upperBound.minor == null -> upperBound.toVersion()!!.toNextMajor(preRelease = "0")
-            upperBound.patch == null -> upperBound.toVersion()!!.toNextMinor(preRelease = "0")
-            else -> upperBound.toVersion()?.toSmallestLargerVersion()
-        }
+        is RegularNpmVersionDescriptor -> upperBound.toHighVersion(format, isUpperBound = true)
     }
 ) {
-    override fun toString(): String = "$lowerBound-$upperBound"
+    override fun toString(): String = "$lowerBound - $upperBound"
 }
 
-internal class TildeVersionRange(private val descriptor: NpmVersionDescriptor?) : RangePredicate(
-    startInclusive = descriptor.toVersion(),
+internal class TildeVersionRange(
+    format: NpmConstraintFormat,
+    private val descriptor: NpmVersionDescriptor?
+) : RangePredicate(
+    startInclusive = descriptor?.toLowVersion(format, isUpperBound = false),
     endExclusive = when (descriptor) {
         null, is StarVersionDescriptor -> null
-        is RegularNpmVersionDescriptor -> when {
-            descriptor.patch != null -> descriptor.toVersion()?.toNextMinor(preRelease = "0")
-            else -> descriptor.toVersion()?.toNextMajor(preRelease = "0")
+        is RegularNpmVersionDescriptor -> {
+            val version = descriptor.toLowVersion(format, isUpperBound = false)
+            when {
+                version == null -> null
+                !isX(descriptor.minorString) -> version.toNextMinor(preRelease = if (format.includePreRelease) null else "0")
+                else -> version.toNextMajor(preRelease = if (format.includePreRelease) null else "0")
+            }
         }
     }
 ) {
@@ -156,21 +152,24 @@ internal class TildeVersionRange(private val descriptor: NpmVersionDescriptor?) 
     }
 }
 
-internal class XVersionRange(private val descriptor: NpmVersionDescriptor?) : RangePredicate(
+internal class XVersionRange(
+    format: NpmConstraintFormat,
+    private val descriptor: NpmVersionDescriptor?
+) : RangePredicate(
     startInclusive = when (descriptor) {
         null, is StarVersionDescriptor -> null
-        is RegularNpmVersionDescriptor -> when {
-            isX(descriptor.majorString) -> null
-            else -> descriptor.toVersion()
-        }
+        is RegularNpmVersionDescriptor -> descriptor.toLowVersion(format, isUpperBound = false)
     },
     endExclusive = when (descriptor) {
         null, is StarVersionDescriptor -> null
-        is RegularNpmVersionDescriptor -> when {
-            isX(descriptor.majorString) -> null
-            descriptor.minor == null || isX(descriptor.minorString) -> SemanticVersion(descriptor.major!! + 1, 0, 0, "0")
-            descriptor.patch == null || isX(descriptor.patchString) -> SemanticVersion(descriptor.major!!, descriptor.minor!! + 1, 0, "0")
-            else -> SemanticVersion(descriptor.major!!, descriptor.minor!!, descriptor.patch!! + 1, "0")
+        is RegularNpmVersionDescriptor -> {
+            val version = descriptor.toLowVersion(format, isUpperBound = false)
+            when {
+                isX(descriptor.majorString) -> null
+                isX(descriptor.minorString) -> version?.toNextMajor(if (format.includePreRelease) null else "0")
+                isX(descriptor.patchString) -> version?.toNextMinor(if (format.includePreRelease) null else "0")
+                else -> version?.toSmallestLargerVersion()
+            }
         }
     }
 ) {
