@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge&label=License)](https://github.com/Osmerion/kotlin-semver/blob/master/LICENSE)
 [![Maven Central](https://img.shields.io/maven-central/v/com.osmerion.kotlin-semver/kotlin-semver.svg?style=for-the-badge&label=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.osmerion.kotlin-semver/kotlin-semver)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2%2E2-green.svg?style=for-the-badge&color=a97bff&logo=Kotlin)
-![Java](https://img.shields.io/badge/Java-11-green.svg?style=for-the-badge&color=b07219&logo=Java)
+![Java](https://img.shields.io/badge/Java-17-green.svg?style=for-the-badge&color=b07219&logo=Java)
 
 A [Kotlin Multiplatform](https://kotlinlang.org/docs/mpp-intro.html)
 implementation of the [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
@@ -11,7 +11,7 @@ specification with support for **parsing**, **comparing** and **incrementing**
 semantic versions accompanied by support for **version constraints**.
 
 The library is fully written in common Kotlin code. Prebuilt binaries are
-available for JVM (Java 11 or later), JS, Wasm, and all native targets.[^1]
+available for JVM (Java 17 or later), JS, Wasm, and all native targets.[^1]
 
 [^1]: Since this library does not rely on any platform-specific APIs, we aim to
       provide prebuilt libraries for all native targets supported by Kotlin.
