@@ -34,4 +34,19 @@ plugins {
 
 rootProject.name = "kotlin-semver"
 
+dependencyResolutionManagement {
+    // https://youtrack.jetbrains.com/issue/KT-68533
+//    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+
+    repositories {
+        mavenCentral()
+    }
+
+    versionCatalogs {
+        register("buildDeps") {
+            from(files("./gradle/build.versions.toml"))
+        }
+    }
+}
+
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")

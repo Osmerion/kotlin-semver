@@ -27,16 +27,13 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.binary.compatibility.validator)
-    alias(libs.plugins.dokka)
-    alias(libs.plugins.gradle.toolchain.switches)
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.plugin.serialization)
+    alias(buildDeps.plugins.binary.compatibility.validator)
+    alias(buildDeps.plugins.dokka)
+    alias(buildDeps.plugins.gradle.toolchain.switches)
+    alias(buildDeps.plugins.kotlin.multiplatform)
+    alias(buildDeps.plugins.kotlin.plugin.serialization)
     id("com.osmerion.maven-publish-conventions")
 }
-
-yarn.lockFileName = "kotlin-yarn.lock"
-yarn.lockFileDirectory = projectDir
 
 java {
     toolchain {
@@ -133,20 +130,20 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                compileOnly(libs.kotlinx.serialization.core)
+                compileOnly(buildDeps.kotlinx.serialization.core)
             }
         }
 
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(libs.kotlinx.serialization.json)
+                implementation(buildDeps.kotlinx.serialization.json)
             }
         }
 
         nativeMain {
             dependencies {
-                implementation(libs.kotlinx.serialization.core)
+                implementation(buildDeps.kotlinx.serialization.core)
             }
         }
     }
