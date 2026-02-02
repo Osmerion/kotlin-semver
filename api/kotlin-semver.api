@@ -1,16 +1,9 @@
-public final class com/osmerion/kotlin/semver/ConstraintFormat : java/lang/Enum {
-	public static final field MAVEN Lcom/osmerion/kotlin/semver/ConstraintFormat;
-	public static final field NPM Lcom/osmerion/kotlin/semver/ConstraintFormat;
-	public static final field OSMERION Lcom/osmerion/kotlin/semver/ConstraintFormat;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/ConstraintFormat;
-	public static fun values ()[Lcom/osmerion/kotlin/semver/ConstraintFormat;
+public abstract interface class com/osmerion/kotlin/semver/ConstraintFormat {
+	public abstract fun parse (Ljava/lang/CharSequence;)Lkotlin/Pair;
+	public abstract fun toString (Ljava/util/List;)Ljava/lang/String;
 }
 
 public final class com/osmerion/kotlin/semver/ConstraintFormatException : java/lang/IllegalArgumentException {
-}
-
-public abstract interface annotation class com/osmerion/kotlin/semver/ExperimentalConstraintFormat : java/lang/annotation/Annotation {
 }
 
 public final class com/osmerion/kotlin/semver/SemanticVersion : java/lang/Comparable {
@@ -36,8 +29,8 @@ public final class com/osmerion/kotlin/semver/SemanticVersion : java/lang/Compar
 	public final fun isNormal ()Z
 	public final fun isPreRelease ()Z
 	public final fun isStable ()Z
-	public static final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun parse (Ljava/lang/String;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static final fun parse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static final fun parse (Ljava/lang/CharSequence;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun removeBuildMetadata ()Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun removePreRelease ()Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun satisfies (Lcom/osmerion/kotlin/semver/VersionConstraint;)Z
@@ -54,18 +47,18 @@ public final class com/osmerion/kotlin/semver/SemanticVersion : java/lang/Compar
 	public static synthetic fun toNextPatch$default (Lcom/osmerion/kotlin/semver/SemanticVersion;Ljava/lang/String;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun toNormalVersion ()Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public fun toString ()Ljava/lang/String;
-	public static final fun tryParse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static final fun tryParse (Ljava/lang/String;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static final fun tryParse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static final fun tryParse (Ljava/lang/CharSequence;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
 }
 
 public final class com/osmerion/kotlin/semver/SemanticVersion$Companion {
-	public final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public final fun parse (Ljava/lang/String;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun parse$default (Lcom/osmerion/kotlin/semver/SemanticVersion$Companion;Ljava/lang/String;ZILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun parse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun parse (Ljava/lang/CharSequence;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun parse$default (Lcom/osmerion/kotlin/semver/SemanticVersion$Companion;Ljava/lang/CharSequence;ZILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-	public final fun tryParse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public final fun tryParse (Ljava/lang/String;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
-	public static synthetic fun tryParse$default (Lcom/osmerion/kotlin/semver/SemanticVersion$Companion;Ljava/lang/String;ZILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun tryParse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public final fun tryParse (Ljava/lang/CharSequence;Z)Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public static synthetic fun tryParse$default (Lcom/osmerion/kotlin/semver/SemanticVersion$Companion;Ljava/lang/CharSequence;ZILjava/lang/Object;)Lcom/osmerion/kotlin/semver/SemanticVersion;
 }
 
 public final class com/osmerion/kotlin/semver/VersionConstraint {
@@ -75,29 +68,80 @@ public final class com/osmerion/kotlin/semver/VersionConstraint {
 	public final fun getPreferredVersion ()Lcom/osmerion/kotlin/semver/SemanticVersion;
 	public fun hashCode ()I
 	public final fun isSatisfiedBy (Lcom/osmerion/kotlin/semver/SemanticVersion;)Z
+	public final fun isSatisfiedBy (Lcom/osmerion/kotlin/semver/SemanticVersion;Z)Z
 	public final fun isSatisfiedByAll (Ljava/lang/Iterable;)Z
 	public final fun isSatisfiedByAny (Ljava/lang/Iterable;)Z
-	public static final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/VersionConstraint;
-	public static final fun parse (Ljava/lang/String;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public static final fun parse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public static final fun parse (Ljava/lang/CharSequence;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
 	public fun toString ()Ljava/lang/String;
-	public static final fun tryParse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/VersionConstraint;
-	public static final fun tryParse (Ljava/lang/String;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public static final fun tryParse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public static final fun tryParse (Ljava/lang/CharSequence;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
 }
 
 public final class com/osmerion/kotlin/semver/VersionConstraint$Companion {
-	public final fun parse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/VersionConstraint;
-	public final fun parse (Ljava/lang/String;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
-	public static synthetic fun parse$default (Lcom/osmerion/kotlin/semver/VersionConstraint$Companion;Ljava/lang/String;Lcom/osmerion/kotlin/semver/ConstraintFormat;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public final fun parse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public final fun parse (Ljava/lang/CharSequence;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public static synthetic fun parse$default (Lcom/osmerion/kotlin/semver/VersionConstraint$Companion;Ljava/lang/CharSequence;Lcom/osmerion/kotlin/semver/ConstraintFormat;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/VersionConstraint;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
-	public final fun tryParse (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/VersionConstraint;
-	public final fun tryParse (Ljava/lang/String;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
-	public static synthetic fun tryParse$default (Lcom/osmerion/kotlin/semver/VersionConstraint$Companion;Ljava/lang/String;Lcom/osmerion/kotlin/semver/ConstraintFormat;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public final fun tryParse (Ljava/lang/CharSequence;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public final fun tryParse (Ljava/lang/CharSequence;Lcom/osmerion/kotlin/semver/ConstraintFormat;)Lcom/osmerion/kotlin/semver/VersionConstraint;
+	public static synthetic fun tryParse$default (Lcom/osmerion/kotlin/semver/VersionConstraint$Companion;Ljava/lang/CharSequence;Lcom/osmerion/kotlin/semver/ConstraintFormat;ILjava/lang/Object;)Lcom/osmerion/kotlin/semver/VersionConstraint;
 }
 
 public final class com/osmerion/kotlin/semver/VersionFormatException : java/lang/IllegalArgumentException {
 }
 
-public class com/osmerion/kotlin/semver/serializers/AbstractConstraintSerializer : kotlinx/serialization/KSerializer {
+public abstract interface annotation class com/osmerion/kotlin/semver/constraints/ExperimentalConstraintApi : java/lang/annotation/Annotation {
+}
+
+public abstract class com/osmerion/kotlin/semver/constraints/RangePredicate : com/osmerion/kotlin/semver/constraints/VersionPredicate {
+	public fun <init> (Lcom/osmerion/kotlin/semver/SemanticVersion;Lcom/osmerion/kotlin/semver/SemanticVersion;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getComparators ()Ljava/util/Set;
+	public fun hashCode ()I
+}
+
+public final class com/osmerion/kotlin/semver/constraints/VersionComparator {
+	public fun <init> (Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;Lcom/osmerion/kotlin/semver/SemanticVersion;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOp ()Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+	public final fun getReference ()Lcom/osmerion/kotlin/semver/SemanticVersion;
+	public fun hashCode ()I
+}
+
+public final class com/osmerion/kotlin/semver/constraints/VersionComparator$Op : java/lang/Enum {
+	public static final field EQ Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+	public static final field GTE Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+	public static final field LT Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+	public static final field NEQ Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+	public static fun values ()[Lcom/osmerion/kotlin/semver/constraints/VersionComparator$Op;
+}
+
+public abstract interface class com/osmerion/kotlin/semver/constraints/VersionPredicate {
+	public abstract fun getComparators ()Ljava/util/Set;
+}
+
+public abstract class com/osmerion/kotlin/semver/constraints/maven/MavenConstraintFormat : com/osmerion/kotlin/semver/ConstraintFormat {
+	public static final field Default Lcom/osmerion/kotlin/semver/constraints/maven/MavenConstraintFormat$Default;
+	public fun parse (Ljava/lang/CharSequence;)Lkotlin/Pair;
+	public fun toString (Ljava/util/List;)Ljava/lang/String;
+}
+
+public final class com/osmerion/kotlin/semver/constraints/maven/MavenConstraintFormat$Default : com/osmerion/kotlin/semver/constraints/maven/MavenConstraintFormat {
+}
+
+public abstract class com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat : com/osmerion/kotlin/semver/ConstraintFormat {
+	public static final field Default Lcom/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat$Default;
+	public fun parse (Ljava/lang/CharSequence;)Lkotlin/Pair;
+	public fun toString (Ljava/util/List;)Ljava/lang/String;
+}
+
+public final class com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat$Default : com/osmerion/kotlin/semver/constraints/npm/NpmConstraintFormat {
+}
+
+public class com/osmerion/kotlin/semver/serializers/ConstraintSerializer : kotlinx/serialization/KSerializer {
 	public fun <init> (Lcom/osmerion/kotlin/semver/ConstraintFormat;)V
 	public fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/osmerion/kotlin/semver/VersionConstraint;
 	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
@@ -106,7 +150,7 @@ public class com/osmerion/kotlin/semver/serializers/AbstractConstraintSerializer
 	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
 }
 
-public final class com/osmerion/kotlin/semver/serializers/DefaultConstraintSerializer : com/osmerion/kotlin/semver/serializers/AbstractConstraintSerializer {
+public final class com/osmerion/kotlin/semver/serializers/DefaultConstraintSerializer : com/osmerion/kotlin/semver/serializers/ConstraintSerializer {
 	public static final field INSTANCE Lcom/osmerion/kotlin/semver/serializers/DefaultConstraintSerializer;
 }
 
