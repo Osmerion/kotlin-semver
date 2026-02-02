@@ -28,7 +28,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.binary.compatibility.validator)
-    alias(libs.plugins.dokkatoo.html)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.toolchain.switches)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.plugin.serialization)
@@ -152,11 +152,11 @@ kotlin {
     }
 }
 
-dokkatoo {
-    dokkatooSourceSets.configureEach {
+dokka {
+    dokkaSourceSets.configureEach {
         reportUndocumented = true
         skipEmptyPackages = true
-        jdkVersion = 8
+        jdkVersion = 11
 
         val localKotlinSourceDir = layout.projectDirectory.dir("src/$name/kotlin")
         val version = project.version
@@ -167,14 +167,6 @@ dokkatoo {
             remoteUrl("https://github.com/Osmerion/kotlin-semver/tree/v${version}/src/${this@configureEach.name}/kotlin")
             remoteLineSuffix = "#L"
         }
-    }
-
-    dokkatooPublications.configureEach {
-        failOnWarning = true
-    }
-
-    versions {
-        jetbrainsDokka = libs.versions.dokka
     }
 }
 
