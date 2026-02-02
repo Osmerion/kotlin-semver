@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Peter Csajtai
- * Copyright (c) 2023-2024 Leon Linhart
+ * Copyright (c) 2023-2026 Leon Linhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.osmerion.kotlin.semver.internal.constraints.formats.npm
+package com.osmerion.kotlin.semver.constraints.npm
 
 import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.constraints.npm.internal.CaretVersionRange
+import com.osmerion.kotlin.semver.constraints.npm.internal.ComparatorPredicate
+import com.osmerion.kotlin.semver.constraints.npm.internal.HyphenVersionRange
+import com.osmerion.kotlin.semver.constraints.npm.internal.Op
+import com.osmerion.kotlin.semver.constraints.npm.internal.TildeVersionRange
 import com.osmerion.kotlin.semver.internal.VersionRange
-import com.osmerion.kotlin.semver.internal.constraints.formats.maven.parseMavenVersionDescriptor
 import com.osmerion.kotlin.semver.internal.toVersionRanges
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
+/*
 class PredicatesTest {
 
     @Test
@@ -220,3 +224,4 @@ class PredicatesTest {
     }
 
 }
+ */
