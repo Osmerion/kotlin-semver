@@ -23,13 +23,11 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(buildDeps.plugins.binary.compatibility.validator)
     alias(buildDeps.plugins.dokka)
-    alias(buildDeps.plugins.gradle.toolchain.switches)
     alias(buildDeps.plugins.kotlin.multiplatform)
     alias(buildDeps.plugins.kotlin.plugin.serialization)
     id("com.osmerion.maven-publish-conventions")
@@ -136,14 +134,37 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(buildDeps.kotlin.test)
                 implementation(buildDeps.kotlinx.serialization.json)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                implementation(project.dependencies.platform(buildDeps.junit.bom))
+                implementation(buildDeps.junit.jupiter.api)
+                implementation(buildDeps.kotlin.test.junit5)
+
+                runtimeOnly(buildDeps.junit.jupiter.engine)
+                runtimeOnly(buildDeps.junit.platform.launcher)
             }
         }
 
         nativeMain {
             dependencies {
-                implementation(buildDeps.kotlinx.serialization.core)
+                api(buildDeps.kotlinx.serialization.core)
+            }
+        }
+
+        wasmWasiMain {
+            dependencies {
+                api(buildDeps.kotlinx.serialization.core)
+            }
+        }
+
+        webMain {
+            dependencies {
+                api(buildDeps.kotlinx.serialization.core)
             }
         }
     }
@@ -164,6 +185,12 @@ dokka {
             remoteUrl("https://github.com/Osmerion/kotlin-semver/tree/v${version}/src/${this@configureEach.name}/kotlin")
             remoteLineSuffix = "#L"
         }
+    }
+}
+
+tasks {
+    withType<Test>().configureEach {
+        useJUnitPlatform()
     }
 }
 
