@@ -29,6 +29,7 @@ import com.osmerion.kotlin.semver.Version
  *
  * @since   0.1.0
  */
+@ExperimentalConstraintApi
 public class VersionComparator(public val op: Op, public val reference: Version) {
 
     override fun equals(other: Any?): Boolean = when {
