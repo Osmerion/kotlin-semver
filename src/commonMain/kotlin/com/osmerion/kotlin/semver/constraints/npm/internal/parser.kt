@@ -23,6 +23,7 @@
 @file:OptIn(ExperimentalConstraintApi::class)
 package com.osmerion.kotlin.semver.constraints.npm.internal
 
+import com.osmerion.kotlin.semver.ConstraintFormatException
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
 import com.osmerion.kotlin.semver.constraints.npm.NpmConstraintFormat
@@ -91,12 +92,12 @@ private fun NpmConstraintFormat.parsePredicate(comp: String): VersionPredicate {
 }
 
 private fun NpmConstraintFormat.parseTilde(comp: String): TildeVersionRange {
-    val (match) = (if (isStrict) SemVerPatterns.TILDE else SemVerPatterns.TILDE_LOOSE).matchEntire(comp)?.destructured ?: TODO()
+    val (match) = (if (isStrict) SemVerPatterns.TILDE else SemVerPatterns.TILDE_LOOSE).matchEntire(comp)?.destructured ?: throw ConstraintFormatException("Invalid tilde range: $comp")
     return TildeVersionRange(format = this, parseNpmVersionDescriptor(match))
 }
 
 private fun NpmConstraintFormat.parseCaret(comp: String): CaretVersionRange {
-    val (_, match) = (if (isStrict) SemVerPatterns.CARET else SemVerPatterns.CARET_LOOSE).matchEntire(comp)?.destructured ?: TODO()
+    val (_, match) = (if (isStrict) SemVerPatterns.CARET else SemVerPatterns.CARET_LOOSE).matchEntire(comp)?.destructured ?: throw ConstraintFormatException("Invalid caret range: $comp")
     return CaretVersionRange(parseNpmVersionDescriptor(match))
 }
 
