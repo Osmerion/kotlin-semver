@@ -112,7 +112,7 @@ The syntax for ranges is loosely based on mathematical notations for intervals.
 
 The `NpmConstraintFormat` implements the constraint format used by [npm](https://github.com/npm/node-semver).
 
-Constraints in this format consist of one or more ranges split b
+Constraints in this format are disjunctions (split by `'||'`) of conjunctions (split by whitespace) of ranges.
 
 
 #### Descriptors
