@@ -152,5 +152,5 @@ jobs:
         with:
           username: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           password: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
-          bundle: ./artifact-bundle.zip
+          bundle: ./artifact-bundle.tgz
           publishing-type: "automatic"
