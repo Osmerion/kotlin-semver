@@ -48,10 +48,11 @@ kotlin {
         languageVersion = KotlinVersion.KOTLIN_2_2
     }
 
-    js {
-        browser()
-        nodejs()
-    }
+    // We don't support JS because we use RegEx features that have only been added in es2018 and Kotlin/JS is barely even at es2015
+//    js {
+//        browser()
+//        nodejs()
+//    }
 
     jvm {
         compilerOptions {

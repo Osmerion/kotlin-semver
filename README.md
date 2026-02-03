@@ -11,12 +11,16 @@ specification with support for **parsing**, **comparing** and **incrementing**
 semantic versions accompanied by support for **version constraints**.
 
 The library is fully written in common Kotlin code. Prebuilt binaries are
-available for JVM (Java 17 or later), JS, Wasm, and all native targets.[^1]
+available for JVM (Java 17 or later), Wasm, and all native targets.[^1][^2]
 
 [^1]: Since this library does not rely on any platform-specific APIs, we aim to
       provide prebuilt libraries for all native targets supported by Kotlin.
       Despite that, some targets may be missing as target support may change
       over time. In case something is missing, please make sure to let us know.
+
+[^2]: This library does not yet support Kotlin/JS as it would currently require
+      ES2018 features whereas the Kotlin compiler only supports targeting ES5
+      and ES2015.
 
 This project was forked from https://github.com/z4kn4fein/kotlin-semver. The
 fork gives up a few idiomatic Kotlin design decisions to provide a significantly

@@ -57,6 +57,7 @@ internal fun NpmConstraintFormat.parseRange(source: CharSequence): List<VersionP
         "${m.groupValues[1].replace("\\s*".toRegex(), "")}${m.groupValues[2]}"
     }
 
+    // TODO This blocks us from support Kotlin/JS because lookbehind is an es2018 feature and Kotlin is barely even at es2015
     val predicates = source.split("(?<!-)\\s+(?!-)".toRegex())
         .map { comp -> parsePredicate(comp) }
 
