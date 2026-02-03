@@ -23,7 +23,7 @@
 @file:OptIn(ExperimentalConstraintApi::class)
 package com.osmerion.kotlin.semver.constraints.npm.internal
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.RangePredicate
 import com.osmerion.kotlin.semver.constraints.VersionComparator
@@ -45,9 +45,9 @@ internal data class CaretVersionRange(private val descriptor: NpmVersionDescript
             fun String.isX() = equals("X", ignoreCase = true)
             when {
                 descriptor.majorString.isX() -> null
-                descriptor.major != 0 || descriptor.minor == null || descriptor.minorString!!.isX() -> SemanticVersion(descriptor.major!! + 1, 0, 0, "0")
-                descriptor.minor != 0 || descriptor.patch == null || descriptor.patchString!!.isX() -> SemanticVersion(descriptor.major!!, descriptor.minor!! + 1, 0, "0")
-                else -> SemanticVersion(descriptor.major!!, descriptor.minor!!, descriptor.patch!! + 1, "0")
+                descriptor.major != 0 || descriptor.minor == null || descriptor.minorString!!.isX() -> Version(descriptor.major!! + 1, 0, 0, "0")
+                descriptor.minor != 0 || descriptor.patch == null || descriptor.patchString!!.isX() -> Version(descriptor.major!!, descriptor.minor!! + 1, 0, "0")
+                else -> Version(descriptor.major!!, descriptor.minor!!, descriptor.patch!! + 1, "0")
             }
         }
     }
@@ -69,16 +69,16 @@ internal data class ComparatorPredicate(
             null, Op.EQUAL, Op.GREATER_THAN_OR_EQUAL -> descriptor.toLowVersion(format, isUpperBound = false)
             Op.LESS_THAN_OR_EQUAL -> descriptor.toHighVersion(format, isUpperBound = true)
             Op.LESS_THAN -> when (descriptor) {
-                is StarVersionDescriptor -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
+                is StarVersionDescriptor -> return setOf(VersionComparator(op = VersionComparator.Op.LT, Version(0, 0, 0, "0")))
                 is RegularNpmVersionDescriptor -> when {
-                    isX(descriptor.majorString) -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
+                    isX(descriptor.majorString) -> return setOf(VersionComparator(op = VersionComparator.Op.LT, Version(0, 0, 0, "0")))
                     else -> descriptor.toLowVersion(format, isUpperBound = true)
                 }
             }
             Op.GREATER_THAN -> when (descriptor) {
-                is StarVersionDescriptor -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
+                is StarVersionDescriptor -> return setOf(VersionComparator(op = VersionComparator.Op.LT, Version(0, 0, 0, "0")))
                 is RegularNpmVersionDescriptor -> when {
-                    isX(descriptor.majorString) -> return setOf(VersionComparator(op = VersionComparator.Op.LT, SemanticVersion(0, 0, 0, "0")))
+                    isX(descriptor.majorString) -> return setOf(VersionComparator(op = VersionComparator.Op.LT, Version(0, 0, 0, "0")))
                     else ->descriptor.toHighVersion(format, isUpperBound = false)
                 }
             }

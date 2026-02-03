@@ -23,7 +23,7 @@
 package com.osmerion.kotlin.semver.constraints.maven.internal
 
 import com.osmerion.kotlin.semver.ConstraintFormatException
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.internal.Patterns
 import com.osmerion.kotlin.semver.internal.PreRelease
 import kotlin.jvm.JvmName
@@ -40,13 +40,13 @@ internal fun parseMavenVersionDescriptor(source: CharSequence): MavenVersionDesc
     return MavenVersionDescriptor(major, minor, patch, preRelease)
 }
 
-internal fun MavenVersionDescriptor.toVersion(increment: Boolean = false): SemanticVersion {
-    return SemanticVersion(major, minor ?: 0, patch ?: 0, preRelease?.toString())
+internal fun MavenVersionDescriptor.toVersion(increment: Boolean = false): Version {
+    return Version(major, minor ?: 0, patch ?: 0, preRelease?.toString())
         .let { if (increment) it.toSmallestLargerVersion() else it }
 }
 
 @JvmName("toVersionNullable")
-internal fun MavenVersionDescriptor?.toVersion(increment: Boolean = false): SemanticVersion? = this?.toVersion(increment)
+internal fun MavenVersionDescriptor?.toVersion(increment: Boolean = false): Version? = this?.toVersion(increment)
 
 internal data class MavenVersionDescriptor(
     private val majorString: String,

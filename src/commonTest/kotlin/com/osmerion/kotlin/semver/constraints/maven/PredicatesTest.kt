@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.constraints.maven
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.maven.internal.ExactVersionMatch
 import com.osmerion.kotlin.semver.constraints.maven.internal.IntervalVersionRange
@@ -39,19 +39,19 @@ class PredicatesTest {
     @Test
     fun testExactVersionMatch() {
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(major = 1, patch = 1, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(major = 1, patch = 1, preRelease = "0"))),
             listOf(listOf(ExactVersionMatch(parseMavenVersionDescriptor("1")))).toVersionRanges()
         )
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2), SemanticVersion(major = 1, minor = 2, patch = 1, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2), Version(major = 1, minor = 2, patch = 1, preRelease = "0"))),
             listOf(listOf(ExactVersionMatch(parseMavenVersionDescriptor("1.2")))).toVersionRanges()
         )
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(major = 1, minor = 2, patch = 4, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2, 3), Version(major = 1, minor = 2, patch = 4, preRelease = "0"))),
             listOf(listOf(ExactVersionMatch(parseMavenVersionDescriptor("1.2.3")))).toVersionRanges()
         )
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3, "0"), SemanticVersion(major = 1, minor = 2, patch = 3, preRelease = "0.0"))),
+            listOf(VersionRange(Version(1, 2, 3, "0"), Version(major = 1, minor = 2, patch = 3, preRelease = "0.0"))),
             listOf(listOf(ExactVersionMatch(parseMavenVersionDescriptor("1.2.3-0")))).toVersionRanges()
         )
     }
@@ -59,7 +59,7 @@ class PredicatesTest {
     @Test
     fun testIntervalVersionRange() {
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(2, 7, 5, "0"))),
+            listOf(VersionRange(Version(1, 2, 3), Version(2, 7, 5, "0"))),
             listOf(listOf(
                 IntervalVersionRange(
                     lowerBound = parseMavenVersionDescriptor("1.2.3"),
@@ -71,7 +71,7 @@ class PredicatesTest {
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 4, "0"), SemanticVersion(2, 7, 5, "0"))),
+            listOf(VersionRange(Version(1, 2, 4, "0"), Version(2, 7, 5, "0"))),
             listOf(listOf(
                 IntervalVersionRange(
                     lowerBound = parseMavenVersionDescriptor("1.2.3"),
@@ -83,7 +83,7 @@ class PredicatesTest {
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(2, 7, 4))),
+            listOf(VersionRange(Version(1, 2, 3), Version(2, 7, 4))),
             listOf(listOf(
                 IntervalVersionRange(
                     lowerBound = parseMavenVersionDescriptor("1.2.3"),
@@ -95,7 +95,7 @@ class PredicatesTest {
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 4, "0"), SemanticVersion(2, 7, 4))),
+            listOf(VersionRange(Version(1, 2, 4, "0"), Version(2, 7, 4))),
             listOf(listOf(
                 IntervalVersionRange(
                     lowerBound = parseMavenVersionDescriptor("1.2.3"),
@@ -110,7 +110,7 @@ class PredicatesTest {
     @Test
     fun testMinimumVersion() {
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), null)),
+            listOf(VersionRange(Version(1), null)),
             listOf(listOf(MinimumVersion(parseMavenVersionDescriptor("1")))).toVersionRanges()
         )
 

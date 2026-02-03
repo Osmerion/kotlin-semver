@@ -45,7 +45,7 @@ public interface ConstraintFormat {
      * @since   0.1.0
      */
     @ExperimentalConstraintApi
-    public fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?>
+    public fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, Version?>
 
     /**
      * Converts the list of predicates into the string representation.

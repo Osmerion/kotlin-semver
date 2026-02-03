@@ -33,12 +33,12 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 /**
- * A version constraint for [semantic versions][SemanticVersion].
+ * A version constraint for [semantic versions][Version].
  *
  * A version constraint is a combination of predicates that a version can be checked against. For more information refer
  * to [isSatisfiedBy].
  *
- * When using a constraint to resolve a version, usually the [largest][SemanticVersion.compareTo] version that satisfies
+ * When using a constraint to resolve a version, usually the [largest][Version.compareTo] version that satisfies
  * the constraint should be picked. However, some constraints may also specify a [preferred version][preferredVersion].
  * Thus, if a constraint has a preferred version, this version should be picked instead, given that it satisfies all
  * applicable constraints. For example, consider the scenario:
@@ -63,7 +63,7 @@ import kotlin.jvm.JvmStatic
 public class VersionConstraint private constructor(
     private val predicates: List<List<VersionPredicate>>,
     private val format: ConstraintFormat,
-    public val preferredVersion: SemanticVersion?
+    public val preferredVersion: Version?
 ) {
 
     /**
@@ -141,7 +141,7 @@ public class VersionConstraint private constructor(
      *
      * This method is shorthand for `isSatisfiedBy(version, includePreRelease = false)`.
      *
-     * @param version           the [version][SemanticVersion] to check
+     * @param version           the [version][Version] to check
      *
      * @return  whether the given constraint is satisfied by this version
      *
@@ -149,7 +149,7 @@ public class VersionConstraint private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun isSatisfiedBy(version: SemanticVersion): Boolean =
+    public infix fun isSatisfiedBy(version: Version): Boolean =
         isSatisfiedBy(version, includePreRelease = false)
 
     /**
@@ -166,7 +166,7 @@ public class VersionConstraint private constructor(
      * For example, in [NPM][ConstraintFormat.NPM] constraint syntax, consider the constraint `>1.0.0-2`. Despite being
      * semantically greater than `1.0.0-2`, `1.1.0-0` does not satisfy the constraint while `1.0.0-3` does.
      *
-     * @param version           the [version][SemanticVersion] to check
+     * @param version           the [version][Version] to check
      * @param includePreRelease whether pre-release versions may satisfy the constraint
      *
      * @return  whether the given constraint is satisfied by this version
@@ -175,7 +175,7 @@ public class VersionConstraint private constructor(
      *
      * @since   0.1.0
      */
-    public fun isSatisfiedBy(version: SemanticVersion, includePreRelease: Boolean): Boolean {
+    public fun isSatisfiedBy(version: Version, includePreRelease: Boolean): Boolean {
         var low = 0
         var high = ranges.lastIndex
 
@@ -212,7 +212,7 @@ public class VersionConstraint private constructor(
     /**
      * Determines whether this constraint is satisfied by all the given [versions].
      *
-     * @param versions  the [versions][SemanticVersion] to check
+     * @param versions  the [versions][Version] to check
      *
      * @return  whether all given versions satisfy this constraint
      *
@@ -220,13 +220,13 @@ public class VersionConstraint private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun isSatisfiedByAll(versions: Iterable<SemanticVersion>): Boolean =
+    public infix fun isSatisfiedByAll(versions: Iterable<Version>): Boolean =
         versions.all { version -> this isSatisfiedBy version }
 
     /**
      * Determines whether this constraint is satisfied by any of the given [versions].
      *
-     * @param versions  the [versions][SemanticVersion] to check
+     * @param versions  the [versions][Version] to check
      *
      * @return  whether any of the given versions satisfies this constraint
      *
@@ -234,7 +234,7 @@ public class VersionConstraint private constructor(
      *
      * @since   0.1.0
      */
-    public infix fun isSatisfiedByAny(versions: Iterable<SemanticVersion>): Boolean =
+    public infix fun isSatisfiedByAny(versions: Iterable<Version>): Boolean =
         versions.any { version -> this isSatisfiedBy version }
 
 }

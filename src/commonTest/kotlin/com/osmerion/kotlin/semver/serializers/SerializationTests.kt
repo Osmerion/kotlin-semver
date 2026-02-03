@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.serializers
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.VersionConstraint
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -33,12 +33,12 @@ import kotlin.test.assertEquals
 class SerializationTests {
 
     @Serializable
-    data class ToSerialize(val version: SemanticVersion)
+    data class ToSerialize(val version: Version)
 
     @Serializable
     data class ToLooseSerialize(
         @Serializable(with = LooseVersionSerializer::class)
-        val version: SemanticVersion
+        val version: Version
     )
 
     @Serializable
@@ -46,19 +46,19 @@ class SerializationTests {
 
     @Test
     fun testVersionSerialization() {
-        val encoded = Json.encodeToString(SemanticVersion.parse("1.0.0-alpha.1+build.3"))
+        val encoded = Json.encodeToString(Version.parse("1.0.0-alpha.1+build.3"))
         assertEquals("\"1.0.0-alpha.1+build.3\"", encoded)
     }
 
     @Test
     fun testVersionDeserialization() {
-        val decoded = Json.decodeFromString<SemanticVersion>("\"1.0.0-alpha.1+build.3\"")
-        assertEquals(SemanticVersion.parse("1.0.0-alpha.1+build.3"), decoded)
+        val decoded = Json.decodeFromString<Version>("\"1.0.0-alpha.1+build.3\"")
+        assertEquals(Version.parse("1.0.0-alpha.1+build.3"), decoded)
     }
 
     @Test
     fun testMemberVersionSerialization() {
-        val obj = ToSerialize(version = SemanticVersion.parse("1.0.0-alpha.1+build.3"))
+        val obj = ToSerialize(version = Version.parse("1.0.0-alpha.1+build.3"))
         val encoded = Json.encodeToString(obj)
         assertEquals("{\"version\":\"1.0.0-alpha.1+build.3\"}", encoded)
     }
@@ -66,12 +66,12 @@ class SerializationTests {
     @Test
     fun testMemberVersionDeserialization() {
         val decoded = Json.decodeFromString<ToSerialize>("{\"version\":\"1.0.0-alpha.1+build.3\"}")
-        assertEquals(SemanticVersion.parse("1.0.0-alpha.1+build.3"), decoded.version)
+        assertEquals(Version.parse("1.0.0-alpha.1+build.3"), decoded.version)
     }
 
     @Test
     fun testMemberLooseVersionSerialization() {
-        val obj = ToLooseSerialize(version = SemanticVersion.parse("1-alpha.1+build.3", strict = false))
+        val obj = ToLooseSerialize(version = Version.parse("1-alpha.1+build.3", strict = false))
         val encoded = Json.encodeToString(obj)
         assertEquals("{\"version\":\"1.0.0-alpha.1+build.3\"}", encoded)
     }
@@ -79,7 +79,7 @@ class SerializationTests {
     @Test
     fun testMemberLooseVersionDeserialization() {
         val decoded = Json.decodeFromString<ToLooseSerialize>("{\"version\":\"1-alpha.1+build.3\"}")
-        assertEquals(SemanticVersion.parse("1-alpha.1+build.3", strict = false), decoded.version)
+        assertEquals(Version.parse("1-alpha.1+build.3", strict = false), decoded.version)
     }
 
     @Test

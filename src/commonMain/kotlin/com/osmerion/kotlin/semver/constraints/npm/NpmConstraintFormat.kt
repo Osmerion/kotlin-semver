@@ -23,7 +23,7 @@
 package com.osmerion.kotlin.semver.constraints.npm
 
 import com.osmerion.kotlin.semver.ConstraintFormat
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
 import com.osmerion.kotlin.semver.constraints.npm.internal.parseRange
@@ -52,7 +52,7 @@ public sealed class NpmConstraintFormat(
     )
 
     @ExperimentalConstraintApi
-    override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?> {
+    override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, Version?> {
         val source = source.replace("\\s+".toRegex(), " ")
 
         val predicates = source.split("||")

@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.serializers
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -31,24 +31,24 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 /**
- * Built-in [kotlinx.serialization] serializer that encodes and decodes [SemanticVersion] as its string representation.
+ * Built-in [kotlinx.serialization] serializer that encodes and decodes [Version] as its string representation.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.serialization
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.deserialization
  *
  * @since   0.1.0
  */
-public object VersionSerializer : KSerializer<SemanticVersion> {
+public object VersionSerializer : KSerializer<Version> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SemanticVersion", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): SemanticVersion = SemanticVersion.parse(decoder.decodeString())
-    override fun serialize(encoder: Encoder, value: SemanticVersion): Unit = encoder.encodeString(value.toString())
+    override fun deserialize(decoder: Decoder): Version = Version.parse(decoder.decodeString())
+    override fun serialize(encoder: Encoder, value: Version): Unit = encoder.encodeString(value.toString())
 
 }
 
 /**
- * Built-in [kotlinx.serialization] serializer that encodes and decodes non-strict [SemanticVersion] as its string
+ * Built-in [kotlinx.serialization] serializer that encodes and decodes non-strict [Version] as its string
  * representation.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.looseSerialization
@@ -56,11 +56,11 @@ public object VersionSerializer : KSerializer<SemanticVersion> {
  *
  * @since   0.1.0
  */
-public object LooseVersionSerializer : KSerializer<SemanticVersion> {
+public object LooseVersionSerializer : KSerializer<Version> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LooseSemanticVersion", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): SemanticVersion = SemanticVersion.parse(decoder.decodeString(), strict = false)
-    override fun serialize(encoder: Encoder, value: SemanticVersion): Unit = encoder.encodeString(value.toString())
+    override fun deserialize(decoder: Decoder): Version = Version.parse(decoder.decodeString(), strict = false)
+    override fun serialize(encoder: Encoder, value: Version): Unit = encoder.encodeString(value.toString())
 
 }

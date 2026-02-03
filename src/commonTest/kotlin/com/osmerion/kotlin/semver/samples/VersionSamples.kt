@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.samples
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.VersionConstraint
 import com.osmerion.kotlin.semver.serializers.LooseVersionSerializer
 import com.osmerion.kotlin.semver.serializers.VersionSerializer
@@ -31,7 +31,7 @@ import kotlinx.serialization.json.Json
 class VersionSamples {
 
     fun explode() {
-        val version = SemanticVersion.parse("1.2.3-alpha.1+build.1")
+        val version = Version.parse("1.2.3-alpha.1+build.1")
         println("Version: $version")
         println("Major: ${version.major}, Minor: ${version.minor}, Patch: ${version.patch}")
         println("Pre-release: ${version.preRelease}")
@@ -40,76 +40,76 @@ class VersionSamples {
         println("Is it stable? ${version.isStable}")
 
         // equality
-        println("Is 1.0.0 == 1.0.0? ${SemanticVersion.parse("1.0.0") == SemanticVersion.parse("1.0.0")}")
-        println("Is 1.0.0 == 1.0.1? ${SemanticVersion.parse("1.0.0") == SemanticVersion.parse("1.0.1")}")
+        println("Is 1.0.0 == 1.0.0? ${Version.parse("1.0.0") == Version.parse("1.0.0")}")
+        println("Is 1.0.0 == 1.0.1? ${Version.parse("1.0.0") == Version.parse("1.0.1")}")
 
         // comparison
-        println("Is 1.0.1 > 1.0.0? ${SemanticVersion.parse("1.0.1") > SemanticVersion.parse("1.0.0")}")
-        println("Is 1.0.0-alpha.1 > 1.0.0-alpha.0? ${SemanticVersion.parse("1.0.0-alpha.1") > SemanticVersion.parse("1.0.0-alpha.0")}")
+        println("Is 1.0.1 > 1.0.0? ${Version.parse("1.0.1") > Version.parse("1.0.0")}")
+        println("Is 1.0.0-alpha.1 > 1.0.0-alpha.0? ${Version.parse("1.0.0-alpha.1") > Version.parse("1.0.0-alpha.0")}")
 
         // range
-        println("Is 1.0.1 in 1.0.0 .. 1.0.2? ${SemanticVersion.parse("1.0.1") in SemanticVersion.parse("1.0.0")..SemanticVersion.parse("1.0.2")}")
+        println("Is 1.0.1 in 1.0.0 .. 1.0.2? ${Version.parse("1.0.1") in Version.parse("1.0.0")..Version.parse("1.0.2")}")
 
         // destructuring
         print("Destructuring: ")
-        val (major, minor, patch, preRelease, build) = SemanticVersion.parse("1.0.0-alpha+build")
+        val (major, minor, patch, preRelease, build) = Version.parse("1.0.0-alpha+build")
         print("$major $minor $patch $preRelease $build")
     }
 
     fun parseStrict() {
-        println(SemanticVersion.parse("1.0.0-alpha.1+build.1"))
+        println(Version.parse("1.0.0-alpha.1+build.1"))
     }
 
     fun parseLoose() {
-        println(SemanticVersion.parse("v1.0-alpha.1+build.1", strict = false))
-        println(SemanticVersion.parse("1-alpha", strict = false))
-        println(SemanticVersion.parse("2", strict = false))
+        println(Version.parse("v1.0-alpha.1+build.1", strict = false))
+        println(Version.parse("1-alpha", strict = false))
+        println(Version.parse("2", strict = false))
     }
 
     fun exception() {
-        SemanticVersion.parse("1.0.a")
+        Version.parse("1.0.a")
     }
 
     fun preReleaseException() {
-        SemanticVersion.parse("1.0.1").toNextPatch(preRelease = "alpha.01")
+        Version.parse("1.0.1").toNextPatch(preRelease = "alpha.01")
     }
 
     fun construct() {
-        println(SemanticVersion(major = 1, preRelease = "alpha"))
-        println(SemanticVersion(major = 1, minor = 1, buildMetadata = "build"))
+        println(Version(major = 1, preRelease = "alpha"))
+        println(Version(major = 1, minor = 1, buildMetadata = "build"))
     }
 
     fun toVersionStrict() {
-        print(SemanticVersion.parse("1.0.0-alpha.1+build.1"))
+        print(Version.parse("1.0.0-alpha.1+build.1"))
     }
 
     fun toVersionLoose() {
-        println(SemanticVersion.parse("v1.0.0-alpha.1+build.1", strict = false))
-        println(SemanticVersion.parse("v1-alpha", strict = false))
-        println(SemanticVersion.parse("2", strict = false))
+        println(Version.parse("v1.0.0-alpha.1+build.1", strict = false))
+        println(Version.parse("v1-alpha", strict = false))
+        println(Version.parse("2", strict = false))
     }
 
     fun tryParseStrict() {
-        println(SemanticVersion.tryParse("1.0.0-alpha.1+build.1"))
-        println(SemanticVersion.tryParse("1.1.a"))
-        println(SemanticVersion.tryParse("v1.1.0"))
-        println(SemanticVersion.tryParse("1.1"))
+        println(Version.tryParse("1.0.0-alpha.1+build.1"))
+        println(Version.tryParse("1.1.a"))
+        println(Version.tryParse("v1.1.0"))
+        println(Version.tryParse("1.1"))
     }
 
     fun tryParseLoose() {
-        println(SemanticVersion.tryParse("v1.1.0", strict = false))
-        println(SemanticVersion.tryParse("1.1-alpha.1+build.1", strict = false))
-        println(SemanticVersion.tryParse("1", strict = false))
-        println(SemanticVersion.tryParse("v1", strict = false))
+        println(Version.tryParse("v1.1.0", strict = false))
+        println(Version.tryParse("1.1-alpha.1+build.1", strict = false))
+        println(Version.tryParse("1", strict = false))
+        println(Version.tryParse("v1", strict = false))
     }
 
     fun copy() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1")
+        val version = Version.parse("1.0.0-alpha.1")
         print(version.copy(minor = 1, preRelease = "beta.0"))
     }
 
     fun toNextMajor() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1")
+        val version = Version.parse("1.0.0-alpha.1")
         println(version.toNextMajor())
         println(version.toNextMajor(preRelease = ""))
         println(version.toNextMajor(preRelease = "alpha"))
@@ -117,7 +117,7 @@ class VersionSamples {
     }
 
     fun toNextMinor() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1")
+        val version = Version.parse("1.0.0-alpha.1")
         println(version.toNextMinor())
         println(version.toNextMinor(preRelease = ""))
         println(version.toNextMinor(preRelease = "alpha"))
@@ -125,7 +125,7 @@ class VersionSamples {
     }
 
     fun toNextPatch() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1")
+        val version = Version.parse("1.0.0-alpha.1")
         println(version.toNextPatch())
         println(version.toNextPatch(preRelease = ""))
         println(version.toNextPatch(preRelease = "alpha"))
@@ -134,39 +134,39 @@ class VersionSamples {
 
     fun satisfies() {
         val constraint = VersionConstraint.parse(">=1.1.0")
-        val version = SemanticVersion.parse("1.1.1")
+        val version = Version.parse("1.1.1")
         print("$version satisfies $constraint? ${version satisfies constraint}")
     }
 
     fun satisfiesAll() {
         val constraints = listOf(">=1.1.0", "~1").map { VersionConstraint.parse(it) }
-        val version = SemanticVersion.parse("1.1.1")
+        val version = Version.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" and ")}? ${version satisfiesAll constraints}")
     }
 
     fun satisfiesAny() {
         val constraints = listOf(">=1.1.0", "~1").map { VersionConstraint.parse(it) }
-        val version = SemanticVersion.parse("1.1.1")
+        val version = Version.parse("1.1.1")
         print("$version satisfies ${constraints.joinToString(" or ")}? ${version satisfiesAny constraints}")
     }
 
     fun removePreRelease() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1+build")
+        val version = Version.parse("1.0.0-alpha.1+build")
         print(version.removePreRelease())
     }
 
     fun removeBuildMetadata() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1+build")
+        val version = Version.parse("1.0.0-alpha.1+build")
         print(version.removeBuildMetadata())
     }
 
     fun toNormalVersion() {
-        val version = SemanticVersion.parse("1.0.0-alpha.1+build")
+        val version = Version.parse("1.0.0-alpha.1+build")
         print(version.toNormalVersion())
     }
 
     fun serialization() {
-        print(Json.encodeToString(VersionSerializer, SemanticVersion.parse("1.0.0-alpha.1+build")))
+        print(Json.encodeToString(VersionSerializer, Version.parse("1.0.0-alpha.1+build")))
     }
 
     fun deserialization() {
@@ -180,7 +180,7 @@ class VersionSamples {
     }
 
     fun looseSerialization() {
-        print(Json.encodeToString(LooseVersionSerializer, SemanticVersion.parse("1-alpha.1+build", strict = false)))
+        print(Json.encodeToString(LooseVersionSerializer, Version.parse("1-alpha.1+build", strict = false)))
     }
 
     fun looseDeserialization() {

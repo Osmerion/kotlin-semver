@@ -22,14 +22,14 @@
  */
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 
 /**
  * A comparator defines a test for a version through an [operation][op] and a [reference].
  *
  * @since   0.1.0
  */
-public class VersionComparator(public val op: Op, public val reference: SemanticVersion) {
+public class VersionComparator(public val op: Op, public val reference: Version) {
 
     override fun equals(other: Any?): Boolean = when {
         this === other -> true

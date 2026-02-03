@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.constraints.npm
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.npm.internal.CaretVersionRange
 import com.osmerion.kotlin.semver.constraints.npm.internal.ComparatorPredicate
@@ -43,32 +43,32 @@ class PredicatesTest {
         val format = NpmConstraintFormat
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(2, 0, 0, preRelease = "0"))),
             listOf(listOf(CaretVersionRange(format.parseNpmVersionDescriptor("1")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2), SemanticVersion(2, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2), Version(2, 0, 0, preRelease = "0"))),
             listOf(listOf(CaretVersionRange(format.parseNpmVersionDescriptor("1.2")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(2, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2, 3), Version(2, 0, 0, preRelease = "0"))),
             listOf(listOf(CaretVersionRange(format.parseNpmVersionDescriptor("1.2.3")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3, preRelease = "1"), SemanticVersion(2, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2, 3, preRelease = "1"), Version(2, 0, 0, preRelease = "0"))),
             listOf(listOf(CaretVersionRange(format.parseNpmVersionDescriptor("1.2.3-1")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(0, 0, 1), SemanticVersion(0, 0, 2, preRelease = "0"))),
+            listOf(VersionRange(Version(0, 0, 1), Version(0, 0, 2, preRelease = "0"))),
             listOf(listOf(CaretVersionRange(format.parseNpmVersionDescriptor("0.0.1")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(0, 1, 0), SemanticVersion(0, 2, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(0, 1, 0), Version(0, 2, 0, preRelease = "0"))),
             listOf(listOf(CaretVersionRange(format.parseNpmVersionDescriptor("0.1.0")))).toVersionRanges()
         )
     }
@@ -79,106 +79,106 @@ class PredicatesTest {
 
         // EQUAL
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(1, 0, 1, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(1, 0, 1, preRelease = "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1"), Op.EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2), SemanticVersion(1, 2, 1, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2), Version(1, 2, 1, preRelease = "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2"), Op.EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(1, 2, 4, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2, 3), Version(1, 2, 4, preRelease = "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3"), Op.EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3, preRelease = "1"), SemanticVersion(1, 2, 3, preRelease = "1.0"))),
+            listOf(VersionRange(Version(1, 2, 3, preRelease = "1"), Version(1, 2, 3, preRelease = "1.0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3-1"), Op.EQUAL))).toVersionRanges()
         )
 
         // LESS_THAN
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(null, Version(1, 0, 0, preRelease = "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1"), Op.LESS_THAN))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 2, 0, preRelease = "0"))),
+            listOf(VersionRange(null, Version(1, 2, 0, preRelease = "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2"), Op.LESS_THAN))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 2, 3))),
+            listOf(VersionRange(null, Version(1, 2, 3))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3"), Op.LESS_THAN))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 2, 3, preRelease = "1"))),
+            listOf(VersionRange(null, Version(1, 2, 3, preRelease = "1"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3-1"), Op.LESS_THAN))).toVersionRanges()
         )
 
         // LESS_THAN_OR_EQUAL
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(2, 0, 0, "0"))),
+            listOf(VersionRange(null, Version(2, 0, 0, "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1"), Op.LESS_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 3, 0, "0"))),
+            listOf(VersionRange(null, Version(1, 3, 0, "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2"), Op.LESS_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 2, 4, "0"))),
+            listOf(VersionRange(null, Version(1, 2, 4, "0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3"), Op.LESS_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(null, SemanticVersion(1, 2, 3, preRelease = "1.0"))),
+            listOf(VersionRange(null, Version(1, 2, 3, preRelease = "1.0"))),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3-1"), Op.LESS_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         // GREATER_THAN
         assertEquals(
-            listOf(VersionRange(SemanticVersion(2, 0, 0), null)),
+            listOf(VersionRange(Version(2, 0, 0), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1"), Op.GREATER_THAN))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 3, 0), null)),
+            listOf(VersionRange(Version(1, 3, 0), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2"), Op.GREATER_THAN))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 4), null)),
+            listOf(VersionRange(Version(1, 2, 4), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3"), Op.GREATER_THAN))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3, preRelease = "1.0"), null)),
+            listOf(VersionRange(Version(1, 2, 3, preRelease = "1.0"), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3-1"), Op.GREATER_THAN))).toVersionRanges()
         )
 
         // GREATER_THAN_OR_EQUAL
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 0, 0), null)),
+            listOf(VersionRange(Version(1, 0, 0), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1"), Op.GREATER_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 0), null)),
+            listOf(VersionRange(Version(1, 2, 0), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2"), Op.GREATER_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), null)),
+            listOf(VersionRange(Version(1, 2, 3), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3"), Op.GREATER_THAN_OR_EQUAL))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3, preRelease = "1"), null)),
+            listOf(VersionRange(Version(1, 2, 3, preRelease = "1"), null)),
             listOf(listOf(ComparatorPredicate(format, format.parseNpmVersionDescriptor("1.2.3-1"), Op.GREATER_THAN_OR_EQUAL))).toVersionRanges()
         )
     }
@@ -188,22 +188,22 @@ class PredicatesTest {
         val format = NpmConstraintFormat
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(3, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(3, 0, 0, preRelease = "0"))),
             listOf(listOf(HyphenVersionRange(format, format.parseNpmVersionDescriptor("1"), format.parseNpmVersionDescriptor("2")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(2, 4, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(2, 4, 0, preRelease = "0"))),
             listOf(listOf(HyphenVersionRange(format, format.parseNpmVersionDescriptor("1"), format.parseNpmVersionDescriptor("2.3")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(2, 3, 5, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(2, 3, 5, preRelease = "0"))),
             listOf(listOf(HyphenVersionRange(format, format.parseNpmVersionDescriptor("1"), format.parseNpmVersionDescriptor("2.3.4")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(2, 3, 4, preRelease = "5.0"))),
+            listOf(VersionRange(Version(1), Version(2, 3, 4, preRelease = "5.0"))),
             listOf(listOf(HyphenVersionRange(format, format.parseNpmVersionDescriptor("1"), format.parseNpmVersionDescriptor("2.3.4-5")))).toVersionRanges()
         )
     }
@@ -213,22 +213,22 @@ class PredicatesTest {
         val format = NpmConstraintFormat
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1), Version(2, 0, 0, preRelease = "0"))),
             listOf(listOf(TildeVersionRange(format, format.parseNpmVersionDescriptor("1")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2), SemanticVersion(1, 3, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2), Version(1, 3, 0, preRelease = "0"))),
             listOf(listOf(TildeVersionRange(format, format.parseNpmVersionDescriptor("1.2")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(1, 3, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2, 3), Version(1, 3, 0, preRelease = "0"))),
             listOf(listOf(TildeVersionRange(format, format.parseNpmVersionDescriptor("1.2.3")))).toVersionRanges()
         )
 
         assertEquals(
-            listOf(VersionRange(SemanticVersion(1, 2, 3, preRelease = "1"), SemanticVersion(1, 3, 0, preRelease = "0"))),
+            listOf(VersionRange(Version(1, 2, 3, preRelease = "1"), Version(1, 3, 0, preRelease = "0"))),
             listOf(listOf(TildeVersionRange(format, format.parseNpmVersionDescriptor("1.2.3-1")))).toVersionRanges()
         )
     }

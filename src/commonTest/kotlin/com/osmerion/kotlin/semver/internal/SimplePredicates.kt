@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.internal
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionComparator
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
@@ -30,19 +30,19 @@ import com.osmerion.kotlin.semver.constraints.VersionPredicate
 @OptIn(ExperimentalConstraintApi::class)
 internal object SimplePredicates {
 
-    fun equal(version: SemanticVersion): VersionPredicate = object : VersionPredicate {
+    fun equal(version: Version): VersionPredicate = object : VersionPredicate {
         override val comparators: Set<VersionComparator> get() = setOf(VersionComparator(VersionComparator.Op.EQ, version))
     }
 
-    fun greaterThanOrEqual(version: SemanticVersion): VersionPredicate = object : VersionPredicate {
+    fun greaterThanOrEqual(version: Version): VersionPredicate = object : VersionPredicate {
         override val comparators: Set<VersionComparator> get() = setOf(VersionComparator(VersionComparator.Op.GTE, version))
     }
 
-    fun lessThan(version: SemanticVersion): VersionPredicate = object : VersionPredicate {
+    fun lessThan(version: Version): VersionPredicate = object : VersionPredicate {
         override val comparators: Set<VersionComparator> get() = setOf(VersionComparator(VersionComparator.Op.LT, version))
     }
 
-    fun notEqual(version: SemanticVersion): VersionPredicate = object : VersionPredicate {
+    fun notEqual(version: Version): VersionPredicate = object : VersionPredicate {
         override val comparators: Set<VersionComparator> get() = setOf(VersionComparator(VersionComparator.Op.NEQ, version))
     }
 

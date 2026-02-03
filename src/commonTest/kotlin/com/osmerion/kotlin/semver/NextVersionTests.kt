@@ -30,7 +30,7 @@ class NextVersionTests {
 
     @Test
     fun testVersionComponentsNullBuildMeta() {
-        val version = SemanticVersion.parse("1.2.3-alpha.4+build.3")
+        val version = Version.parse("1.2.3-alpha.4+build.3")
         assertEquals("2.0.0", version.toNextMajor().toString())
         assertEquals("1.3.0", version.toNextMinor().toString())
         assertEquals("1.2.3", version.toNextPatch().toString())
@@ -38,7 +38,7 @@ class NextVersionTests {
 
     @Test
     fun testNextVersionsWithoutPreRelease() {
-        val version = SemanticVersion.parse("1.2.3")
+        val version = Version.parse("1.2.3")
         assertEquals("2.0.0", version.toNextMajor().toString())
         assertEquals("1.3.0", version.toNextMinor().toString())
         assertEquals("1.2.4", version.toNextPatch().toString())
@@ -46,7 +46,7 @@ class NextVersionTests {
 
     @Test
     fun testNextVersionsWithNonNumericPreRelease() {
-        val version = SemanticVersion.parse("1.2.3-alpha")
+        val version = Version.parse("1.2.3-alpha")
         assertEquals("2.0.0", version.toNextMajor().toString())
         assertEquals("1.3.0", version.toNextMinor().toString())
         assertEquals("1.2.3", version.toNextPatch().toString())
@@ -54,7 +54,7 @@ class NextVersionTests {
 
     @Test
     fun testInvalidPreReleases() {
-        val version = SemanticVersion.parse("1.2.3-alpha")
+        val version = Version.parse("1.2.3-alpha")
         assertFailsWith<VersionFormatException> { version.toNextMajor(preRelease = "01") }
         assertFailsWith<VersionFormatException> { version.toNextMinor(preRelease = "01") }
         assertFailsWith<VersionFormatException> { version.toNextPatch(preRelease = "01") }

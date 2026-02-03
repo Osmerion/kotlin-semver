@@ -43,7 +43,7 @@ import kotlin.jvm.JvmSynthetic
  * @since   0.1.0
  */
 @Serializable(with = VersionSerializer::class)
-public class SemanticVersion private constructor(
+public class Version private constructor(
     /**
      * The `MAJOR` number of the version.
      *
@@ -78,7 +78,7 @@ public class SemanticVersion private constructor(
      * @since   0.1.0
      */
     public val buildMetadata: String? = null
-) : Comparable<SemanticVersion> {
+) : Comparable<Version> {
 
     /**
      * Constructs a semantic version from the given arguments following the pattern:
@@ -111,7 +111,7 @@ public class SemanticVersion private constructor(
     }
 
     /**
-     * Companion object of [SemanticVersion].
+     * Companion object of [Version].
      *
      * @since   0.1.0
      */
@@ -121,7 +121,7 @@ public class SemanticVersion private constructor(
         private val looseVersionRegex: Regex by lazy { Patterns.PREFIXED_LOOSE_VERSION_REGEX.toRegex() }
 
         /**
-         * Parses the given [source] argument as a [SemanticVersion]. If the string does not represent a semantic
+         * Parses the given [source] argument as a [Version]. If the string does not represent a semantic
          * version, a [VersionFormatException] is thrown.
          *
          * By default, this function only accepts version strings that conform to the Semantic Versioning Specification
@@ -141,7 +141,7 @@ public class SemanticVersion private constructor(
         @JvmOverloads
         @JvmStatic
         @Suppress("MagicNumber")
-        public fun parse(source: CharSequence, strict: Boolean = true): SemanticVersion {
+        public fun parse(source: CharSequence, strict: Boolean = true): Version {
             val regex = if (strict) versionRegex else looseVersionRegex
             val result = regex.matchEntire(source) ?: throw VersionFormatException("Invalid version string: $source")
             val major = result.groupValues[1].toIntOrNull()
@@ -151,14 +151,14 @@ public class SemanticVersion private constructor(
             val buildMetadata = result.groups[5]?.value
 
             return when {
-                strict && major != null && minor != null && patch != null -> SemanticVersion(major, minor, patch, preRelease, buildMetadata)
-                !strict && major != null -> SemanticVersion(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
+                strict && major != null && minor != null && patch != null -> Version(major, minor, patch, preRelease, buildMetadata)
+                !strict && major != null -> Version(major, minor ?: 0, patch ?: 0, preRelease, buildMetadata)
                 else -> throw VersionFormatException("Invalid version string: $source")
             }
         }
 
         /**
-         * Parses the given [source] argument as a [SemanticVersion]. If the string does not represent a semantic
+         * Parses the given [source] argument as a [Version]. If the string does not represent a semantic
          * version, `null` is returned instead.
          *
          * By default, this function only accepts version strings that conform to the Semantic Versioning Specification
@@ -177,7 +177,7 @@ public class SemanticVersion private constructor(
          */
         @JvmOverloads
         @JvmStatic
-        public fun tryParse(source: CharSequence, strict: Boolean = true): SemanticVersion? = try {
+        public fun tryParse(source: CharSequence, strict: Boolean = true): Version? = try {
             parse(source, strict)
         } catch (_: VersionFormatException) {
             null
@@ -194,7 +194,7 @@ public class SemanticVersion private constructor(
         get() = parsedPreRelease?.toString()
 
     /**
-     * Constructs a copy of this [SemanticVersion].
+     * Constructs a copy of this [Version].
      *
      * The copied object's properties can be altered with the optional parameters.
      *
@@ -208,13 +208,13 @@ public class SemanticVersion private constructor(
         patch: Int = this.patch,
         preRelease: String? = this.preRelease,
         buildMetadata: String? = this.buildMetadata
-    ): SemanticVersion =
-        SemanticVersion(major, minor, patch, preRelease, buildMetadata)
+    ): Version =
+        Version(major, minor, patch, preRelease, buildMetadata)
 
     /**
      * Compares this version with the given [other] version for order.
      *
-     * The ordering of [semantic versions][SemanticVersion] is consistent with the definition from the Semantic
+     * The ordering of [semantic versions][Version] is consistent with the definition from the Semantic
      * Versioning 2.0.0 specification:
      *
      *  1. Precedence is determined by the first difference when comparing the major, minor, patch and pre-release
@@ -232,7 +232,7 @@ public class SemanticVersion private constructor(
      *         are equal.
      *
      * The build metadata of a version is ignored when determining its relative order. Since the build metadata is
-     * included in equality checks, the natural ordering of [SemanticVersion] is inconsistent with [equals].
+     * included in equality checks, the natural ordering of [Version] is inconsistent with [equals].
      * Specifically, `e1.compareTo(e2) == 0` does not imply `e1.equals(e2)` exactly if `e1.buildMetadata != e2.buildMetadata`.
      *
      * @param other the version to be compared
@@ -242,7 +242,7 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public override fun compareTo(other: SemanticVersion): Int = when {
+    public override fun compareTo(other: Version): Int = when {
         major > other.major -> 1
         major < other.major -> -1
         minor > other.minor -> 1
@@ -257,7 +257,7 @@ public class SemanticVersion private constructor(
 
     public override fun equals(other: Any?): Boolean = when {
         this === other -> true
-        other is SemanticVersion -> major == other.major
+        other is Version -> major == other.major
             && minor == other.minor
             && patch == other.patch
             && parsedPreRelease == other.parsedPreRelease
@@ -388,7 +388,7 @@ public class SemanticVersion private constructor(
      * @since   0.1.0
      */
     @JvmOverloads
-    public fun toNextMajor(preRelease: String? = null): SemanticVersion = SemanticVersion(
+    public fun toNextMajor(preRelease: String? = null): Version = Version(
         major = major + 1,
         minor = 0,
         patch = 0,
@@ -411,7 +411,7 @@ public class SemanticVersion private constructor(
      * @since   0.1.0
      */
     @JvmOverloads
-    public fun toNextMinor(preRelease: String? = null): SemanticVersion = SemanticVersion(
+    public fun toNextMinor(preRelease: String? = null): Version = Version(
         major = major,
         minor = minor + 1,
         patch = 0,
@@ -424,7 +424,7 @@ public class SemanticVersion private constructor(
      * In accordance with the Semantic Versioning Specification 2.0.0, the major and minor version numbers are left
      * untouched.
      *
-     * If this [SemanticVersion] represents a pre-release version and [preRelease] is `null`, the patch version number
+     * If this [Version] represents a pre-release version and [preRelease] is `null`, the patch version number
      * is not incremented. Instead, the pre-release identifier of this version is simply dropped to produce the next
      * patch version.
      *
@@ -438,7 +438,7 @@ public class SemanticVersion private constructor(
      * @since   0.1.0
      */
     @JvmOverloads
-    public fun toNextPatch(preRelease: String? = null): SemanticVersion = SemanticVersion(
+    public fun toNextPatch(preRelease: String? = null): Version = Version(
         major = major,
         minor = minor,
         patch = if (parsedPreRelease == null || preRelease != null) patch + 1 else patch,
@@ -454,7 +454,7 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public fun removePreRelease(): SemanticVersion =
+    public fun removePreRelease(): Version =
         copy(preRelease = null)
 
     /**
@@ -466,7 +466,7 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public fun removeBuildMetadata(): SemanticVersion =
+    public fun removeBuildMetadata(): Version =
         copy(buildMetadata = null)
 
     /**
@@ -478,7 +478,7 @@ public class SemanticVersion private constructor(
      *
      * @since   0.1.0
      */
-    public fun toNormalVersion(): SemanticVersion =
+    public fun toNormalVersion(): Version =
         copy(preRelease = null, buildMetadata = null)
 
     /**
@@ -524,7 +524,7 @@ public class SemanticVersion private constructor(
         constraints.any { constraint -> constraint isSatisfiedBy this }
 
     @JvmSynthetic
-    internal fun toSmallestLargerVersion(): SemanticVersion {
+    internal fun toSmallestLargerVersion(): Version {
         var patch = patch
         val preRelease = if (parsedPreRelease != null) {
             parsedPreRelease.toSmallestLargerVersion()
@@ -533,7 +533,7 @@ public class SemanticVersion private constructor(
             PreRelease.MIN
         }
 
-        return SemanticVersion(major, minor, patch, preRelease)
+        return Version(major, minor, patch, preRelease)
     }
 
 }

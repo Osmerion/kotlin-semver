@@ -24,7 +24,7 @@ package com.osmerion.kotlin.semver.constraints.maven
 
 import com.osmerion.kotlin.semver.ConstraintFormat
 import com.osmerion.kotlin.semver.ConstraintFormatException
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
 import com.osmerion.kotlin.semver.constraints.maven.internal.ExactVersionMatch
@@ -46,10 +46,10 @@ public sealed class MavenConstraintFormat : ConstraintFormat {
 
     public companion object Default : MavenConstraintFormat()
 
-    override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, SemanticVersion?> {
+    override fun parse(source: CharSequence): Pair<List<List<VersionPredicate>>, Version?> {
         if (source.isBlank()) throw ConstraintFormatException("Constraint strings may not be blank")
 
-        var preferredVersion: SemanticVersion? = null
+        var preferredVersion: Version? = null
         val predicateSets = buildList {
             var pos = 0
             var expectingMore = false

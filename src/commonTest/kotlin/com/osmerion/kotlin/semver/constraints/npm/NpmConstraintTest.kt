@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.constraints.npm
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.VersionConstraint
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.internal.VersionRange
@@ -37,11 +37,11 @@ class NpmConstraintTest {
     fun testToComparators() {
         // https://github.com/npm/node-semver/blob/ac9b35769ab0ddfefd5a3af4a3ecaf3da2012352/test/ranges/to-comparators.js
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 1, preRelease = "0")),
+            VersionRange(Version(1), Version(2, 0, 1, preRelease = "0")),
             "1.0.0 - 2.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(1, 0, 1, preRelease = "0")),
+            VersionRange(Version(1), Version(1, 0, 1, preRelease = "0")),
             "1.0.0"
         )
         assertRangeEquals(
@@ -57,64 +57,64 @@ class NpmConstraintTest {
             "*"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), null),
+            VersionRange(Version(1), null),
             ">=1.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 0, 1), null),
+            VersionRange(Version(1, 0, 1), null),
             ">1.0.0"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(2, 0, 1, preRelease = "0")),
+            VersionRange(null, Version(2, 0, 1, preRelease = "0")),
             "<=2.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 0, preRelease = "0")),
+            VersionRange(Version(1), Version(2, 0, 0, preRelease = "0")),
             "1"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(2, 0, 1, preRelease = "0")),
+            VersionRange(null, Version(2, 0, 1, preRelease = "0")),
             "<=2.0.0"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(2, 0, 0)),
+            VersionRange(null, Version(2, 0, 0)),
             "<2.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), null),
+            VersionRange(Version(1), null),
             ">= 1.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), null),
+            VersionRange(Version(1), null),
             ">=  1.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), null),
+            VersionRange(Version(1), null),
             ">=   1.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 0, 1), null),
+            VersionRange(Version(1, 0, 1), null),
             "> 1.0.0"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(2, 0, 0)),
+            VersionRange(null, Version(2, 0, 0)),
             "<\t2.0.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(0, 1, 97), null),
+            VersionRange(Version(0, 1, 97), null),
             ">=0.1.97"
         )
         assertRangeEquals(
             listOf(
-                VersionRange(SemanticVersion(0, 1, 20), SemanticVersion(0, 1, 21, "0")),
-                VersionRange(SemanticVersion(1, 2, 4), SemanticVersion(1, 2, 5, "0"))
+                VersionRange(Version(0, 1, 20), Version(0, 1, 21, "0")),
+                VersionRange(Version(1, 2, 4), Version(1, 2, 5, "0"))
             ),
             "0.1.20 || 1.2.4"
         )
         assertRangeEquals(
             listOf(
-                VersionRange(null, SemanticVersion(0, 0, 1)),
-                VersionRange(SemanticVersion(0, 2, 3), null)
+                VersionRange(null, Version(0, 0, 1)),
+                VersionRange(Version(0, 2, 3), null)
             ),
             ">=0.2.3 || <0.0.1"
         )
@@ -123,17 +123,17 @@ class NpmConstraintTest {
             "||"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(2, 0, 0), SemanticVersion(3, 0, 0, "0")),
+            VersionRange(Version(2, 0, 0), Version(3, 0, 0, "0")),
             "2.x.x"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 2, 0), SemanticVersion(1, 3, 0, "0")),
+            VersionRange(Version(1, 2, 0), Version(1, 3, 0, "0")),
             "1.2.x"
         )
         assertRangeEquals(
             listOf(
-                VersionRange(SemanticVersion(1, 2, 0), SemanticVersion(1, 3, 0, "0")),
-                VersionRange(SemanticVersion(2, 0, 0), SemanticVersion(3, 0, 0, "0"))
+                VersionRange(Version(1, 2, 0), Version(1, 3, 0, "0")),
+                VersionRange(Version(2, 0, 0), Version(3, 0, 0, "0"))
             ),
             "1.2.x || 2.x"
         )
@@ -142,126 +142,126 @@ class NpmConstraintTest {
             "x"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(2), SemanticVersion(3, 0, 0, "0")),
+            VersionRange(Version(2), Version(3, 0, 0, "0")),
             "2.*.*"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 2), SemanticVersion(1, 3, 0, "0")),
+            VersionRange(Version(1, 2), Version(1, 3, 0, "0")),
             "1.2.*"
         )
         assertRangeEquals(
             listOf(
-                VersionRange(SemanticVersion(1, 2), SemanticVersion(1, 3, 0, "0")),
-                VersionRange(SemanticVersion(2), SemanticVersion(3, 0, 0, "0"))
+                VersionRange(Version(1, 2), Version(1, 3, 0, "0")),
+                VersionRange(Version(2), Version(3, 0, 0, "0"))
             ),
             "1.2.* || 2.*"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(2), SemanticVersion(3, 0, 0, "0")),
+            VersionRange(Version(2), Version(3, 0, 0, "0")),
             "2"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(2, 3), SemanticVersion(2, 4, 0, "0")),
+            VersionRange(Version(2, 3), Version(2, 4, 0, "0")),
             "2.3"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(2, 4, 0), SemanticVersion(2, 5, 0, "0")),
+            VersionRange(Version(2, 4, 0), Version(2, 5, 0, "0")),
             "~2.4"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(2, 4, 0), SemanticVersion(2, 5, 0, "0")),
+            VersionRange(Version(2, 4, 0), Version(2, 5, 0, "0")),
             "~>2.4"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(3, 2, 1), SemanticVersion(3, 3, 0, "0")),
+            VersionRange(Version(3, 2, 1), Version(3, 3, 0, "0")),
             "~>3.2.1"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 0, "0")),
+            VersionRange(Version(1), Version(2, 0, 0, "0")),
             "~1"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 0, "0")),
+            VersionRange(Version(1), Version(2, 0, 0, "0")),
             "~>1"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(2, 0, 0, "0")),
+            VersionRange(Version(1), Version(2, 0, 0, "0")),
             "~> 1"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(1, 1, 0, "0")),
+            VersionRange(Version(1), Version(1, 1, 0, "0")),
             "~1.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), SemanticVersion(1, 1, 0, "0")),
+            VersionRange(Version(1), Version(1, 1, 0, "0")),
             "~ 1.0"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 0, 3), SemanticVersion(1, 1, 0, "0")),
+            VersionRange(Version(1, 0, 3), Version(1, 1, 0, "0")),
             "~ 1.0.3"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 0, 3), SemanticVersion(1, 1, 0, "0")),
+            VersionRange(Version(1, 0, 3), Version(1, 1, 0, "0")),
             "~> 1.0.3"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(1, 0, 0, "0")),
+            VersionRange(null, Version(1, 0, 0, "0")),
             "<1"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(1, 0, 0, "0")),
+            VersionRange(null, Version(1, 0, 0, "0")),
             "< 1"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), null),
+            VersionRange(Version(1), null),
             ">=1"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1), null),
+            VersionRange(Version(1), null),
             ">= 1"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(1, 2, 0, "0")),
+            VersionRange(null, Version(1, 2, 0, "0")),
             "<1.2"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(1, 2, 0, "0")),
+            VersionRange(null, Version(1, 2, 0, "0")),
             "< 1.2"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(0, 0, 0, "0")),
+            VersionRange(null, Version(0, 0, 0, "0")),
             "1 2"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 2), SemanticVersion(3, 4, 6, "0")),
+            VersionRange(Version(1, 2), Version(3, 4, 6, "0")),
             "1.2 - 3.4.5"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(3, 5, 0, "0")),
+            VersionRange(Version(1, 2, 3), Version(3, 5, 0, "0")),
             "1.2.3 - 3.4"
         )
         assertRangeEquals(
-            VersionRange(SemanticVersion(1, 2, 3), SemanticVersion(4, 0, 0, "0")),
+            VersionRange(Version(1, 2, 3), Version(4, 0, 0, "0")),
             "1.2.3 - 3"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(0, 0, 0, "0")),
+            VersionRange(null, Version(0, 0, 0, "0")),
             ">*"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(0, 0, 0, "0")),
+            VersionRange(null, Version(0, 0, 0, "0")),
             "<*"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(0, 0, 0, "0")),
+            VersionRange(null, Version(0, 0, 0, "0")),
             ">X"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(0, 0, 0, "0")),
+            VersionRange(null, Version(0, 0, 0, "0")),
             "<X"
         )
         assertRangeEquals(
-            VersionRange(null, SemanticVersion(0, 0, 0, "0")),
+            VersionRange(null, Version(0, 0, 0, "0")),
             "<x <* || >* 2-x"
         )
         assertRangeEquals(
@@ -342,7 +342,7 @@ class NpmConstraintTest {
             )
 
             val constraint = VersionConstraint.parse(constraint, format)
-            val version = SemanticVersion.parse(version, strict = !loose)
+            val version = Version.parse(version, strict = !loose)
 
             if (!constraint.isSatisfiedBy(version, includePreRelease = includePreRelease)) {
                 fail("Version '${version}' does not satisfy constraint '${constraint}'")
@@ -484,7 +484,7 @@ class NpmConstraintTest {
             )
 
             val constraint = VersionConstraint.parse(constraint, format)
-            val version = SemanticVersion.parse(version, strict = !loose)
+            val version = Version.parse(version, strict = !loose)
 
             if (constraint.isSatisfiedBy(version, includePreRelease = includePreRelease)) {
                 fail("Version '${version}' satisfies constraint '${constraint}'")

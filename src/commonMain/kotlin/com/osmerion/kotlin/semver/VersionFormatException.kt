@@ -23,7 +23,7 @@
 package com.osmerion.kotlin.semver
 
 /**
- * Thrown to indicate that an attempt was made to convert a string to a [SemanticVersion] for a string that does not
+ * Thrown to indicate that an attempt was made to convert a string to a [Version] for a string that does not
  * have the appropriate format.
  *
  * @sample com.osmerion.kotlin.semver.samples.VersionSamples.exception

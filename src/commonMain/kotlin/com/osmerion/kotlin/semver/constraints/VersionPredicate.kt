@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.constraints
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 
 /**
  * A predicate is a conjunction of [comparators][VersionComparator].
@@ -33,7 +33,7 @@ import com.osmerion.kotlin.semver.SemanticVersion
 public interface VersionPredicate {
 
     /**
-     * A set of comparators that all have to be satisfied in order to for a [version][SemanticVersion] to pass the test
+     * A set of comparators that all have to be satisfied in order to for a [version][Version] to pass the test
      * against this predicate.
      *
      * @since   0.1.0

@@ -23,7 +23,7 @@
 package com.osmerion.kotlin.semver.constraints
 
 import com.osmerion.kotlin.semver.ConstraintFormatException
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 
 /**
  * A range predicate is defined by up to two versions that limit valid versions.
@@ -32,8 +32,8 @@ import com.osmerion.kotlin.semver.SemanticVersion
  */
 @ExperimentalConstraintApi
 public abstract class RangePredicate(
-    private val startInclusive: SemanticVersion?,
-    private val endExclusive: SemanticVersion?
+    private val startInclusive: Version?,
+    private val endExclusive: Version?
 ) : VersionPredicate {
 
     init {

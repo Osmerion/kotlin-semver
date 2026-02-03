@@ -22,7 +22,7 @@
  */
 package com.osmerion.kotlin.semver.internal
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
 import com.osmerion.kotlin.semver.constraints.VersionComparator
 import com.osmerion.kotlin.semver.constraints.VersionPredicate
@@ -93,7 +93,7 @@ internal fun List<List<VersionPredicate>>.toVersionRanges(): List<VersionRange> 
 
     return buildList {
         var currentRange = validRanges.firstOrNull() ?: let {
-            add(VersionRange(null, SemanticVersion(0, 0, 0, "0")))
+            add(VersionRange(null, Version(0, 0, 0, "0")))
             return@buildList
         }
 
@@ -115,8 +115,8 @@ internal fun List<List<VersionPredicate>>.toVersionRanges(): List<VersionRange> 
 }
 
 internal data class VersionRange(
-    val startInclusive: SemanticVersion?,
-    val endExclusive: SemanticVersion?
+    val startInclusive: Version?,
+    val endExclusive: Version?
 ) : Comparable<VersionRange> {
 
     override fun compareTo(other: VersionRange): Int = when {

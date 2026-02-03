@@ -22,10 +22,8 @@
  */
 package com.osmerion.kotlin.semver.internal
 
-import com.osmerion.kotlin.semver.SemanticVersion
+import com.osmerion.kotlin.semver.Version
 import com.osmerion.kotlin.semver.constraints.ExperimentalConstraintApi
-import com.osmerion.kotlin.semver.constraints.VersionComparator
-import com.osmerion.kotlin.semver.constraints.VersionPredicate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,23 +33,23 @@ class VersionRangeTest {
     @Test
     fun testToVersionRanges() {
         assertEquals(
-            listOf(VersionRange(startInclusive = null, endExclusive = SemanticVersion(1))),
-            listOf(listOf(SimplePredicates.lessThan(SemanticVersion(1)))).toVersionRanges()
+            listOf(VersionRange(startInclusive = null, endExclusive = Version(1))),
+            listOf(listOf(SimplePredicates.lessThan(Version(1)))).toVersionRanges()
         )
         assertEquals(
-            listOf(VersionRange(startInclusive = SemanticVersion(1), endExclusive = null)),
-            listOf(listOf(SimplePredicates.greaterThanOrEqual(SemanticVersion(1)))).toVersionRanges()
+            listOf(VersionRange(startInclusive = Version(1), endExclusive = null)),
+            listOf(listOf(SimplePredicates.greaterThanOrEqual(Version(1)))).toVersionRanges()
         )
         assertEquals(
-            listOf(VersionRange(startInclusive = SemanticVersion(1), endExclusive = SemanticVersion(1, 0, 1, "0"))),
-            listOf(listOf(SimplePredicates.equal(SemanticVersion(1)))).toVersionRanges()
+            listOf(VersionRange(startInclusive = Version(1), endExclusive = Version(1, 0, 1, "0"))),
+            listOf(listOf(SimplePredicates.equal(Version(1)))).toVersionRanges()
         )
         assertEquals(
             listOf(
-                VersionRange(startInclusive = null, endExclusive = SemanticVersion(1)),
-                VersionRange(startInclusive = SemanticVersion(1, 0, 1, "0"), endExclusive = null)
+                VersionRange(startInclusive = null, endExclusive = Version(1)),
+                VersionRange(startInclusive = Version(1, 0, 1, "0"), endExclusive = null)
             ),
-            listOf(listOf(SimplePredicates.notEqual(SemanticVersion(1)))).toVersionRanges()
+            listOf(listOf(SimplePredicates.notEqual(Version(1)))).toVersionRanges()
         )
     }
 
