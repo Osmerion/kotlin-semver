@@ -42,11 +42,10 @@ internal data class CaretVersionRange(private val descriptor: NpmVersionDescript
     endExclusive = when (descriptor) {
         null, is StarVersionDescriptor -> null
         is RegularNpmVersionDescriptor -> {
-            fun String.isX() = equals("X", ignoreCase = true)
             when {
-                descriptor.majorString.isX() -> null
-                descriptor.major != 0 || descriptor.minor == null || descriptor.minorString!!.isX() -> Version(descriptor.major!! + 1, 0, 0, "0")
-                descriptor.minor != 0 || descriptor.patch == null || descriptor.patchString!!.isX() -> Version(descriptor.major!!, descriptor.minor!! + 1, 0, "0")
+                isX(descriptor.majorString) -> null
+                descriptor.major != 0 || descriptor.minor == null || isX(descriptor.minorString) -> Version(descriptor.major!! + 1, 0, 0, "0")
+                descriptor.minor != 0 || descriptor.patch == null || isX(descriptor.patchString) -> Version(descriptor.major!!, descriptor.minor!! + 1, 0, "0")
                 else -> Version(descriptor.major!!, descriptor.minor!!, descriptor.patch!! + 1, "0")
             }
         }
