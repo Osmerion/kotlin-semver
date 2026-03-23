@@ -1,7 +1,7 @@
 # kotlin-semver
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge&label=License)](https://github.com/Osmerion/kotlin-semver/blob/master/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/com.osmerion.kotlin-semver/kotlin-semver.svg?style=for-the-badge&label=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.osmerion.kotlin-semver/kotlin-semver)
+[![Maven Central](https://img.shields.io/maven-central/v/com.osmerion.kotlin-semver/kotlin-semver.svg?style=for-the-badge&label=Maven%20Central)](https://central.sonatype.com/artifact/com.osmerion.kotlin-semver/kotlin-semver)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2%2E2-green.svg?style=for-the-badge&color=a97bff&logo=Kotlin)
 ![Java](https://img.shields.io/badge/Java-17-green.svg?style=for-the-badge&color=b07219&logo=Java)
 
